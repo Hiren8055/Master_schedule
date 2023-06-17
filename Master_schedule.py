@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.ticker import MultipleLocator
+from matplotlib.ticker import FixedFormatter
 
 train_timings = [2.17, 2.22, 2.29, 2.32, 2.35, 2.38, 2.44, 2.46, 2.51, 2.56, 2.59, 3.03, 3.15, 3.20]
 stations = ['ST266.78', 'ST266.78', 'UDN262.77', 'BHET257.3', 'SCH252.63', 'MRL245.63', 'NVS237.33', 'NVS237.33', 'VDH228.87', 'AML221.72', 'BIM216.41', 'DGI207.21', 'BL198.22', 'BL198.22']
@@ -49,11 +51,11 @@ plt.plot(train_timings, stations, color='red')
 plt.plot(train_timings_1, stations_1, color='red')
 plt.plot(train_timings_2, stations_2, color='red')
 plt.plot(train_timings_3, stations_3, color='blue')
-
+plt.minorticks_on()
 xa = np.linspace(0, 8, 240)
 print(len(xa))
 ya = ["BL198.22"]*len(xa)
-plt.plot(xa, ya, color='blue', linewidth=1, linestyle=':')
+plt.plot(xa, ya, color='blue',linewidth=1, linestyle=(0, (1, 1.15)))
 ya = ["DGI207.21"]*len(xa)
 plt.plot(xa, ya, color='blue', linewidth=1, linestyle=':')
 ya = ["BIM216.41"]*len(xa)
@@ -76,7 +78,9 @@ ya = ["ST266.78"]*len(xa)
 plt.plot(xa, ya, color='blue', linewidth=1, linestyle=':')
 
 # plt.yticks(y_positions, y_labels)
-plt.gca().xaxis.grid(True, linestyle='-')
+plt.gca().xaxis.grid(True, which = 'major', linestyle='-', color = 'black')
+plt.gca().xaxis.grid(True, which = 'minor', linestyle='-')
+plt.gca().xaxis.set_minor_locator(MultipleLocator(10/60))
 plt.xticks([0, 1, 2, 3, 4, 5, 6, 7, 8], [0, 1, 2, 3, 4, 5, 6, 7, 8])
 
 plt.text(2.17,-2,"12902",rotation='vertical')
@@ -90,8 +94,15 @@ plt.arrow(4.3, 11, 0, -1, width = 0.01)
 
 plt.text(5.53,12,"12905",rotation='vertical')
 plt.arrow(5.53, 11, 0, -1, width = 0.01)
-
+plt.tick_params(axis='x', which='minor', labelbottom=True)
 plt.tick_params(labeltop=True, labelright=True)
+minor_labels = ["10", "20", "30", "40", "50"] * 8
+minor_labels.insert(0,"")
+minor_labels.insert(0,"")
+minor_labels.insert(0,"")
+formatter = FixedFormatter(minor_labels)
+plt.gca().xaxis.set_minor_formatter(formatter)
+plt.tick_params(axis='x', which='minor', labelsize=8)
 plt.savefig('master_schedule.png')
 # plt.xlabel("Time")
 # plt.legend()
