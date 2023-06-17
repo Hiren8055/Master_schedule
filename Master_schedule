@@ -1,0 +1,92 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+xa = np.linspace(0, 8, 240)
+print(len(xa))
+ya = ["BL198.22"]*len(xa)
+plt.plot(xa, ya, color='blue', linewidth=1, linestyle=':')
+ya = ["DGI207.21"]*len(xa)
+plt.plot(xa, ya, color='blue', linewidth=1, linestyle=':')
+ya = ["BIM216.41"]*len(xa)
+plt.plot(xa, ya, color='blue', linewidth=1, linestyle=':')
+ya = ["AML221.72"]*len(xa)
+plt.plot(xa, ya, color='blue', linewidth=1, linestyle=':')
+ya = ["VDH228.87"]*len(xa)
+plt.plot(xa, ya, color='blue', linewidth=1, linestyle=':')
+ya = ["NVS237.33"]*len(xa)
+plt.plot(xa, ya, color='blue', linewidth=1, linestyle=':')
+ya = ["MRL245.63"]*len(xa)
+plt.plot(xa, ya, color='blue', linewidth=1, linestyle=':')
+ya = ["SCH252.63"]*len(xa)
+plt.plot(xa, ya, color='blue', linewidth=1, linestyle=':')
+ya = ["BHET257.3"]*len(xa)
+plt.plot(xa, ya, color='blue', linewidth=1, linestyle=':')
+ya = ["UDN262.77"]*len(xa)
+plt.plot(xa, ya, color='blue', linewidth=1, linestyle=':')
+ya = ["ST266.78"]*len(xa)
+plt.plot(xa, ya, color='blue', linewidth=1, linestyle=':')       
+
+
+
+train_timings = [2.17, 2.22, 2.29, 2.32, 2.35, 2.38, 2.44, 2.46, 2.51, 2.56, 2.59, 3.03, 3.15, 3.20]
+stations = ['ST266.78', 'ST266.78', 'UDN262.77', 'BHET257.3', 'SCH252.63', 'MRL245.63', 'NVS237.33', 'NVS237.33', 'VDH228.87', 'AML221.72', 'BIM216.41', 'DGI207.21', 'BL198.22', 'BL198.22']
+print(len(train_timings))
+print(len(stations))
+
+# halt with 5 mins
+train_timings_1 = [
+        2.17, 2.22, 2.29, 2.32, 2.35, 2.38, 2.44,2.46, 2.51, 2.56, 2.59, 3.03, 3.15, 3.20
+]
+stations_1 = ['ST266.78', 'ST266.78', 'UDN262.77', 'BHET257.3', 'SCH252.63', 'MRL245.63', 'NVS237.33', 'NVS237.33', 'VDH228.87', 'AML221.72', 'BIM216.41', 'DGI207.21', 'BL198.22', 'BL198.22']
+print(len(train_timings_1))
+print(len(stations_1))
+
+# reverse train
+train_timings_2 = [
+        2.17, 2.22, 2.29, 2.32, 2.35, 2.38, 2.44,2.46, 2.51, 2.56, 2.59, 3.03, 3.15, 3.20
+]
+stations_2 = ['ST266.78', 'ST266.78', 'UDN262.77', 'BHET257.3', 'SCH252.63', 'MRL245.63', 'NVS237.33', 'NVS237.33', 'VDH228.87', 'AML221.72', 'BIM216.41', 'DGI207.21', 'BL198.22', 'BL198.22']
+print(len(train_timings_2))
+print(len(stations_2))
+
+# intersection of trains
+train_timings_3 = [
+        2.17, 2.22, 2.29, 2.32, 2.35, 2.38, 2.44,2.46, 2.51, 2.56, 2.59, 3.03, 3.15, 3.20
+]
+stations_3 = ['ST266.78', 'ST266.78', 'UDN262.77', 'BHET257.3', 'SCH252.63', 'MRL245.63', 'NVS237.33', 'NVS237.33', 'VDH228.87', 'AML221.72', 'BIM216.41', 'DGI207.21', 'BL198.22', 'BL198.22']
+print(len(train_timings_3))
+print(len(stations_3))
+
+
+
+
+
+
+y_labes = ['ST266.78', 'UDN262.77', 'BHET257.3', 'SCH252.63', 'MRL245.63', 'NVS237.33', 'VDH228.87', 'AML221.72', 'BIM216.41', 'DGI207.21', 'BL198.22']
+y_no = range(len(y_labes))
+# plt.plot(x_arrival, y_positions, 'o', color='blue', label='Arrival')
+# plt.plot(x_departure, y_positions, 'o', color='red', label='Departure')
+plt.figure(figsize=(10,6))
+plt.plot(train_timings, stations, color='red', label='Departure')
+
+
+
+# plt.yticks(y_positions, y_labels)
+plt.gca().xaxis.grid(True, linestyle='-')
+plt.xticks([0, 1, 2, 3, 4, 5, 6, 7, 8], [0, 1, 2, 3, 4, 5, 6, 7, 8])
+plt.text(2.17,-2,"12902",rotation='vertical')
+plt.arrow(2.17, -1, 0, 1, width = 0.01)
+plt.tick_params(labeltop=True, labelright=True)
+plt.savefig('master_schedule.png')
+
+plt.yticks(y_no, y_labels)
+
+
+plt.ylim(-0.5, len(y_labels) - 0.5)
+plt.xlim(0, 8)
+
+
+plt.xlabel("Time")
+plt.legend()
+
+plt.show()
