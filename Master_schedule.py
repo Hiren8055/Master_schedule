@@ -56,58 +56,65 @@ def demo_plots():
 # TODO: HAVE TO PERFORM IT FOR ALL THE COLUMNS IN SHEETS "DOWN"
 # HAVE TO ACCESS ANOTHER SHEET NAMED "UP"
 def excel_to_pandas(filename):
-    df = pd.read_excel(filename)
-    df = df.iloc[2:]
-    df = df[:-5]
-    df = df.loc[~(df.iloc[:, 0].isna() & df.iloc[:, 0].shift().isin(["EA", "TRT"]))]
-    df = df.loc[~df.iloc[:, 0].isin(["EA", "TRT"])]
-    df.iloc[:, 0].fillna(method="ffill", inplace=True)
-    df = df.dropna(subset=df.columns[2:], how="all")
-    df = df.reset_index(drop=True)
-    df = df.drop(df.columns[1], axis=1)
-    df.iloc[0, 0] = np.nan
-    df.columns = df.iloc[0]
-    df = df.drop(0)
-    first_column_series = df.iloc[:, 0]
-    df = df.iloc[:, 1:]
-    first_column_series = first_column_series.rename(None)
-    df = df.set_index(first_column_series)
-    list_2d = []
-    for column_name in df.columns:
-        column_df = df[column_name]
-        
-        # Drop null values in the column DataFrame
-        column_df = column_df.dropna()
-        column_df = column_df.astype(str)
+    df_dict = pd.read_excel(filename, sheet_name=['DN', 'UP'])
+    down_up = dict()
 
-        # Remove the '1900-01-01 ' prefix from the values in the column
-        column_df = column_df.str.replace('1900-01-01 ', '')
-        # Convert the column back to datetime type if needed
-    #     column_df = pd.to_datetime(column_df)
-        column_df = column_df.replace(r'[\s._-]+|^$', np.nan, regex=True)
-        column_df = column_df.dropna()
-        column_df = pd.DataFrame(column_df)
-    #     # Create a new DataFrame for each column
-    #     column_df = pd.DataFrame(df[column_name])
-        
-    #     # Drop null values in the column DataFrame
-    #     column_df = column_df.dropna()
-        
-        # Do further operations with the non-null column DataFrame if needed
-        # ...
-        row_indices = column_df.index.tolist()
-        datapoints = column_df.iloc[:, 0].tolist()
+    for key, df in df_dict.items():
+        df = df.iloc[2:]
+        df = df[:-3]
+        df = df.iloc[::-1]
+        first_non_empty_row = df.apply(lambda row: row.notnull().any(), axis=1).idxmax()
+        df = df.loc[first_non_empty_row:]
+        df = df.iloc[::-1]
+        df = df.loc[~(df.iloc[:, 0].isna() & df.iloc[:, 0].shift().isin(["EA", "TRT"]))]
+        df = df.loc[~df.iloc[:, 0].isin(["EA", "TRT"])]
+        df.iloc[:, 0].fillna(method="ffill", inplace=True)
+        df = df.dropna(subset=df.columns[2:], how="all")
+        df = df.reset_index(drop=True)
+        df = df.drop(df.columns[1], axis=1)
+        df.iloc[0, 0] = np.nan
+        df.columns = df.iloc[0]
+        df = df.drop(0)
+        first_column_series = df.iloc[:, 0]
+        df = df.iloc[:, 1:]
+        first_column_series = first_column_series.rename(None)
+        df = df.set_index(first_column_series)
+        list_2d = []
+        for column_name in df.columns:
+            column_df = df[column_name]
 
-        # Create the 2-dimensional list
-        list_2d = list_2d + [row_indices, datapoints]
+            # Drop null values in the column DataFrame
+            column_df = column_df.dropna()
+            column_df = column_df.astype(str)
 
-        # # Print the non-null column DataFrame
-        # print(f"Non-null values in '{column_name}':")
-        # print(column_df)
-        # print()
+            # Remove the '1900-01-01 ' prefix from the values in the column
+            column_df = column_df.str.replace('1900-01-01 ', '')
+            # Convert the column back to datetime type if needed
+        #     column_df = pd.to_datetime(column_df)
+            column_df = column_df.replace(r'[\s._-]+|^$', np.nan, regex=True)
+            column_df = column_df.dropna()
+            column_df = pd.DataFrame(column_df)
+        #     # Create a new DataFrame for each column
+        #     column_df = pd.DataFrame(df[column_name])
 
-    # pass 3d list down and up containt all the combined 2d list made before
-    return list_2d
+        #     # Drop null values in the column DataFrame
+        #     column_df = column_df.dropna()
+
+            # Do further operations with the non-null column DataFrame if needed
+            # ...
+            row_indices = column_df.index.tolist()
+            datapoints = column_df.iloc[:, 0].tolist()
+
+            # Create the 2-dimensional list
+            list_2d = list_2d + [row_indices, datapoints]
+            
+            # # Print the non-null column DataFrame
+            # print(f"Non-null values in '{column_name}':")
+            # print(column_df)
+            # print()
+        # pass 3d list down and up containt all the combined 2d list made before
+        down_up[key] = list_2d
+    return down_up
 
 
 def axes_setting():
@@ -187,8 +194,8 @@ def graph_plotting():
     plt.savefig('master_schedule.png')
     plt.show()
 
-stations_array = excel_to_pandas('HIREN.xlsx')
-print("stations_array",stations_array)
+stations_dict = excel_to_pandas('HIREN.xlsx')
+print("stations_dict",stations_array)
 trains(stations_array)
 #graph_plotting function still has errors that need to be resort, can take old code for plotting.
 #graph_plotting()
