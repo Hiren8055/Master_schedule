@@ -195,7 +195,7 @@ def graph_plotting():
     plt.show()
 
 stations_dict = excel_to_pandas('HIREN.xlsx')
-print("stations_dict",stations_array)
+print("stations_dict",stations_dict)
 trains(stations_array)
 #graph_plotting function still has errors that need to be resort, can take old code for plotting.
 #graph_plotting()
