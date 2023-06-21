@@ -87,40 +87,140 @@ def conversion(station_dict):
                 value[i] = [float(num) for num in value[i]]   
     return station_dict
 
-def plot_trains(station_dict,y_axis):
-    plt.figure(figsize=(20,12))
+def plot_trains(station_dict, y_axis):
+    fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(10, 50))
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
             for j in range(len(arr_2d[i])):
                 arr_2d[i][j] = y_axis.index(arr_2d[i][j])
-    print(station_dict)
+    # Subplot 1: 0-8
+    axes[0].minorticks_on()
+    xa_0 = np.linspace(0, 8, 320)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
-            plt.plot(arr_2d[i+1], arr_2d[i], color='red')
-    plt.minorticks_on()
-    xa = np.linspace(0, 24, 720)
+            axes[0].plot(arr_2d[i+1], arr_2d[i], color='red')
     for i in range(len(y_axis)):
         y_index = y_axis[i]
-        ya = [y_index]*len(xa)
-        plt.plot(xa, ya, color='blue',linewidth=1, linestyle=(0, (1, 1.15)))
-    plt.gca().xaxis.grid(True, which = 'major', linestyle='-', color = 'black')
-    plt.gca().xaxis.grid(True, which = 'minor', linestyle='-')
-    plt.gca().xaxis.set_minor_locator(MultipleLocator(10/60))
-    plt.xticks([0, 1, 2, 3, 4, 5, 6, 7, 8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],[0, 1, 2, 3, 4, 5, 6, 7, 8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24])
-    plt.yticks([0, 1, 2, 3, 4, 5, 6, 7, 8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33], y_axis)
-    plt.tick_params(axis='x', which='minor', labelbottom=True)
-    plt.tick_params(labeltop=True, labelright=True)
-    minor_labels = ["10", "20", "30", "40", "50"] * 24
-    minor_labels.insert(0,"")
-#     minor_labels.insert(0,"")
-#     minor_labels.insert(0,"")
+        ya = [y_index] * len(xa_0)
+        axes[0].plot(xa_0, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+    axes[0].xaxis.grid(True, which='major', linestyle='-', color='black')
+    axes[0].xaxis.grid(True, which='minor', linestyle='-')
+    axes[0].xaxis.set_minor_locator(MultipleLocator(10 / 60))
+    axes[0].set_xticks([0, 1, 2, 3, 4, 5, 6, 7, 8])
+    axes[0].set_xticklabels([0, 1, 2, 3, 4, 5, 6, 7, 8])
+    axes[0].set_yticks(range(len(y_axis)))
+    axes[0].set_yticklabels(y_axis)
+    axes[0].tick_params(axis='x', which='minor', labelbottom=True)
+    axes[0].tick_params(labeltop=True, labelright=True)
+    minor_labels = ["10", "20", "30", "40", "50"] * 8
+    minor_labels.insert(0, "")
     formatter = FixedFormatter(minor_labels)
-    plt.gca().xaxis.set_minor_formatter(formatter)
-    plt.tick_params(axis='x', which='minor', labelsize=6)
-    plt.xlim(0, 24)
-    plt.ylim(0, 33)
+    axes[0].xaxis.set_minor_formatter(formatter)
+    axes[0].tick_params(axis='x', which='minor', labelsize=6)
+    axes[0].set_xlim(0, 8)
+    axes[0].set_ylim(0, len(y_axis))
+
+    # Subplot 2: 8-16
+    axes[1].minorticks_on()
+    xa_1 = np.linspace(8, 16, 320)
+    for key, arr_2d in station_dict.items():
+        for i in range(0, len(arr_2d), 2):
+            axes[1].plot(arr_2d[i+1], arr_2d[i], color='red')
+    for i in range(len(y_axis)):
+        y_index = y_axis[i]
+        ya = [y_index] * len(xa_1)
+        axes[1].plot(xa_1, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+    axes[1].xaxis.grid(True, which='major', linestyle='-', color='black')
+    axes[1].xaxis.grid(True, which='minor', linestyle='-')
+    axes[1].xaxis.set_minor_locator(MultipleLocator(10 / 60))
+    axes[1].set_xticks([8, 9, 10, 11, 12, 13, 14, 15, 16])
+    axes[1].set_xticklabels([8, 9, 10, 11, 12, 13, 14, 15, 16])
+    axes[1].set_yticks(range(len(y_axis)))
+    axes[1].set_yticklabels(y_axis)
+    axes[1].tick_params(axis='x', which='minor', labelbottom=True)
+    axes[1].tick_params(labeltop=True, labelright=True)
+    minor_labels = ["10", "20", "30", "40", "50"] * 8
+    minor_labels.insert(0, "")
+    formatter = FixedFormatter(minor_labels)
+    axes[1].xaxis.set_minor_formatter(formatter)
+    axes[1].tick_params(axis='x', which='minor', labelsize=6)
+    axes[1].set_xlim(8, 16)
+    axes[1].set_ylim(0, len(y_axis))
+
+    # Subplot 3: 16-24
+    axes[2].minorticks_on()
+    xa_2 = np.linspace(16, 24, 320)
+    for key, arr_2d in station_dict.items():
+        for i in range(0, len(arr_2d), 2):
+            axes[2].plot(arr_2d[i+1], arr_2d[i], color='red')
+    for i in range(len(y_axis)):
+        y_index = y_axis[i]
+        ya = [y_index] * len(xa_2)
+        axes[2].plot(xa_2, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+    axes[2].xaxis.grid(True, which='major', linestyle='-', color='black')
+    axes[2].xaxis.grid(True, which='minor', linestyle='-')
+    axes[2].xaxis.set_minor_locator(MultipleLocator(10 / 60))
+    axes[2].set_xticks([16, 17, 18, 19, 20, 21, 22, 23, 24])
+    axes[2].set_xticklabels([16, 17, 18, 19, 20, 21, 22, 23, 24])
+    axes[2].set_yticks(range(len(y_axis)))
+    axes[2].set_yticklabels(y_axis)
+    axes[2].tick_params(axis='x', which='minor', labelbottom=True)
+    axes[2].tick_params(labeltop=True, labelright=True)
+    minor_labels = ["10", "20", "30", "40", "50"] * 8
+    minor_labels.insert(0, "")
+    formatter = FixedFormatter(minor_labels)
+    axes[2].xaxis.set_minor_formatter(formatter)
+    axes[2].tick_params(axis='x', which='minor', labelsize=6)
+    axes[2].set_xlim(16, 24)
+    axes[2].set_ylim(0, len(y_axis))
+    
+    # Subplot 3: 16-24
+    axes[3].minorticks_on()
+    xa_3 = np.linspace(16, 24, 320)
+    for key, arr_2d in station_dict.items():
+        for i in range(0, len(arr_2d), 2):
+            axes[3].plot(arr_2d[i+1], arr_2d[i], color='red')
+    for i in range(len(y_axis)):
+        y_index = y_axis[i]
+        ya = [y_index] * len(xa_3)
+        axes[3].plot(xa_3, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+    axes[3].xaxis.grid(True, which='major', linestyle='-', color='black')
+    axes[3].xaxis.grid(True, which='minor', linestyle='-')
+    axes[3].xaxis.set_minor_locator(MultipleLocator(10 / 60))
+    axes[3].set_xticks([24,25,26,27,28,29,30,31,32])
+    axes[3].set_xticklabels([0, 1, 2, 3, 4, 5, 6, 7, 8])
+    axes[3].set_yticks(range(len(y_axis)))
+    axes[3].set_yticklabels(y_axis)
+    axes[3].tick_params(axis='x', which='minor', labelbottom=True)
+    axes[3].tick_params(labeltop=True, labelright=True)
+    minor_labels = ["10", "20", "30", "40", "50"] * 8
+    minor_labels.insert(0, "")
+    formatter = FixedFormatter(minor_labels)
+    axes[3].xaxis.set_minor_formatter(formatter)
+    axes[3].tick_params(axis='x', which='minor', labelsize=6)
+    axes[3].set_xlim(24, 32)
+    axes[3].set_ylim(0, len(y_axis))
+    
+    plt.tight_layout()
+#     for me, ax in enumerate(axes):
+#         ax.set_title(f"Subplot {me+1}")
+#         # Save each subplot as a separate PDF
+#         plt.savefig(f"subplot_{me+1}.pdf")
     plt.savefig("myImagePDF.pdf", format="pdf")
     plt.show()
+def add_24_down_up(down_up):
+    arr_2= down_up['DN']
+    for hi in range(1, len(arr_2),2):
+        arr_2[hi] = [x + 24 if x < 1 else x for x in arr_2[hi]]
+    down_up['DN'] = arr_2
+    arr_2 = down_up['UP']
+    # Add 24 to each element  the arrayin
+    for h in range(1, len(arr_2),2):
+        arr_2[h] = [x + 24 if x < 23 else x for x in arr_2[h]]
+    down_up['UP'] = arr_2
+    print(down_up)
+    return down_up
 down_up, y_labes =  excel_to_pandas("HIREN.xlsx")
 down_up = conversion(down_up)
+down_up = add_24_down_up(down_up)
 plot_trains(down_up, y_labes)
