@@ -36,6 +36,7 @@ def excel_to_pandas(filename):
         first_column_series = df.iloc[:, 0]
         df = df.iloc[:, 1:]
         first_column_series = first_column_series.rename(None)
+        first_column_series = first_column_series.str.strip()
         df = df.set_index(first_column_series)
         list_2d = []
         for column_name in df.columns:
@@ -43,8 +44,13 @@ def excel_to_pandas(filename):
             column_df = column_df.dropna()
             column_df = column_df.astype(str)
             column_df = column_df.str.replace('1900-01-01 ', '')
-            column_df = column_df.replace(r'[\s._-]+|^$', np.nan, regex=True)
+            column_df = column_df.replace(r'([\s_-]+|^$|(\.))', np.nan, regex=True)
+#             column_df = column_df.dropna()
+#             mask = column_df.str.contains(r'\.+')
+#             column_df[mask] = np.nan
             column_df = column_df.dropna()
+#             column_df = column_df[column_df != "......"]
+            column_df = column_df[column_df.astype(str).str.contains(r'\d', na=False)]
             column_df = pd.DataFrame(column_df)
             row_indices = column_df.index.tolist()
             datapoints = column_df.iloc[:, 0].tolist()
@@ -54,7 +60,9 @@ def excel_to_pandas(filename):
         down_up[key] = list_2d
         down_up[key + key] = df.index
 
-    y_axis =list(dict.fromkeys(down_up['DNDN'].values.tolist()))
+    y_axis = list(dict.fromkeys(down_up['DNDN'].values.tolist()))
+    down_up.pop("DNDN")
+    down_up.pop("UPUP")
     return down_up,y_axis
 def conversion(station_dict):
     # this wil multiply with ratios for plotting
@@ -77,43 +85,42 @@ def conversion(station_dict):
                     value[i][j] = str(round(time_in_hours, 2))
 
                 value[i] = [float(num) for num in value[i]]   
-    return stations_dict
+    return station_dict
 
 def plot_trains(station_dict,y_axis):
-    plt.figure(figsize=(10,6))
-    
-    for key, arr_2d in station_dict:
+    plt.figure(figsize=(20,12))
+    for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
-            for j in len(arr_2d[i]):
-                plt.plot(arr_2d[i][j], arr_2d[i+1][j], color='red')
+            for j in range(len(arr_2d[i])):
+                arr_2d[i][j] = y_axis.index(arr_2d[i][j])
+    print(station_dict)
+    for key, arr_2d in station_dict.items():
+        for i in range(0, len(arr_2d), 2):
+            plt.plot(arr_2d[i+1], arr_2d[i], color='red')
     plt.minorticks_on()
     xa = np.linspace(0, 24, 720)
-    for i in y_axis:
-        ya = [y_axis[i]]*len(xa)
+    for i in range(len(y_axis)):
+        y_index = y_axis[i]
+        ya = [y_index]*len(xa)
         plt.plot(xa, ya, color='blue',linewidth=1, linestyle=(0, (1, 1.15)))
     plt.gca().xaxis.grid(True, which = 'major', linestyle='-', color = 'black')
     plt.gca().xaxis.grid(True, which = 'minor', linestyle='-')
     plt.gca().xaxis.set_minor_locator(MultipleLocator(10/60))
     plt.xticks([0, 1, 2, 3, 4, 5, 6, 7, 8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],[0, 1, 2, 3, 4, 5, 6, 7, 8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24])
+    plt.yticks([0, 1, 2, 3, 4, 5, 6, 7, 8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33], y_axis)
     plt.tick_params(axis='x', which='minor', labelbottom=True)
     plt.tick_params(labeltop=True, labelright=True)
     minor_labels = ["10", "20", "30", "40", "50"] * 24
     minor_labels.insert(0,"")
-    minor_labels.insert(0,"")
-    minor_labels.insert(0,"")
+#     minor_labels.insert(0,"")
+#     minor_labels.insert(0,"")
     formatter = FixedFormatter(minor_labels)
     plt.gca().xaxis.set_minor_formatter(formatter)
-    plt.tick_params(axis='x', which='minor', labelsize=8)
+    plt.tick_params(axis='x', which='minor', labelsize=6)
+    plt.xlim(0, 24)
+    plt.ylim(0, 33)
+    plt.savefig("myImagePDF.pdf", format="pdf")
     plt.show()
-<<<<<<< HEAD
-
-stations_dict = excel_to_pandas('HIREN.xlsx')
-print("stations_dict",stations_dict)
-trains(stations_array)
-#graph_plotting function still has errors that need to be resort, can take old code for plotting.
-#graph_plotting()
-=======
 down_up, y_labes =  excel_to_pandas("HIREN.xlsx")
 down_up = conversion(down_up)
 plot_trains(down_up, y_labes)
->>>>>>> db654eece272b12217fddd15bcf37f142663e84d
