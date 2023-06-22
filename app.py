@@ -1,28 +1,43 @@
 from PySide2 import QtWidgets
-import matplotlib.pyplot as plt
+from PySide2.QtWidgets import QScrollArea
+from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-import pandas as pd
-from qt_material import apply_stylesheet
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+import matplotlib.pyplot as plt
 import numpy as np
+from qt_material import apply_stylesheet
+import pandas as pd
 from matplotlib.ticker import MultipleLocator
 from matplotlib.ticker import FixedFormatter
+
 
 class PlotWindow(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Matplotlib Plot")
-        self.figure = plt.figure()
+        
+        self.figure = Figure(figsize=(10, 50))
         self.canvas = FigureCanvas(self.figure)
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setWidget(self.canvas)
+        
         self.button = QtWidgets.QPushButton("Load Excel File")
         self.button.clicked.connect(self.load_file)
+        
         self.export_button = QtWidgets.QPushButton("Export Plot as PDF")
         self.export_button.clicked.connect(self.export_plot)
         self.export_button.setEnabled(False)
-        self.layout = QtWidgets.QVBoxLayout()
-        self.layout.addWidget(self.canvas)
+        
+        self.layout = QtWidgets.QVBoxLayout(self)
+        self.layout.addWidget(self.scroll_area)
+        self.layout.addWidget(self.toolbar)
         self.layout.addWidget(self.button)
         self.layout.addWidget(self.export_button)
-        self.setLayout(self.layout)
+        self.canvas.setMinimumSize(1000, 4000)
+        self.canvas.setMinimumSize(1001, 4001)
     def excel_to_pandas(self, filename):
         df_dict = pd.read_excel(filename, sheet_name=['DN', 'UP'])
         down_up = dict()
@@ -85,10 +100,10 @@ class PlotWindow(QtWidgets.QWidget):
                         # Convert hours, minutes, and seconds to a decimal representation of hours
                         time_in_hours = hours + (minutes / 60) + (seconds / 3600)
 
-                        after_decimal = time_in_hours % 1
-                        rescaled_value = after_decimal * 3/5
+                        # after_decimal = time_in_hours % 1
+                        # rescaled_value = after_decimal * 3/5
 
-                        time_in_hours = int(time_in_hours) + rescaled_value
+                        # time_in_hours = int(time_in_hours) + rescaled_value
 
                         # Update the value in the dictionary
                         value[i][j] = str(round(time_in_hours, 2))
@@ -106,22 +121,22 @@ class PlotWindow(QtWidgets.QWidget):
             arr_2[h] = [x + 24 if x < 23 else x for x in arr_2[h]]
         down_up['UP'] = arr_2
         return down_up
-    def plot_trains(station_dict, y_axis):
-        fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(10, 50))
+    def plot_trains(self,station_dict, y_axis):
+        axes = self.figure.subplots(nrows=4, ncols=1)
         for key, arr_2d in station_dict.items():
             for i in range(0, len(arr_2d), 2):
                 for j in range(len(arr_2d[i])):
                     arr_2d[i][j] = y_axis.index(arr_2d[i][j])
         # Subplot 1: 0-8
         axes[0].minorticks_on()
-        xa_0 = np.linspace(0, 8, 320)
+        xa_0 = np.linspace(0, 8, 240)
         for key, arr_2d in station_dict.items():
             for i in range(0, len(arr_2d), 2):
                 axes[0].plot(arr_2d[i+1], arr_2d[i], color='red')
         for i in range(len(y_axis)):
             y_index = y_axis[i]
             ya = [y_index] * len(xa_0)
-            axes[0].plot(xa_0, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+            axes[0].plot(xa_0, ya, color='blue', linewidth=1, linestyle=(10, (1, 1.328)))
         axes[0].xaxis.grid(True, which='major', linestyle='-', color='black')
         axes[0].xaxis.grid(True, which='minor', linestyle='-')
         axes[0].xaxis.set_minor_locator(MultipleLocator(10 / 60))
@@ -141,14 +156,14 @@ class PlotWindow(QtWidgets.QWidget):
 
         # Subplot 2: 8-16
         axes[1].minorticks_on()
-        xa_1 = np.linspace(8, 16, 320)
+        xa_1 = np.linspace(8, 16, 240)
         for key, arr_2d in station_dict.items():
             for i in range(0, len(arr_2d), 2):
                 axes[1].plot(arr_2d[i+1], arr_2d[i], color='red')
         for i in range(len(y_axis)):
             y_index = y_axis[i]
             ya = [y_index] * len(xa_1)
-            axes[1].plot(xa_1, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+            axes[1].plot(xa_1, ya, color='blue', linewidth=1, linestyle=(10, (1, 1.328)))
         axes[1].xaxis.grid(True, which='major', linestyle='-', color='black')
         axes[1].xaxis.grid(True, which='minor', linestyle='-')
         axes[1].xaxis.set_minor_locator(MultipleLocator(10 / 60))
@@ -168,14 +183,14 @@ class PlotWindow(QtWidgets.QWidget):
 
         # Subplot 3: 16-24
         axes[2].minorticks_on()
-        xa_2 = np.linspace(16, 24, 320)
+        xa_2 = np.linspace(16, 24, 240)
         for key, arr_2d in station_dict.items():
             for i in range(0, len(arr_2d), 2):
                 axes[2].plot(arr_2d[i+1], arr_2d[i], color='red')
         for i in range(len(y_axis)):
             y_index = y_axis[i]
             ya = [y_index] * len(xa_2)
-            axes[2].plot(xa_2, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+            axes[2].plot(xa_2, ya, color='blue', linewidth=1, linestyle=(10, (1, 1.328)))
         axes[2].xaxis.grid(True, which='major', linestyle='-', color='black')
         axes[2].xaxis.grid(True, which='minor', linestyle='-')
         axes[2].xaxis.set_minor_locator(MultipleLocator(10 / 60))
@@ -195,14 +210,14 @@ class PlotWindow(QtWidgets.QWidget):
         
         # Subplot 3: 16-24
         axes[3].minorticks_on()
-        xa_3 = np.linspace(16, 24, 320)
+        xa_3 = np.linspace(24, 32, 240)
         for key, arr_2d in station_dict.items():
             for i in range(0, len(arr_2d), 2):
                 axes[3].plot(arr_2d[i+1], arr_2d[i], color='red')
         for i in range(len(y_axis)):
             y_index = y_axis[i]
             ya = [y_index] * len(xa_3)
-            axes[3].plot(xa_3, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+            axes[3].plot(xa_3, ya, color='blue', linewidth=1, linestyle=(10, (1, 1.328)))
         axes[3].xaxis.grid(True, which='major', linestyle='-', color='black')
         axes[3].xaxis.grid(True, which='minor', linestyle='-')
         axes[3].xaxis.set_minor_locator(MultipleLocator(10 / 60))
@@ -221,6 +236,8 @@ class PlotWindow(QtWidgets.QWidget):
         axes[3].set_ylim(0, len(y_axis))
         
         plt.tight_layout()
+        self.canvas.draw()
+
     #     for me, ax in enumerate(axes):
     #         ax.set_title(f"Subplot {me+1}")
     #         # Save each subplot as a separate PDF
@@ -232,19 +249,18 @@ class PlotWindow(QtWidgets.QWidget):
         file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Excel File", "", "Excel Files (*.xlsx)")
         if file_name:
             # data = pd.read_excel(file_name)
-            down_up, y_labes =  excel_to_pandas(file_name)
-            down_up = conversion(down_up)
-            down_up = add_24_down_up(down_up)
+            down_up, y_labes =  self.excel_to_pandas(file_name)
+            down_up = self.conversion(down_up)
+            down_up = self.add_24_down_up(down_up)
             # x = data["x"]
-            # y = data["y"]
+            # y = data["y"]             
             self.figure.clear()
-            plot_trains(down_up, y_labes)
+            self.plot_trains(down_up, y_labes)
             # ax = self.figure.add_subplot(111)
             # ax.plot(x, y, "r-")
             # ax.set_xlabel("x")
             # ax.set_ylabel("y")
             # ax.set_title("Line Plot from Excel File")
-            self.canvas.draw()
             self.export_button.setEnabled(True)
 
     def export_plot(self):
@@ -255,6 +271,6 @@ class PlotWindow(QtWidgets.QWidget):
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     window = PlotWindow()
-    apply_stylesheet(app, theme='dark_blue.xml')
+    # apply_stylesheet(app, theme='dark_blue.xml')
     window.show()
     app.exec_()
