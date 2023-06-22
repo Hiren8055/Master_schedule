@@ -271,6 +271,6 @@ class PlotWindow(QtWidgets.QWidget):
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     window = PlotWindow()
-    # apply_stylesheet(app, theme='dark_blue.xml')
+    apply_stylesheet(app, theme='dark_blue.xml')
     window.show()
     app.exec_()
