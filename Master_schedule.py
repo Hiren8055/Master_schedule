@@ -14,10 +14,13 @@ from matplotlib.ticker import FixedFormatter
 # TODO: HAVE TO PERFORM IT FOR ALL THE COLUMNS IN SHEETS "DOWN"
 # HAVE TO ACCESS ANOTHER SHEET NAMED "UP"
 def excel_to_pandas(filename):
-    df_dict = pd.read_excel(filename, sheet_name=['DN', 'UP'])
+    df_dict = pd.read_excel(filename, sheet_name=['DN', 'UP'], header=None)
     down_up = dict()
+    dwn_upp = dict()
     for key, df in df_dict.items():
-        df = df.iloc[2:]
+        first_filled_row_index = df.first_valid_index()
+        df = df.loc[first_filled_row_index:]
+        df = df[2:]
         df = df[:-3]
         df = df.iloc[::-1]
         first_non_empty_row = df.apply(lambda row: row.notnull().any(), axis=1).idxmax()
@@ -37,6 +40,7 @@ def excel_to_pandas(filename):
         first_column_series = first_column_series.rename(None)
         first_column_series = first_column_series.str.strip()
         df = df.set_index(first_column_series)
+        trains_list = df.columns.tolist()
         list_2d = []
         for column_name in df.columns:
             column_df = df[column_name]
@@ -58,11 +62,11 @@ def excel_to_pandas(filename):
             list_2d = list_2d + [row_indices, datapoints]
         down_up[key] = list_2d
         down_up[key + key] = df.index
-
+        dwn_upp[key] = trains_list
     y_axis = list(dict.fromkeys(down_up['DNDN'].values.tolist()))
     down_up.pop("DNDN")
     down_up.pop("UPUP")
-    return down_up,y_axis
+    return down_up,y_axis, dwn_upp
 
 def conversion(station_dict):
     # this wil multiply with ratios for plotting
@@ -86,7 +90,7 @@ def conversion(station_dict):
     return station_dict
 
 
-def plot_trains(station_dict, y_axis):
+def plot_trains(station_dict, y_axis, trains_dict):
     y_axis.insert(0," ")
     y_axis.insert(0,"  ")
     y_axis.insert(0,"   ")
@@ -95,9 +99,9 @@ def plot_trains(station_dict, y_axis):
     y_axis.append("      ")
     y_axis.append("       ")
     y_axis.append("        ")
-
-
-
+    print(" ")
+    print("Trains dictionary: ", trains_dict)
+    print(" ")
 # Arrow:
 #     eg. axes[2].arrow(20, 25, 0, 1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
 #     20---> x axis
@@ -308,7 +312,7 @@ def add_24_down_up(down_up):
     return down_up
 
 
-down_up, y_labes =  excel_to_pandas('HIREN.xlsx')
+down_up, y_labes, dwn_upp =  excel_to_pandas('HIREN.xlsx')
 down_up = conversion(down_up)
 down_up = add_24_down_up(down_up)
-plot_trains(down_up, y_labes)    
+plot_trains(down_up, y_labes, dwn_upp)    
