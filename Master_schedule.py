@@ -103,14 +103,15 @@ def plot_trains(station_dict, y_axis):
     axes[0].minorticks_on()
 
     print('station_dict : ', station_dict)
-    xa_0 = np.linspace(0, 8, 200)
+    # xa_0 = np.linspace(0, 8, 200)
+    xa_0 = np.arange(0, 8, 0.03333)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
             axes[0].plot(arr_2d[i+1], arr_2d[i], color='red')
     for i in range(len(y_axis)):
         y_index = y_axis[i]
         ya = [y_index] * len(xa_0)
-        axes[0].plot(xa_0, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+        axes[0].scatter(xa_0, ya, marker=',',color='blue', s=0.3)
         
     ### ARROW DowN        
     k = 1    
@@ -145,14 +146,14 @@ def plot_trains(station_dict, y_axis):
   
     # Subplot 2: 8-16
     axes[1].minorticks_on()
-    xa_1 = np.linspace(8, 16, 240)
+    xa_1 =np.arange(8, 16, 0.03333)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
             axes[1].plot(arr_2d[i+1], arr_2d[i], color='red')
     for i in range(len(y_axis)):
         y_index = y_axis[i]
         ya = [y_index] * len(xa_1)
-        axes[1].plot(xa_1, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+        axes[1].scatter(xa_1, ya, marker=',',color='blue', s=0.3)
         
     ### ARROW DowN        
     k = 1    
@@ -188,14 +189,14 @@ def plot_trains(station_dict, y_axis):
     # Subplot 3: 16-24
     
     axes[2].minorticks_on()
-    xa_2 = np.linspace(16, 24, 240)
+    xa_2 = np.arange(16, 24, 0.03333)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
             axes[2].plot(arr_2d[i+1], arr_2d[i], color='red')
     for i in range(len(y_axis)):
         y_index = y_axis[i]
         ya = [y_index] * len(xa_2)
-        axes[2].plot(xa_2, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+        axes[2].scatter(xa_2, ya, marker=',',color='blue', s=0.3)
 
     ### ARROW DowN         
     k = 1    
@@ -234,14 +235,14 @@ def plot_trains(station_dict, y_axis):
     # Subplot 4: 24-31
        
     axes[3].minorticks_on()
-    xa_3 = np.linspace(24, 32, 240)
+    xa_3 = np.arange(24, 32, 0.03333)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
             axes[3].plot(arr_2d[i+1], arr_2d[i], color='red')
     for i in range(len(y_axis)):
         y_index = y_axis[i]
         ya = [y_index] * len(xa_3)
-        axes[3].plot(xa_3, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+        axes[3].scatter(xa_3, ya, marker=',',color='blue', s=0.3)
         
         
     ### ARROW DowN       
