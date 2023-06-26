@@ -87,6 +87,16 @@ def conversion(station_dict):
 
 
 def plot_trains(station_dict, y_axis):
+    y_axis.insert(0," ")
+    y_axis.insert(0,"  ")
+    y_axis.insert(0,"   ")
+    y_axis.insert(0,"    ")
+    y_axis.append("     ")
+    y_axis.append("      ")
+    y_axis.append("       ")
+    y_axis.append("        ")
+
+
 
 # Arrow:
 #     eg. axes[2].arrow(20, 25, 0, 1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
