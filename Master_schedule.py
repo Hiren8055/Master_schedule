@@ -212,14 +212,14 @@ def plot_trains(station_dict, y_axis):
     k = 1    
     for i in range(len(station_dict['DN']) // 2):    
         if 16 <= station_dict['DN'][k][0] <= 24:
-            axes[2].arrow(station_dict['DN'][k][0], station_dict['DN'][k - 1][0], 0, 1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
+            axes[2].arrow(station_dict['DN'][k][0], station_dict['DN'][k - 1][0] - 1, 0, 1, width = 0.005)
         k += 2
 
     ### ARROW UP        
     k = 1    
     for i in range(len(station_dict['UP']) // 2):    
         if 16 <= station_dict['UP'][k][0] <= 24:
-            axes[2].arrow(station_dict['UP'][k][0], station_dict['UP'][k - 1][0], 0, -1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
+            axes[2].arrow(station_dict['UP'][k][0], station_dict['UP'][k - 1][0] + 1, 0, -1, width = 0.005, head_width=0.1, head_length=0.1, color = 'blue')
         k += 2   
     
     #Test arrow for plotting outside
@@ -259,14 +259,14 @@ def plot_trains(station_dict, y_axis):
     k = 1    
     for i in range(len(station_dict['DN']) // 2):    
         if 24 <= station_dict['DN'][k][0] <= 32:
-            axes[3].arrow(station_dict['DN'][k][0], station_dict['DN'][k - 1][0], 0, 1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
+            axes[3].arrow(station_dict['DN'][k][0], station_dict['DN'][k - 1][0] - 1, 0, 1, width = 0.005, head_width=0.1, head_length=0.1, color = 'blue')
         k += 2
         
     ### ARROW UP        
     k = 1    
     for i in range(len(station_dict['UP']) // 2):    
         if 24 <= station_dict['UP'][k][0] <= 32:
-            axes[3].arrow(station_dict['UP'][k][0], station_dict['UP'][k - 1][0], 0, -1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
+            axes[3].arrow(station_dict['UP'][k][0], station_dict['UP'][k - 1][0] + 1, 0, -1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
         k += 2     
         
     axes[3].xaxis.grid(True, which='major', linestyle='-', color='black')
