@@ -11,7 +11,6 @@ import numpy as np
 from matplotlib.ticker import MultipleLocator
 from matplotlib.ticker import FixedFormatter
 
-
 # TODO: HAVE TO PERFORM IT FOR ALL THE COLUMNS IN SHEETS "DOWN"
 # HAVE TO ACCESS ANOTHER SHEET NAMED "UP"
 def excel_to_pandas(filename):
@@ -64,6 +63,7 @@ def excel_to_pandas(filename):
     down_up.pop("DNDN")
     down_up.pop("UPUP")
     return down_up,y_axis
+
 def conversion(station_dict):
     # this wil multiply with ratios for plotting
     for key, value in station_dict.items():
@@ -77,9 +77,7 @@ def conversion(station_dict):
                     time_in_hours = hours + (minutes / 60) + (seconds / 3600)
 
                     after_decimal = time_in_hours % 1
-                    rescaled_value = after_decimal * 3/5
-
-                    time_in_hours = int(time_in_hours) + rescaled_value
+                    time_in_hours = int(time_in_hours) + after_decimal
 
                     # Update the value in the dictionary
                     value[i][j] = str(round(time_in_hours, 2))
@@ -87,7 +85,15 @@ def conversion(station_dict):
                 value[i] = [float(num) for num in value[i]]   
     return station_dict
 
+
 def plot_trains(station_dict, y_axis):
+
+# Arrow:
+#     eg. axes[2].arrow(20, 25, 0, 1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
+#     20---> x axis
+#     25 --> y axis
+#     1 --> size of line segment
+   
     fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(10, 50))
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
@@ -95,7 +101,9 @@ def plot_trains(station_dict, y_axis):
                 arr_2d[i][j] = y_axis.index(arr_2d[i][j])
     # Subplot 1: 0-8
     axes[0].minorticks_on()
-    xa_0 = np.linspace(0, 8, 320)
+
+    print('station_dict : ', station_dict)
+    xa_0 = np.linspace(0, 8, 200)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
             axes[0].plot(arr_2d[i+1], arr_2d[i], color='red')
@@ -103,6 +111,21 @@ def plot_trains(station_dict, y_axis):
         y_index = y_axis[i]
         ya = [y_index] * len(xa_0)
         axes[0].plot(xa_0, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+        
+    ### ARROW DowN        
+    k = 1    
+    for i in range(len(station_dict['DN']) // 2):    
+        if 0 <= station_dict['DN'][k][0] <= 8:
+            axes[0].arrow(station_dict['DN'][k][0], station_dict['DN'][k - 1][0], 0, 1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
+        k += 2
+    
+    ### ARROW UP        
+    k = 1    
+    for i in range(len(station_dict['UP']) // 2):    
+        if 0 <= station_dict['UP'][k][0] <= 8:
+            axes[0].arrow(station_dict['UP'][k][0], station_dict['UP'][k - 1][0], 0, -1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
+        k += 2     
+    
     axes[0].xaxis.grid(True, which='major', linestyle='-', color='black')
     axes[0].xaxis.grid(True, which='minor', linestyle='-')
     axes[0].xaxis.set_minor_locator(MultipleLocator(10 / 60))
@@ -119,10 +142,10 @@ def plot_trains(station_dict, y_axis):
     axes[0].tick_params(axis='x', which='minor', labelsize=6)
     axes[0].set_xlim(0, 8)
     axes[0].set_ylim(0, len(y_axis))
-
+  
     # Subplot 2: 8-16
     axes[1].minorticks_on()
-    xa_1 = np.linspace(8, 16, 320)
+    xa_1 = np.linspace(8, 16, 240)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
             axes[1].plot(arr_2d[i+1], arr_2d[i], color='red')
@@ -130,6 +153,21 @@ def plot_trains(station_dict, y_axis):
         y_index = y_axis[i]
         ya = [y_index] * len(xa_1)
         axes[1].plot(xa_1, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+        
+    ### ARROW DowN        
+    k = 1    
+    for i in range(len(station_dict['DN']) // 2):    
+        if 8 <= station_dict['DN'][k][0] <= 16:
+            axes[1].arrow(station_dict['DN'][k][0], station_dict['DN'][k - 1][0], 0, 1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
+        k += 2  
+        
+    ### ARROW UP        
+    k = 1    
+    for i in range(len(station_dict['UP']) // 2):    
+        if 8 <= station_dict['UP'][k][0] <= 16:
+            axes[1].arrow(station_dict['UP'][k][0], station_dict['UP'][k - 1][0], 0, -1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
+        k += 2         
+        
     axes[1].xaxis.grid(True, which='major', linestyle='-', color='black')
     axes[1].xaxis.grid(True, which='minor', linestyle='-')
     axes[1].xaxis.set_minor_locator(MultipleLocator(10 / 60))
@@ -148,8 +186,9 @@ def plot_trains(station_dict, y_axis):
     axes[1].set_ylim(0, len(y_axis))
 
     # Subplot 3: 16-24
+    
     axes[2].minorticks_on()
-    xa_2 = np.linspace(16, 24, 320)
+    xa_2 = np.linspace(16, 24, 240)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
             axes[2].plot(arr_2d[i+1], arr_2d[i], color='red')
@@ -157,6 +196,24 @@ def plot_trains(station_dict, y_axis):
         y_index = y_axis[i]
         ya = [y_index] * len(xa_2)
         axes[2].plot(xa_2, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+
+    ### ARROW DowN         
+    k = 1    
+    for i in range(len(station_dict['DN']) // 2):    
+        if 16 <= station_dict['DN'][k][0] <= 24:
+            axes[2].arrow(station_dict['DN'][k][0], station_dict['DN'][k - 1][0], 0, 1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
+        k += 2
+
+    ### ARROW UP        
+    k = 1    
+    for i in range(len(station_dict['UP']) // 2):    
+        if 16 <= station_dict['UP'][k][0] <= 24:
+            axes[2].arrow(station_dict['UP'][k][0], station_dict['UP'][k - 1][0], 0, -1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
+        k += 2   
+    
+    #Test arrow for plotting outside
+#     axes[2].arrow(19, -1, 0, 1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')  
+    
     axes[2].xaxis.grid(True, which='major', linestyle='-', color='black')
     axes[2].xaxis.grid(True, which='minor', linestyle='-')
     axes[2].xaxis.set_minor_locator(MultipleLocator(10 / 60))
@@ -174,9 +231,10 @@ def plot_trains(station_dict, y_axis):
     axes[2].set_xlim(16, 24)
     axes[2].set_ylim(0, len(y_axis))
     
-    # Subplot 3: 16-24
+    # Subplot 4: 24-31
+       
     axes[3].minorticks_on()
-    xa_3 = np.linspace(16, 24, 320)
+    xa_3 = np.linspace(24, 32, 240)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
             axes[3].plot(arr_2d[i+1], arr_2d[i], color='red')
@@ -184,6 +242,22 @@ def plot_trains(station_dict, y_axis):
         y_index = y_axis[i]
         ya = [y_index] * len(xa_3)
         axes[3].plot(xa_3, ya, color='blue', linewidth=1, linestyle=(0, (1, 1.15)))
+        
+        
+    ### ARROW DowN       
+    k = 1    
+    for i in range(len(station_dict['DN']) // 2):    
+        if 24 <= station_dict['DN'][k][0] <= 32:
+            axes[3].arrow(station_dict['DN'][k][0], station_dict['DN'][k - 1][0], 0, 1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
+        k += 2
+        
+    ### ARROW UP        
+    k = 1    
+    for i in range(len(station_dict['UP']) // 2):    
+        if 24 <= station_dict['UP'][k][0] <= 32:
+            axes[3].arrow(station_dict['UP'][k][0], station_dict['UP'][k - 1][0], 0, -1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
+        k += 2     
+        
     axes[3].xaxis.grid(True, which='major', linestyle='-', color='black')
     axes[3].xaxis.grid(True, which='minor', linestyle='-')
     axes[3].xaxis.set_minor_locator(MultipleLocator(10 / 60))
@@ -208,6 +282,7 @@ def plot_trains(station_dict, y_axis):
 #         plt.savefig(f"subplot_{me+1}.pdf")
     plt.savefig("myImagePDF.pdf", format="pdf")
     plt.show()
+
 def add_24_down_up(down_up):
     arr_2= down_up['DN']
     for hi in range(1, len(arr_2),2):
@@ -218,9 +293,11 @@ def add_24_down_up(down_up):
     for h in range(1, len(arr_2),2):
         arr_2[h] = [x + 24 if x < 23 else x for x in arr_2[h]]
     down_up['UP'] = arr_2
-    print(down_up)
+#     print(down_up)
     return down_up
-down_up, y_labes =  excel_to_pandas("HIREN.xlsx")
+
+
+down_up, y_labes =  excel_to_pandas('HIREN.xlsx')
 down_up = conversion(down_up)
 down_up = add_24_down_up(down_up)
-plot_trains(down_up, y_labes)
+plot_trains(down_up, y_labes)    
