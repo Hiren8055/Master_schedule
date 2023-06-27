@@ -10,7 +10,6 @@ import pandas as pd
 import numpy as np
 from matplotlib.ticker import MultipleLocator
 from matplotlib.ticker import FixedFormatter
-
 from adjustText import adjust_text
 
 # TODO: HAVE TO PERFORM IT FOR ALL THE COLUMNS IN SHEETS "DOWN"

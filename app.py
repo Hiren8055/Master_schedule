@@ -9,6 +9,7 @@ from qt_material import apply_stylesheet
 import pandas as pd
 from matplotlib.ticker import MultipleLocator
 from matplotlib.ticker import FixedFormatter
+from adjustText import adjust_text
 
 
 class PlotWindow(QtWidgets.QWidget):
