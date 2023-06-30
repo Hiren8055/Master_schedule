@@ -14,13 +14,17 @@ from adjustText import adjust_text
 
 # TODO: HAVE TO PERFORM IT FOR ALL THE COLUMNS IN SHEETS "DOWN"
 # HAVE TO ACCESS ANOTHER SHEET NAMED "UP"
+# add try and except in code no error should be pop to user
 def excel_to_pandas(filename):
+    # have to generalize the dn and up
     df_dict = pd.read_excel(filename, sheet_name=['DN', 'UP'], header=None)
     down_up = dict()
     dwn_upp = dict()
+
     for key, df in df_dict.items():
+        #drop all the na values
         first_filled_row_index = df.first_valid_index()
-        df = df.loc[first_filled_row_index:]
+        df = df.loc[first_filled_row_index:] 
         df = df[2:]
         df = df[:-3]
         df = df.iloc[::-1]
@@ -43,21 +47,30 @@ def excel_to_pandas(filename):
         df = df.set_index(first_column_series)
         trains_list = df.columns.tolist()
         list_2d = []
+        print("dfcolumsn",df.columns)
         for column_name in df.columns:
             column_df = df[column_name]
             column_df = column_df.dropna()
-            column_df = column_df.astype(str)
-            column_df = column_df.str.replace('1900-01-01 ', '')
-            column_df = column_df.replace(r'([\s_-]+|^$|(\.))', np.nan, regex=True)
+            column_df = column_df.astype(str) # convert data to string
+            # column_df = column_df.str.replace('1900-01-01 ', '')
+            column_df = column_df.replace(r'([\s_-]+|^$|(\.))', np.nan, regex=True) 
 #             column_df = column_df.dropna()
 #             mask = column_df.str.contains(r'\.+')
 #             column_df[mask] = np.nan
             column_df = column_df.dropna()
 #             column_df = column_df[column_df != "......"]
-            column_df = column_df[column_df.astype(str).str.contains(r'\d', na=False)]
-            column_df = pd.DataFrame(column_df)
+            # print("column_df",column_df)
+            # column_df=column_df.squeeze()
+            # print("series",column_df)
+            print("looping through",column_df)
+            # column_df = column_df[column_df.astype("string").str.contains(r'\d', na=False)] # only
+            # column_df = column_df[column_df.astype('str').str.extractall('(\d+)')] # only
+            # print("dorp string", column_df)
+            # column_df = pd.DataFrame(column_df)
             row_indices = column_df.index.tolist()
-            datapoints = column_df.iloc[:, 0].tolist()
+            print("column_df.iloc",column_df.values.tolist())
+            # datapoints = column_df.iloc[:, 0].tolist()
+            datapoints = column_df.values.tolist()
 
             # Create the 2-dimensional list
             list_2d = list_2d + [row_indices, datapoints]
@@ -76,17 +89,21 @@ def conversion(station_dict):
             if i % 2 == 1:  # Check if it's an alternative column
                 for j in range(len(value[i])):
                     time_string = value[i][j]
-                    hours, minutes, seconds = map(int, time_string.split(':'))
-
+                    print("splitting",type(time_string))
+                    if len(time_string) >= 8 and type(time_string) != str :
+                        hours, minutes, seconds = map(int, time_string.split(':'))
+                    else:
+                        continue
                     # Convert hours, minutes, and seconds to a decimal representation of hours
                     time_in_hours = hours + (minutes / 60) + (seconds / 3600)
-
+                    print("time_in_hours",time_in_hours)
                     after_decimal = time_in_hours % 1
+                    print("after_decimal",after_decimal)
                     time_in_hours = int(time_in_hours) + after_decimal
-
+                    print("time_in_hour",time_in_hours)
                     # Update the value in the dictionary
                     value[i][j] = str(round(time_in_hours, 2))
-
+                    
                 value[i] = [float(num) for num in value[i]]   
     return station_dict
 
@@ -339,10 +356,12 @@ def add_24_down_up(down_up):
 #     print(down_up)
     return down_up
 
-down_up, y_labes, dwn_upp =  excel_to_pandas('HIREN.xlsx')
+down_up, y_labes, dwn_upp =  excel_to_pandas('HIREN4.xlsx')
+# try:
 for key in dwn_upp:
-    dwn_upp[key] = [int(value) for value in dwn_upp[key]]
-  
+    dwn_upp[key] = [value for value in dwn_upp[key]]
+# except ValueError:
+    # print("Enter trains in valid format")
 down_up = conversion(down_up)
 down_up = add_24_down_up(down_up)
 plot_trains(down_up, y_labes, dwn_upp)
