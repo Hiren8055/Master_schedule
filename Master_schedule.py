@@ -194,7 +194,7 @@ def plot_trains(station_dict, y_axis, trains_dict):
         if 8 <= station_dict['UP'][k][0] <= 16:
             axes[1].text(station_dict['UP'][k][0], station_dict['UP'][k - 1][0] + 1.3, trains_dict['UP'][i], rotation = 'vertical', fontsize=9)
             axes[1].arrow(station_dict['UP'][k][0], station_dict['UP'][k - 1][0], 0, -1, width = 0.005)
-        k += 2         
+        k += 2
         
     axes[1].xaxis.grid(True, which='major', linestyle='-', color='black')
     axes[1].xaxis.grid(True, which='minor', linestyle='-')
@@ -329,8 +329,6 @@ def plot_trains(station_dict, y_axis, trains_dict):
 #         ax.set_title(f"Subplot {me+1}")
 #         # Save each subplot as a separate PDF
 #         plt.savefig(f"subplot_{me+1}.pdf")
-
-
     fig.savefig(
     "frac0.pdf",
     bbox_inches=mtransforms.Bbox([[0, 0.75], [1,1]]).transformed(
