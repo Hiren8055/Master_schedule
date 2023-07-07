@@ -47,6 +47,8 @@ def excel_to_pandas(filename):
         df = df.set_index(first_column_series)
         trains_list = df.columns.tolist()
         list_2d = []
+        df = df.loc[:,~df.columns.duplicated()].copy()
+
         for column_name in df.columns:
             column_df = df[column_name]
             column_df = column_df.dropna()
@@ -58,7 +60,7 @@ def excel_to_pandas(filename):
 #             column_df[mask] = np.nan
             column_df = column_df.dropna()
 #             column_df = column_df[column_df != "......"]
-            column_df = column_df[column_df.astype(str).str.contains(r'\d', na=False)]
+            column_df = column_df[column_df.astype(str).str.contains(r'\d\d:\d\d:\d\d', na=False)]
             column_df = pd.DataFrame(column_df)
             row_indices = column_df.index.tolist()
             datapoints = column_df.iloc[:, 0].tolist()
@@ -68,7 +70,7 @@ def excel_to_pandas(filename):
         down_up[key] = list_2d
         down_up[key + key] = df.index
         dwn_upp[key] = trains_list
-    y_axis = list(dict.fromkeys(down_up['DNDN'].values.tolist()))
+    y_axis = ["CCG","BCT","DDR","BA","BDTS","ADH","BVI","BYR","BSR","NSP","VR","VTN","SAH","KLV","PLG","UOI","BOR","VGN","DRD","GVD","BRRD","UBR","SJN","BLD","KEB","VAPI","BAGD","UVD","PAD","ATUL","BL","DGI","JRS","BIM","AML","ACL","VDH","HXR","GNST","NVS","MRL","SCH","BHET","UDN","ST"]
     down_up.pop("DNDN")
     down_up.pop("UPUP")
     return down_up,y_axis, dwn_upp
@@ -374,7 +376,7 @@ def add_24_down_up(down_up):
 
 down_up, y_labes, dwn_upp =  excel_to_pandas('HIREN.xlsx')
 for key in dwn_upp:
-    dwn_upp[key] = [int(value) for value in dwn_upp[key]]
+    dwn_upp[key] = [value for value in dwn_upp[key]]
 
 
 
