@@ -421,7 +421,7 @@ def plot_trains(station_dict, y_axis, trains_dict):
     axes[1][2].set_xticklabels([16, 17, 18, 19, 20, 21, 22, 23, 24])
     sub_y_axis = y_axis[10:39]
     print("for ticks",sub_y_axis)
-    axes[1][0].set_yticks(range(len(sub_y_axis)))
+    axes[1][2].set_yticks(range(len(sub_y_axis)))
     sub_y_axis[0:4] = "    "       # buffer at last
     sub_y_axis[-4:] = "    "       # buffer at last
     print("for labels",sub_y_axis)
@@ -456,7 +456,7 @@ def plot_trains(station_dict, y_axis, trains_dict):
     axes[2][2].set_xticklabels([16, 17, 18, 19, 20, 21, 22, 23, 24])
     sub_y_axis = y_axis[30:]
     print("for ticks",sub_y_axis)
-    axes[2][0].set_yticks(range(len(sub_y_axis)))
+    axes[2][2].set_yticks(range(len(sub_y_axis)))
     sub_y_axis[0:4] = "    "       # buffer at last
     sub_y_axis[-4:] = "    "       # buffer at last
     print("for labels",sub_y_axis)
