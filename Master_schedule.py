@@ -362,15 +362,17 @@ def plot_trains(station_dict, y_axis, trains_dict):
 
 def add_24_down_up(down_up):
     arr_2= down_up['DN']
-    for hi in range(1, len(arr_2),2):
-        arr_2[hi] = [x + 24 if x < 1 else x for x in arr_2[hi]]
-    down_up['DN'] = arr_2
-    arr_2 = down_up['UP']
-    # Add 24 to each element  the arrayin
-    for h in range(1, len(arr_2),2):
-        arr_2[h] = [x + 24 if x < 23 else x for x in arr_2[h]]
-    down_up['UP'] = arr_2
-#     print(down_up)
+    y = False
+    for key, arr_2 in down_up.items():
+        for hi in range(1, len(arr_2),2):
+            for x in range(len(arr_2[hi])-1):
+                if(arr_2[hi][x+1] < arr_2[hi][x]):
+                    y = x+1
+            if(y):
+                arr_4 = [arr_2[hi][i] + 24 for i in range(y, len(arr_2[hi]))]
+                arr_2[hi]= arr_2[hi][:y]+ arr_4
+            y = False
+        down_up[key] = arr_2
     return down_up
 
 
