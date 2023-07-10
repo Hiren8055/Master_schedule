@@ -68,9 +68,10 @@ def excel_to_pandas(filename):
         down_up[key + key] = df.index
         dwn_upp[key] = trains_list
     y_axis = ["CCG","BCT","DDR","BA","BDTS","ADH","BVI","BYR","BSR","NSP","VR","VTN","SAH","KLV","PLG","UOI","BOR","VGN","DRD","GVD","BRRD","UBR","SJN","BLD","KEB","VAPI","BAGD","UVD","PAD","ATUL","BL","DGI","JRS","BIM","AML","ACL","VDH","HXR","GNST","NVS","MRL","SCH","BHET","UDN","ST"]
-    down_up.pop("DNDN")
+    y_labes = ["CCG 0.0","BCT 14.66","DDR 10.17","BA 14.66","BDTS 15.29","ADH 29.32","BVI 33.98","BYR 43.11","BSR 51.78","NSP 55.85","VR 59.98","VTN 68.42","SAH 76.74","KLV 82.55","PLG 90.92","UOI 97.15","BOR 102.8","VGN 111.5","DRD 123.7","GVD 134.8","BRRD 139.0","UBR 144.0","SJN 149.4","BLD 160.9","KEB 165.8","VAPI 172.0","BAGD 179.0","UVD 182.0","PAD 187.7","ATUL 191.0","BL 198.22","DGI 207.21","JRS 212.28","BIM 216.41","AML 221.72","ACL 225.33","VDH 228.87","HXR 232.0","GNST 234.0","NVS 237.33","MRL 245.63","SCH 252.26","BHET 257.3","UDN 262.77","ST 266.78"]
+    down_up.pop("DNDN") 
     down_up.pop("UPUP")
-    return down_up,y_axis, dwn_upp
+    return down_up,y_axis,y_labes, dwn_upp
 
 def conversion(station_dict):
     # this wil multiply with ratios for plotting
@@ -94,7 +95,6 @@ def conversion(station_dict):
     return station_dict
 
 def add_24_down_up(down_up):
-    arr_2= down_up['DN']
     y = False
     for key, arr_2 in down_up.items():
         for hi in range(1, len(arr_2),2):
@@ -109,7 +109,7 @@ def add_24_down_up(down_up):
     return down_up
 
 
-down_up, y_labes, dwn_upp =  excel_to_pandas('HIREN.xlsx')
+down_up, y_axis, y_labes, dwn_upp =  excel_to_pandas('HIREN.xlsx')
 for key in dwn_upp:
     dwn_upp[key] = [value for value in dwn_upp[key]]
 
@@ -117,4 +117,4 @@ for key in dwn_upp:
 
 down_up = conversion(down_up)
 down_up = add_24_down_up(down_up)
-plot_trains(down_up, y_labes, dwn_upp)
+plot_trains(down_up, y_axis, y_labes, dwn_upp)

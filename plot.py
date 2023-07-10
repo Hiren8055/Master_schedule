@@ -5,7 +5,7 @@ from matplotlib.ticker import FixedFormatter
 from adjustText import adjust_text
 import matplotlib.transforms as mtransforms
 
-def plot_trains(station_dict, y_axis, trains_dict):
+def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     y_axis.insert(0," ")
     y_axis.insert(0,"  ")
     y_axis.insert(0,"   ")
@@ -25,7 +25,7 @@ def plot_trains(station_dict, y_axis, trains_dict):
  
 # have to make  3 x 3 grid
   
-    fig, axes = plt.subplots(nrows=4, ncols=3, figsize=(10, 50))
+    fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(10, 50))
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
             for j in range(len(arr_2d[i])):
@@ -40,7 +40,11 @@ def plot_trains(station_dict, y_axis, trains_dict):
     xa_0 = np.arange(0, 8, 0.03333)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
+            arr_minus = np.array(arr_2d[i+1])
+            arr_minus = arr_minus - 24
+            axes[0][0].plot(arr_minus, arr_2d[i], color='red')
             axes[0][0].plot(arr_2d[i+1], arr_2d[i], color='red')
+
     for i in range(len(y_axis)):
         y_index = y_axis[i]
         ya = [y_index] * len(xa_0)
@@ -70,6 +74,7 @@ def plot_trains(station_dict, y_axis, trains_dict):
 
     # slicing for subplots
     sub_y_axis = y_axis[0:19]
+    axes[0][0].set_ylim(min(sub_y_axis),max(sub_y_axis))
     print("for tick",sub_y_axis)
     axes[0][0].set_yticks(range(len(sub_y_axis)))
     sub_y_axis[-4:] = "    "       # buffer at last
@@ -84,9 +89,7 @@ def plot_trains(station_dict, y_axis, trains_dict):
     formatter = FixedFormatter(minor_labels)
     axes[0][0].xaxis.set_minor_formatter(formatter)
     axes[0][0].tick_params(axis='x', which='minor', labelsize=6)
-    axes[0][0].set_xlim(0, 8)
-    axes[0][0].set_ylim(0, len(sub_y_axis))
-  
+    axes[0][0].set_xlim(0, 8)  
 
 # have to give buffer before the plots for arrow
 
@@ -97,11 +100,14 @@ def plot_trains(station_dict, y_axis, trains_dict):
     xa_0 = np.arange(0, 8, 0.03333)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
-            axes[0][1].plot(arr_2d[i+1], arr_2d[i], color='red')
+            arr_minus = np.array(arr_2d[i+1])
+            arr_minus = arr_minus - 24
+            axes[1][0].plot(arr_minus, arr_2d[i], color='red')
+            axes[1][0].plot(arr_2d[i+1], arr_2d[i], color='red')
     for i in range(len(y_axis)):
         y_index = y_axis[i]
         ya = [y_index] * len(xa_0)
-        axes[0][1].scatter(xa_0, ya, marker=',',color='blue', s=0.3)
+        axes[1][0].scatter(xa_0, ya, marker=',',color='blue', s=0.3)
 
     axes[1][0].xaxis.grid(True, which='major', linestyle='-', color='black')
     axes[1][0].xaxis.grid(True, which='minor', linestyle='-')
@@ -111,6 +117,7 @@ def plot_trains(station_dict, y_axis, trains_dict):
 
     # slicing for subplots
     sub_y_axis = y_axis[10:39]
+    axes[1][0].set_ylim(min(sub_y_axis),max(sub_y_axis))
     print("for ticks",sub_y_axis)
     axes[1][0].set_yticks(range(len(sub_y_axis)))
     sub_y_axis[0:4] = "    "       # buffer at last
@@ -126,7 +133,6 @@ def plot_trains(station_dict, y_axis, trains_dict):
     axes[1][0].xaxis.set_minor_formatter(formatter)
     axes[1][0].tick_params(axis='x', which='minor', labelsize=6)
     axes[1][0].set_xlim(0, 8)
-    axes[1][0].set_ylim(0, len(sub_y_axis))
 
 
     axes[2][0].minorticks_on()
@@ -136,11 +142,14 @@ def plot_trains(station_dict, y_axis, trains_dict):
     xa_0 = np.arange(0, 8, 0.03333)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
-            axes[0][1].plot(arr_2d[i+1], arr_2d[i], color='red')
+            arr_minus = np.array(arr_2d[i+1])
+            arr_minus = arr_minus - 24
+            axes[2][0].plot(arr_minus, arr_2d[i], color='red')
+            axes[2][0].plot(arr_2d[i+1], arr_2d[i], color='red')
     for i in range(len(y_axis)):
         y_index = y_axis[i]
         ya = [y_index] * len(xa_0)
-        axes[0][1].scatter(xa_0, ya, marker=',',color='blue', s=0.3)
+        axes[2][0].scatter(xa_0, ya, marker=',',color='blue', s=0.3)
 
     axes[2][0].xaxis.grid(True, which='major', linestyle='-', color='black')
     axes[2][0].xaxis.grid(True, which='minor', linestyle='-')
@@ -151,6 +160,7 @@ def plot_trains(station_dict, y_axis, trains_dict):
     # slicing for subplots
     print(y_axis)
     sub_y_axis = y_axis[30:]
+    axes[2][0].set_ylim(min(sub_y_axis),max(sub_y_axis))
     print("for ticks",sub_y_axis)
     axes[2][0].set_yticks(range(len(sub_y_axis)))
     sub_y_axis[0:4] = "    "       # buffer at last
@@ -166,8 +176,6 @@ def plot_trains(station_dict, y_axis, trains_dict):
     axes[2][0].xaxis.set_minor_formatter(formatter)
     axes[2][0].tick_params(axis='x', which='minor', labelsize=6)
     axes[2][0].set_xlim(0, 8)
-    axes[2][0].set_ylim(0, len(sub_y_axis))
-
 
 
 
@@ -179,6 +187,9 @@ def plot_trains(station_dict, y_axis, trains_dict):
     xa_1 =np.arange(8, 16, 0.03333)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
+            arr_minus = np.array(arr_2d[i+1])
+            arr_minus = arr_minus - 24
+            axes[0][1].plot(arr_minus, arr_2d[i], color='red')
             axes[0][1].plot(arr_2d[i+1], arr_2d[i], color='red')
     for i in range(len(y_axis)):
         y_index = y_axis[i]
@@ -209,6 +220,7 @@ def plot_trains(station_dict, y_axis, trains_dict):
 
     sub_y_axis = y_axis[0:19]
     print("8 -16 for tick",sub_y_axis)
+    axes[0][1].set_ylim(min(sub_y_axis),max(sub_y_axis))
     axes[0][1].set_yticks(range(len(sub_y_axis)))
     sub_y_axis[-4:] = "    "       # buffer at last
     print("8 -16 for before",sub_y_axis)
@@ -222,7 +234,6 @@ def plot_trains(station_dict, y_axis, trains_dict):
     axes[0][1].xaxis.set_minor_formatter(formatter)
     axes[0][1].tick_params(axis='x', which='minor', labelsize=6)
     axes[0][1].set_xlim(8, 16)
-    axes[0][1].set_ylim(0, len(sub_y_axis))
 
 
 
@@ -231,6 +242,9 @@ def plot_trains(station_dict, y_axis, trains_dict):
     xa_1 =np.arange(8, 16, 0.03333)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
+            arr_minus = np.array(arr_2d[i+1])
+            arr_minus = arr_minus - 24
+            axes[1][1].plot(arr_minus, arr_2d[i], color='red')
             axes[1][1].plot(arr_2d[i+1], arr_2d[i], color='red')
     for i in range(len(y_axis)):
         y_index = y_axis[i]
@@ -259,6 +273,7 @@ def plot_trains(station_dict, y_axis, trains_dict):
     axes[1][1].set_xticks([8, 9, 10, 11, 12, 13, 14, 15, 16])
     axes[1][1].set_xticklabels([8, 9, 10, 11, 12, 13, 14, 15, 16])
     sub_y_axis = y_axis[10:39]
+    axes[1][1].set_ylim(min(sub_y_axis),max(sub_y_axis))
     print("for ticks",sub_y_axis)
     axes[1][1].set_yticks(range(len(sub_y_axis)))
     sub_y_axis[0:4] = "    "       # buffer at last
@@ -273,7 +288,6 @@ def plot_trains(station_dict, y_axis, trains_dict):
     axes[1][1].xaxis.set_minor_formatter(formatter)
     axes[1][1].tick_params(axis='x', which='minor', labelsize=6)
     axes[1][1].set_xlim(8, 16)
-    axes[1][1].set_ylim(0, len(sub_y_axis))
 
 
 
@@ -283,11 +297,14 @@ def plot_trains(station_dict, y_axis, trains_dict):
     xa_1 =np.arange(8, 16, 0.03333)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
-            axes[1][1].plot(arr_2d[i+1], arr_2d[i], color='red')
+            arr_minus = np.array(arr_2d[i+1])
+            arr_minus = arr_minus - 24
+            axes[2][1].plot(arr_minus, arr_2d[i], color='red')
+            axes[2][1].plot(arr_2d[i+1], arr_2d[i], color='red')
     for i in range(len(y_axis)):
         y_index = y_axis[i]
         ya = [y_index] * len(xa_1)
-        axes[1][1].scatter(xa_1, ya, marker=',',color='blue', s=0.3)
+        axes[2][1].scatter(xa_1, ya, marker=',',color='blue', s=0.3)
         
     ### ARROW DowN        
     # k = 1    
@@ -312,6 +329,7 @@ def plot_trains(station_dict, y_axis, trains_dict):
     axes[2][1].set_xticklabels([8, 9, 10, 11, 12, 13, 14, 15, 16])
     
     sub_y_axis = y_axis[30:]
+    axes[2][1].set_ylim(min(sub_y_axis),max(sub_y_axis))
     print("for ticks",sub_y_axis)
     axes[2][1].set_yticks(range(len(sub_y_axis)))
     sub_y_axis[0:4] = "    "       # buffer at last
@@ -326,7 +344,6 @@ def plot_trains(station_dict, y_axis, trains_dict):
     axes[2][1].xaxis.set_minor_formatter(formatter)
     axes[2][1].tick_params(axis='x', which='minor', labelsize=6)
     axes[2][1].set_xlim(8, 16)
-    axes[2][1].set_ylim(0, len(sub_y_axis))
 
 
 
@@ -337,6 +354,9 @@ def plot_trains(station_dict, y_axis, trains_dict):
     xa_2 = np.arange(16, 24, 0.03333)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
+            arr_minus = np.array(arr_2d[i+1])
+            arr_minus = arr_minus - 24
+            axes[0][2].plot(arr_minus, arr_2d[i], color='red')
             axes[0][2].plot(arr_2d[i+1], arr_2d[i], color='red')
     for i in range(len(y_axis)):
         y_index = y_axis[i]
@@ -384,6 +404,7 @@ def plot_trains(station_dict, y_axis, trains_dict):
     axes[0][2].set_xticks([16, 17, 18, 19, 20, 21, 22, 23, 24])
     axes[0][2].set_xticklabels([16, 17, 18, 19, 20, 21, 22, 23, 24])
     sub_y_axis = y_axis[0:19]
+    axes[0][2].set_ylim(min(sub_y_axis),max(sub_y_axis))
     print("for tick",sub_y_axis)
     axes[0][0].set_yticks(range(len(sub_y_axis)))
     sub_y_axis[-4:] = "    "       # buffer at last
@@ -397,7 +418,6 @@ def plot_trains(station_dict, y_axis, trains_dict):
     axes[0][2].xaxis.set_minor_formatter(formatter)
     axes[0][2].tick_params(axis='x', which='minor', labelsize=6)
     axes[0][2].set_xlim(16, 24)
-    axes[0][2].set_ylim(0, len(sub_y_axis))
     
 
 
@@ -407,11 +427,14 @@ def plot_trains(station_dict, y_axis, trains_dict):
     xa_2 = np.arange(16, 24, 0.03333)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
-            axes[0][2].plot(arr_2d[i+1], arr_2d[i], color='red')
+            arr_minus = np.array(arr_2d[i+1])
+            arr_minus = arr_minus - 24
+            axes[1][2].plot(arr_minus, arr_2d[i], color='red')
+            axes[1][2].plot(arr_2d[i+1], arr_2d[i], color='red')
     for i in range(len(y_axis)):
         y_index = y_axis[i]
         ya = [y_index] * len(xa_2)
-        axes[0][2].scatter(xa_2, ya, marker=',',color='blue', s=0.3)
+        axes[1][2].scatter(xa_2, ya, marker=',',color='blue', s=0.3)
 
 
     axes[1][2].xaxis.grid(True, which='major', linestyle='-', color='black')
@@ -420,6 +443,7 @@ def plot_trains(station_dict, y_axis, trains_dict):
     axes[1][2].set_xticks([16, 17, 18, 19, 20, 21, 22, 23, 24])
     axes[1][2].set_xticklabels([16, 17, 18, 19, 20, 21, 22, 23, 24])
     sub_y_axis = y_axis[10:39]
+    axes[1][2].set_ylim(min(sub_y_axis),max(sub_y_axis))
     print("for ticks",sub_y_axis)
     axes[1][2].set_yticks(range(len(sub_y_axis)))
     sub_y_axis[0:4] = "    "       # buffer at last
@@ -434,19 +458,20 @@ def plot_trains(station_dict, y_axis, trains_dict):
     axes[1][2].xaxis.set_minor_formatter(formatter)
     axes[1][2].tick_params(axis='x', which='minor', labelsize=6)
     axes[1][2].set_xlim(16, 24)
-    axes[1][2].set_ylim(0, len(sub_y_axis))
-
 
 
     axes[2][2].minorticks_on()
     xa_2 = np.arange(16, 24, 0.03333)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
-            axes[0][2].plot(arr_2d[i+1], arr_2d[i], color='red')
+            arr_minus = np.array(arr_2d[i+1])
+            arr_minus = arr_minus - 24
+            axes[2][2].plot(arr_minus, arr_2d[i], color='red')
+            axes[2][2].plot(arr_2d[i+1], arr_2d[i], color='red')
     for i in range(len(y_axis)):
         y_index = y_axis[i]
         ya = [y_index] * len(xa_2)
-        axes[0][2].scatter(xa_2, ya, marker=',',color='blue', s=0.3)
+        axes[2][2].scatter(xa_2, ya, marker=',',color='blue', s=0.3)
 
 
     axes[2][2].xaxis.grid(True, which='major', linestyle='-', color='black')
@@ -455,6 +480,7 @@ def plot_trains(station_dict, y_axis, trains_dict):
     axes[2][2].set_xticks([16, 17, 18, 19, 20, 21, 22, 23, 24])
     axes[2][2].set_xticklabels([16, 17, 18, 19, 20, 21, 22, 23, 24])
     sub_y_axis = y_axis[30:]
+    axes[2][2].set_ylim(min(sub_y_axis),max(sub_y_axis))
     print("for ticks",sub_y_axis)
     axes[2][2].set_yticks(range(len(sub_y_axis)))
     sub_y_axis[0:4] = "    "       # buffer at last
@@ -469,21 +495,9 @@ def plot_trains(station_dict, y_axis, trains_dict):
     axes[2][2].xaxis.set_minor_formatter(formatter)
     axes[2][2].tick_params(axis='x', which='minor', labelsize=6)
     axes[2][2].set_xlim(16, 24)
-    axes[2][2].set_ylim(0, len(sub_y_axis))
 
 
     # Subplot 4: 24-31
-       
-    axes[3][0].minorticks_on()
-    xa_3 = np.arange(24, 32, 0.03333)
-    for key, arr_2d in station_dict.items():
-        for i in range(0, len(arr_2d), 2):
-            axes[3][0].plot(arr_2d[i+1], arr_2d[i], color='red')
-    for i in range(len(y_axis)):
-        y_index = y_axis[i]
-        ya = [y_index] * len(xa_3)
-        axes[3][0].scatter(xa_3, ya, marker=',',color='blue', s=0.3)
-        
         
     # ### ARROW DowN       
     # # k = 1    
@@ -501,95 +515,6 @@ def plot_trains(station_dict, y_axis, trains_dict):
     # #         axes[3].arrow(station_dict['UP'][k][0], station_dict['UP'][k - 1][0] + 1, 0, -1, width = 0.005)
     # #     k += 2     
         
-    axes[3][0].xaxis.grid(True, which='major', linestyle='-', color='black')
-    axes[3][0].xaxis.grid(True, which='minor', linestyle='-')
-    axes[3][0].xaxis.set_minor_locator(MultipleLocator(10 / 60))
-    axes[3][0].set_xticks([24,25,26,27,28,29,30,31,32])
-    axes[3][0].set_xticklabels([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    sub_y_axis = y_axis[0:19]
-    print("for tick",sub_y_axis)
-    axes[3][0].set_yticks(range(len(sub_y_axis)))
-    sub_y_axis[-4:] = "    "       # buffer at last
-    print("for before",sub_y_axis)
-    axes[3][0].set_yticklabels(sub_y_axis)
-    axes[3][0].tick_params(axis='x', which='minor', labelbottom=True)
-    axes[3][0].tick_params(labeltop=True, labelright=True)
-    minor_labels = ["10", "20", "30", "40", "50"] * 8
-    minor_labels.insert(0, "")
-    formatter = FixedFormatter(minor_labels)
-    axes[3][0].xaxis.set_minor_formatter(formatter)
-    axes[3][0].tick_params(axis='x', which='minor', labelsize=6)
-    axes[3][0].set_xlim(24, 32)
-    axes[3][0].set_ylim(0, len(sub_y_axis))
-    
-    
-
-    
-    axes[3][1].minorticks_on()
-    xa_3 = np.arange(24, 32, 0.03333)
-    for key, arr_2d in station_dict.items():
-        for i in range(0, len(arr_2d), 2):
-            axes[3][1].plot(arr_2d[i+1], arr_2d[i], color='red')
-    for i in range(len(y_axis)):
-        y_index = y_axis[i]
-        ya = [y_index] * len(xa_3)
-        axes[3][1].scatter(xa_3, ya, marker=',',color='blue', s=0.3)
-    
-    axes[3][1].xaxis.grid(True, which='major', linestyle='-', color='black')
-    axes[3][1].xaxis.grid(True, which='minor', linestyle='-')
-    axes[3][1].xaxis.set_minor_locator(MultipleLocator(10 / 60))
-    axes[3][1].set_xticks([24,25,26,27,28,29,30,31,32])
-    axes[3][1].set_xticklabels([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    sub_y3ax1s = y_axis[10:39]
-    print("for ticks",sub_y_axis)
-    axes[3][1].set_yticks(range(len(sub_y_axis)))
-    sub_y_axis[0:4] = "    "       # buffer at last
-    sub_y_axis[-4:] = "    "       # buffer at last
-    print("for labels",sub_y_axis)
-    axes[3][1].set_yticklabels(sub_y_axis)
-    axes[3][1].tick_params(axis='x', which='minor', labelbottom=True)
-    axes[3][1].tick_params(labeltop=True, labelright=True)
-    minor_labels = ["10", "20", "30", "40", "50"] * 8
-    minor_labels.insert(0, "")
-    formatter = FixedFormatter(minor_labels)
-    axes[3][1].xaxis.set_minor_formatter(formatter)
-    axes[3][1].tick_params(axis='x', which='minor', labelsize=6)
-    axes[3][1].set_xlim(24, 32)
-    axes[3][1].set_ylim(0, len(sub_y_axis))
-
-
-     
-    axes[3][2].minorticks_on()
-    xa_3 = np.arange(24, 32, 0.03333)
-    for key, arr_2d in station_dict.items():
-        for i in range(0, len(arr_2d), 2):
-            axes[3][2].plot(arr_2d[i+1], arr_2d[i], color='red')
-    for i in range(len(y_axis)):
-        y_index = y_axis[i]
-        ya = [y_index] * len(xa_3)
-        axes[3][2].scatter(xa_3, ya, marker=',',color='blue', s=0.3)
-    
-    axes[3][2].xaxis.grid(True, which='major', linestyle='-', color='black')
-    axes[3][2].xaxis.grid(True, which='minor', linestyle='-')
-    axes[3][2].xaxis.set_minor_locator(MultipleLocator(10 / 60))
-    axes[3][2].set_xticks([24,25,26,27,28,29,30,31,32])
-    axes[3][2].set_xticklabels([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    sub_y3ax2s = y_axis[30:]
-    print("for ticks",sub_y_axis)
-    axes[3][2].set_yticks(range(len(sub_y_axis)))
-    sub_y_axis[0:4] = "    "       # buffer at last
-    sub_y_axis[-4:] = "    "       # buffer at last
-    print("for labels",sub_y_axis)
-    axes[3][2].set_yticklabels(sub_y_axis)
-    axes[3][2].tick_params(axis='x', which='minor', labelbottom=True)
-    axes[3][2].tick_params(labeltop=True, labelright=True)
-    minor_labels = ["10", "20", "30", "40", "50"] * 8
-    minor_labels.insert(0, "")
-    formatter = FixedFormatter(minor_labels)
-    axes[3][2].xaxis.set_minor_formatter(formatter)
-    axes[3][2].tick_params(axis='x', which='minor', labelsize=6)
-    axes[3][2].set_xlim(24, 32)
-    axes[3][2].set_ylim(0, len(sub_y_axis))
 
 
 
