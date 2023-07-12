@@ -14,18 +14,22 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     y_axis.append("      ")
     y_axis.append("       ")
     y_axis.append("        ")
-    print(" ")
-    # print("Trains dictionary: ", trains_dict)
-    print(" ")
+    #print(" ")
+    # #print("Trains dictionary: ", trains_dict)
+    #print(" ")
 # Arrow:
 #     eg. axes[2].arrow(20, 25, 0, 1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
 #     20---> x axis
 #     25 --> y axis
 #     1 --> size of line segment
  
-# have to make  3 x 3 grid
-  
+
     fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(10, 50))
+    # have to make  3 x 3 grid
+    fig.set_figheight(100)
+ 
+# set width of each subplot as 8
+    fig.set_figwidth(100)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
             for j in range(len(arr_2d[i])):
@@ -35,7 +39,7 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     # Subplot 1: 0-8
     axes[0][0].minorticks_on()
 
-    # print('station_dict : ', station_dict)
+    # ##print('station_dict : ', station_dict)
     # xa_0 = np.linspace(0, 8, 200)
     xa_0 = np.arange(0, 8, 0.03333)
     for key, arr_2d in station_dict.items():
@@ -73,12 +77,12 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     axes[0][0].set_xticklabels([0, 1, 2, 3, 4, 5, 6, 7, 8])
 
     # slicing for subplots
-    sub_y_axis = y_axis[0:19]
+    sub_y_axis = y_axis[4:19]
     axes[0][0].set_ylim(0, 19)
-    print("for tick",sub_y_axis)
+    ##print("for tick",sub_y_axis)
     axes[0][0].set_yticks(range(len(sub_y_axis)))
-    sub_y_axis[-4:] = "    "       # buffer at last
-    print("for before",sub_y_axis)
+    # sub_y_axis[-4:] = "    "       # buffer at last
+    #print("for before fnkg",sub_y_axis)
 
     axes[0][0].set_yticklabels(sub_y_axis)
     axes[0][0].tick_params(axis='x', which='minor', labelbottom=True)
@@ -95,7 +99,7 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
 
     axes[1][0].minorticks_on()
 
-    # print('station_dict : ', station_dict)
+    # #print('station_dict : ', station_dict)
     # xa_0 = np.linspace(0, 8, 200)
     xa_0 = np.arange(0, 8, 0.03333)
     for key, arr_2d in station_dict.items():
@@ -118,11 +122,11 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     # slicing for subplots
     sub_y_axis = y_axis[10:39]
     axes[1][0].set_ylim(10,39)
-    print("for ticks",sub_y_axis)
+    #print("for ticks",sub_y_axis)
     axes[1][0].set_yticks(range(len(sub_y_axis)))
-    sub_y_axis[0:4] = "    "       # buffer at last
-    sub_y_axis[-4:] = "    "       # buffer at last
-    print("for labels",sub_y_axis)
+    # sub_y_axis[0:4] = "    "       # buffer at last
+    # sub_y_axis[-4:] = "    "       # buffer at last
+    #print("for labels",sub_y_axis)
     axes[1][0].set_yticklabels(sub_y_axis)
     axes[1][0].tick_params(axis='x', which='minor', labelbottom=True)
     axes[1][0].tick_params(labeltop=True, labelright=True)
@@ -137,7 +141,7 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
 
     axes[2][0].minorticks_on()
 
-    # print('station_dict : ', station_dict)
+    # #print('station_dict : ', station_dict)
     # xa_0 = np.linspace(0, 8, 200)
     xa_0 = np.arange(0, 8, 0.03333)
     for key, arr_2d in station_dict.items():
@@ -158,14 +162,14 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     axes[2][0].set_xticklabels([0, 1, 2, 3, 4, 5, 6, 7, 8])
 
     # slicing for subplots
-    print(y_axis)
+    #print(y_axis)
     sub_y_axis = y_axis[30:]
     axes[2][0].set_ylim(30,len(sub_y_axis))
-    print("for ticks",sub_y_axis)
+    #print("for ticks",sub_y_axis)
     axes[2][0].set_yticks(range(len(sub_y_axis)))
-    sub_y_axis[0:4] = "    "       # buffer at last
-    sub_y_axis[-4:] = "    "       # buffer at last
-    print("for labels",sub_y_axis)
+    # sub_y_axis[0:4] = "    "       # buffer at last
+    # sub_y_axis[-4:] = "    "       # buffer at last
+    #print("for labels",sub_y_axis)
     axes[2][0].set_yticklabels(sub_y_axis)
     axes[2][0].tick_params(axis='x', which='minor', labelbottom=True)
     axes[2][0].tick_params(labeltop=True, labelright=True)
@@ -219,11 +223,11 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     axes[0][1].set_xticklabels([8, 9, 10, 11, 12, 13, 14, 15, 16])
 
     sub_y_axis = y_axis[0:19]
-    print("8 -16 for tick",sub_y_axis)
+    #print("8 -16 for tick",sub_y_axis)
     axes[0][1].set_ylim(0,19)
     axes[0][1].set_yticks(range(len(sub_y_axis)))
-    sub_y_axis[-4:] = "    "       # buffer at last
-    print("8 -16 for before",sub_y_axis)
+    # sub_y_axis[-4:] = "    "       # buffer at last
+    #print("8 -16 for before",sub_y_axis)
 
     axes[0][1].set_yticklabels(sub_y_axis)
     axes[0][1].tick_params(axis='x', which='minor', labelbottom=True)
@@ -274,11 +278,11 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     axes[1][1].set_xticklabels([8, 9, 10, 11, 12, 13, 14, 15, 16])
     sub_y_axis = y_axis[10:39]
     axes[1][1].set_ylim(10,39)
-    print("for ticks",sub_y_axis)
+    #print("for ticks",sub_y_axis)
     axes[1][1].set_yticks(range(len(sub_y_axis)))
-    sub_y_axis[0:4] = "    "       # buffer at last
-    sub_y_axis[-4:] = "    "       # buffer at last
-    print("for labels",sub_y_axis)
+    # sub_y_axis[0:4] = "    "       # buffer at last
+    # sub_y_axis[-4:] = "    "       # buffer at last
+    #print("for labels",sub_y_axis)
     axes[1][1].set_yticklabels(sub_y_axis)
     axes[1][1].tick_params(axis='x', which='minor', labelbottom=True)
     axes[1][1].tick_params(labeltop=True, labelright=True)
@@ -330,11 +334,11 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     
     sub_y_axis = y_axis[30:]
     axes[2][1].set_ylim(30,len(sub_y_axis))
-    print("for ticks",sub_y_axis)
+    #print("for ticks",sub_y_axis)
     axes[2][1].set_yticks(range(len(sub_y_axis)))
-    sub_y_axis[0:4] = "    "       # buffer at last
-    sub_y_axis[-4:] = "    "       # buffer at last
-    print("for labels",sub_y_axis)
+    # sub_y_axis[0:4] = "    "       # buffer at last
+    # sub_y_axis[-4:] = "    "       # buffer at last
+    #print("for labels",sub_y_axis)
     axes[2][1].set_yticklabels(sub_y_axis)
     axes[2][1].tick_params(axis='x', which='minor', labelbottom=True)
     axes[2][1].tick_params(labeltop=True, labelright=True)
@@ -370,7 +374,7 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     #     if 16 <= station_dict['DN'][k][0] <= 24:
     #         arrow_lis.append(station_dict['DN'][k][0])
     #         count = arrow_lis.count(station_dict['DN'][k][0])
-    #         # print(arrow_lis)
+    #         # #print(arrow_lis)
             
 
     ### ARROW UP   
@@ -405,10 +409,10 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     axes[0][2].set_xticklabels([16, 17, 18, 19, 20, 21, 22, 23, 24])
     sub_y_axis = y_axis[0:19]
     axes[0][2].set_ylim(0,19)
-    print("for tick",sub_y_axis)
+    #print("for tick",sub_y_axis)
     axes[0][0].set_yticks(range(len(sub_y_axis)))
-    sub_y_axis[-4:] = "    "       # buffer at last
-    print("for before",sub_y_axis)
+    # sub_y_axis[-4:] = "    "       # buffer at last
+    #print("for before",sub_y_axis)
     axes[0][2].set_yticklabels(sub_y_axis)
     axes[0][2].tick_params(axis='x', which='minor', labelbottom=True)
     axes[0][2].tick_params(labeltop=True, labelright=True)
@@ -444,11 +448,11 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     axes[1][2].set_xticklabels([16, 17, 18, 19, 20, 21, 22, 23, 24])
     sub_y_axis = y_axis[10:39]
     axes[1][2].set_ylim(10,39)
-    print("for ticks",sub_y_axis)
+    #print("for ticks",sub_y_axis)
     axes[1][2].set_yticks(range(len(sub_y_axis)))
-    sub_y_axis[0:4] = "    "       # buffer at last
-    sub_y_axis[-4:] = "    "       # buffer at last
-    print("for labels",sub_y_axis)
+    # sub_y_axis[0:4] = "    "       # buffer at last
+    # sub_y_axis[-4:] = "    "       # buffer at last
+    #print("for labels",sub_y_axis)
     axes[1][2].set_yticklabels(sub_y_axis)
     axes[1][2].tick_params(axis='x', which='minor', labelbottom=True)
     axes[1][2].tick_params(labeltop=True, labelright=True)
@@ -481,11 +485,11 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     axes[2][2].set_xticklabels([16, 17, 18, 19, 20, 21, 22, 23, 24])
     sub_y_axis = y_axis[30:]
     axes[2][2].set_ylim(30,len(sub_y_axis))
-    print("for ticks",sub_y_axis)
+    #print("for ticks",sub_y_axis)
     axes[2][2].set_yticks(range(len(sub_y_axis)))
-    sub_y_axis[0:4] = "    "       # buffer at last
-    sub_y_axis[-4:] = "    "       # buffer at last
-    print("for labels",sub_y_axis)
+    # sub_y_axis[0:4] = "    "       # buffer at last
+    # sub_y_axis[-4:] = "    "       # buffer at last
+    #print("for labels",sub_y_axis)
     axes[2][2].set_yticklabels(sub_y_axis)
     axes[2][2].tick_params(axis='x', which='minor', labelbottom=True)
     axes[2][2].tick_params(labeltop=True, labelright=True)
@@ -528,7 +532,8 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
 #         plt.savefig(f"subplot_{me+1}.pdf")
     fig.savefig(
     "frac0.pdf",
-    bbox_inches=mtransforms.Bbox([[0, 0.75], [1,1]]).transformed(
+
+    bbox_inches=mtransforms.Bbox([[0, 2], [0,2]]).transformed(
         fig.transFigure - fig.dpi_scale_trans
     ),format="pdf")
     fig.savefig(
@@ -548,7 +553,7 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     ),format="pdf")
 
 
-    print("saved-------------------------")
+    #print("saved-------------------------")
     # for i, ax in enumerate(axes.flat):
     #     ax.set_title('Plot {}'.format(i+1))
     #     plt.savefig('subplot_{}.pdf'.format(i+1), format="pdf")
