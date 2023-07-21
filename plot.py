@@ -27,7 +27,6 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(10, 50))
     # have to make  3 x 3 grid
     fig.set_figheight(100)
- 
 # set width of each subplot as 8
     fig.set_figwidth(100)
     for key, arr_2d in station_dict.items():
@@ -75,15 +74,17 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     axes[0][0].xaxis.set_minor_locator(MultipleLocator(10 / 60))
     axes[0][0].set_xticks([0, 1, 2, 3, 4, 5, 6, 7, 8])
     axes[0][0].set_xticklabels([0, 1, 2, 3, 4, 5, 6, 7, 8])
-
+    print("length of y_axis",len(y_axis))
     # slicing for subplots
     sub_y_axis = y_axis[4:19]
-    axes[0][0].set_ylim(0, 19)
+    axes[0][0].set_ylim(0, 15)
+    print("sub 0 0", sub_y_axis)
     ##print("for tick",sub_y_axis)
+    print("range",range(len(sub_y_axis)))
     axes[0][0].set_yticks(range(len(sub_y_axis)))
     # sub_y_axis[-4:] = "    "       # buffer at last
     #print("for before fnkg",sub_y_axis)
-
+    
     axes[0][0].set_yticklabels(sub_y_axis)
     axes[0][0].tick_params(axis='x', which='minor', labelbottom=True)
     axes[0][0].tick_params(labeltop=True, labelright=True)
@@ -121,7 +122,7 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
 
     # slicing for subplots
     sub_y_axis = y_axis[10:39]
-    axes[1][0].set_ylim(10,39)
+    axes[1][0].set_ylim(0,19)
     #print("for ticks",sub_y_axis)
     axes[1][0].set_yticks(range(len(sub_y_axis)))
     # sub_y_axis[0:4] = "    "       # buffer at last
@@ -163,9 +164,8 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
 
     # slicing for subplots
     #print(y_axis)
-    sub_y_axis = y_axis[30:]
-    axes[2][0].set_ylim(30,len(sub_y_axis))
-    #print("for ticks",sub_y_axis)
+    sub_y_axis = y_axis[30:49]
+    axes[2][0].set_ylim(0,19)
     axes[2][0].set_yticks(range(len(sub_y_axis)))
     # sub_y_axis[0:4] = "    "       # buffer at last
     # sub_y_axis[-4:] = "    "       # buffer at last
@@ -222,9 +222,8 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     axes[0][1].set_xticks([8, 9, 10, 11, 12, 13, 14, 15, 16])
     axes[0][1].set_xticklabels([8, 9, 10, 11, 12, 13, 14, 15, 16])
 
-    sub_y_axis = y_axis[0:19]
-    #print("8 -16 for tick",sub_y_axis)
-    axes[0][1].set_ylim(0,19)
+    sub_y_axis = y_axis[4:19]
+    axes[0][1].set_ylim(0, 15)
     axes[0][1].set_yticks(range(len(sub_y_axis)))
     # sub_y_axis[-4:] = "    "       # buffer at last
     #print("8 -16 for before",sub_y_axis)
@@ -277,7 +276,7 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     axes[1][1].set_xticks([8, 9, 10, 11, 12, 13, 14, 15, 16])
     axes[1][1].set_xticklabels([8, 9, 10, 11, 12, 13, 14, 15, 16])
     sub_y_axis = y_axis[10:39]
-    axes[1][1].set_ylim(10,39)
+    axes[1][1].set_ylim(0,19)
     #print("for ticks",sub_y_axis)
     axes[1][1].set_yticks(range(len(sub_y_axis)))
     # sub_y_axis[0:4] = "    "       # buffer at last
@@ -332,10 +331,12 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     axes[2][1].set_xticks([8, 9, 10, 11, 12, 13, 14, 15, 16])
     axes[2][1].set_xticklabels([8, 9, 10, 11, 12, 13, 14, 15, 16])
     
-    sub_y_axis = y_axis[30:]
-    axes[2][1].set_ylim(30,len(sub_y_axis))
+    sub_y_axis = y_axis[30:49]
+    axes[2][1].set_ylim(0,19)
     #print("for ticks",sub_y_axis)
+    print("2 1 sub len",range(len(sub_y_axis)))
     axes[2][1].set_yticks(range(len(sub_y_axis)))
+    
     # sub_y_axis[0:4] = "    "       # buffer at last
     # sub_y_axis[-4:] = "    "       # buffer at last
     #print("for labels",sub_y_axis)
@@ -407,10 +408,10 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     axes[0][2].xaxis.set_minor_locator(MultipleLocator(10 / 60))
     axes[0][2].set_xticks([16, 17, 18, 19, 20, 21, 22, 23, 24])
     axes[0][2].set_xticklabels([16, 17, 18, 19, 20, 21, 22, 23, 24])
-    sub_y_axis = y_axis[0:19]
-    axes[0][2].set_ylim(0,19)
+    sub_y_axis = y_axis[4:19]
+    axes[0][2].set_ylim(0, 15)
     #print("for tick",sub_y_axis)
-    axes[0][0].set_yticks(range(len(sub_y_axis)))
+    axes[0][2].set_yticks(range(len(sub_y_axis)))
     # sub_y_axis[-4:] = "    "       # buffer at last
     #print("for before",sub_y_axis)
     axes[0][2].set_yticklabels(sub_y_axis)
@@ -447,7 +448,7 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     axes[1][2].set_xticks([16, 17, 18, 19, 20, 21, 22, 23, 24])
     axes[1][2].set_xticklabels([16, 17, 18, 19, 20, 21, 22, 23, 24])
     sub_y_axis = y_axis[10:39]
-    axes[1][2].set_ylim(10,39)
+    axes[1][2].set_ylim(0,19)
     #print("for ticks",sub_y_axis)
     axes[1][2].set_yticks(range(len(sub_y_axis)))
     # sub_y_axis[0:4] = "    "       # buffer at last
@@ -483,8 +484,8 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     axes[2][2].xaxis.set_minor_locator(MultipleLocator(10 / 60))
     axes[2][2].set_xticks([16, 17, 18, 19, 20, 21, 22, 23, 24])
     axes[2][2].set_xticklabels([16, 17, 18, 19, 20, 21, 22, 23, 24])
-    sub_y_axis = y_axis[30:]
-    axes[2][2].set_ylim(30,len(sub_y_axis))
+    sub_y_axis = y_axis[30:49]
+    axes[2][2].set_ylim(0,19)
     #print("for ticks",sub_y_axis)
     axes[2][2].set_yticks(range(len(sub_y_axis)))
     # sub_y_axis[0:4] = "    "       # buffer at last
@@ -519,36 +520,69 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     # #         axes[3].arrow(station_dict['UP'][k][0], station_dict['UP'][k - 1][0] + 1, 0, -1, width = 0.005)
     # #     k += 2     
         
-
-
-
-
-
-
     plt.tight_layout()
 #     for me, ax in enumerate(axes):
 #         ax.set_title(f"Subplot {me+1}")
 #         # Save each subplot as a separate PDF
 #         plt.savefig(f"subplot_{me+1}.pdf")
+    buf = 0.001
     fig.savefig(
-    "frac0.pdf",
+    "frac00.pdf",
+    bbox_inches = mtransforms.Bbox([[0, 0.666], [0.335,1]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+        fig.transFigure - fig.dpi_scale_trans
+    ),format="pdf")
+    fig.savefig(
+    "frac01.pdf",
+    bbox_inches = mtransforms.Bbox([[0.335 - buf, 0.666], [0.667,1]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+        fig.transFigure - fig.dpi_scale_trans
+    ),format="pdf")
+    fig.savefig(
+    "frac02.pdf",
+    bbox_inches = mtransforms.Bbox([[0.667, 0.666], [1.002,1]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+        fig.transFigure - fig.dpi_scale_trans
+    ),format="pdf")
 
-    bbox_inches=mtransforms.Bbox([[0, 2], [0,2]]).transformed(
+
+
+
+    fig.savefig(
+    "frac10.pdf",
+    bbox_inches=mtransforms.Bbox([[0, 0.34 ], [0.335, 0.666 ]]).transformed( # [[xmin, ymin], [xmax, ymax]]
         fig.transFigure - fig.dpi_scale_trans
     ),format="pdf")
     fig.savefig(
-    "frac1.pdf",
-    bbox_inches=mtransforms.Bbox([[0, 0.5], [1, 0.75]]).transformed(
+    "frac11.pdf",
+    bbox_inches=mtransforms.Bbox([[0.335 - buf, 0.34], [0.667, 0.666]]).transformed( # [[xmin, ymin], [xmax, ymax]]
         fig.transFigure - fig.dpi_scale_trans
     ),format="pdf")
     fig.savefig(
-    "frac2.pdf",
-    bbox_inches=mtransforms.Bbox([[0, 0.25], [1, 0.5]]).transformed(
+    "frac12.pdf",
+    bbox_inches=mtransforms.Bbox([[0.667, 0.34 ], [1.002, 0.666 ]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+        fig.transFigure - fig.dpi_scale_trans
+    ),format="pdf")
+
+
+
+
+    # fig.savefig(
+    # "frac2.pdf",
+    # bbox_inches=mtransforms.Bbox([[0, 0.25], [1, 0.5]]).transformed(
+    #     fig.transFigure - fig.dpi_scale_trans
+    # ),format="pdf")
+
+    fig.savefig(
+    "frac20.pdf",
+    bbox_inches=mtransforms.Bbox([[0, 0], [0.335, 0.34-3*buf]]).transformed( # [[xmin, ymin], [xmax, ymax]]
         fig.transFigure - fig.dpi_scale_trans
     ),format="pdf")
     fig.savefig(
-    "frac3.pdf",
-    bbox_inches=mtransforms.Bbox([[0, 0], [1, 0.25]]).transformed(
+    "frac21.pdf",
+    bbox_inches=mtransforms.Bbox([[0.335 - buf, 0], [0.667, 0.34-3*buf]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+        fig.transFigure - fig.dpi_scale_trans
+    ),format="pdf")
+    fig.savefig(
+    "frac22.pdf",
+    bbox_inches=mtransforms.Bbox([[0.667, 0], [1.002, 0.34-3*buf]]).transformed( # [[xmin, ymin], [xmax, ymax]]
         fig.transFigure - fig.dpi_scale_trans
     ),format="pdf")
 
@@ -558,4 +592,10 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     #     ax.set_title('Plot {}'.format(i+1))
     #     plt.savefig('subplot_{}.pdf'.format(i+1), format="pdf")
     #     ax.clear()
-    plt.show()
+    plt.subplots_adjust(left=0.1,
+                    bottom=0.1,
+                    right=0.9,
+                    top=0.9,
+                    wspace=0.4,
+                    hspace=0.4)
+    # plt.show()
