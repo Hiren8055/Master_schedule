@@ -33,11 +33,13 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
         for i in range(0, len(arr_2d), 2):
             for j in range(len(arr_2d[i])):
                 arr_2d[i][j] = y_axis.index(arr_2d[i][j])
-
+    def Reverse(lst):
+        new_lst = lst[::-1]
+        return new_lst
 
     # Subplot 1: 0-8
-    def plot(p,q,arr,a,b,c,d,e,f):
-        axes[p][q].minorticks_on()
+    def plot(index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end,xlim_start,xlim_end):
+        axes[index_0][index_1].minorticks_on()
 
         # ##print('station_dict : ', station_dict)
         # xa_0 = np.linspace(0, 8, 200)
@@ -46,74 +48,57 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
             for i in range(0, len(arr_2d), 2):
                 arr_minus = np.array(arr_2d[i+1])
                 arr_minus = arr_minus - 24
-                axes[p][q].plot(arr_minus, arr_2d[i], color='red')
-                axes[p][q].plot(arr_2d[i+1], arr_2d[i], color='red')
+                axes[index_0][index_1].plot(arr_minus, arr_2d[i], color='red')
+                axes[index_0][index_1].plot(arr_2d[i+1], arr_2d[i], color='red')
 
         for i in range(len(y_axis)):
             y_index = y_axis[i]
             ya = [y_index] * len(xa_0)
-            axes[p][q].scatter(xa_0, ya, marker=',',color='blue', s=0.3)
-            
-        ### ARROW DowN        
-        # k = 1    
-        # for i in range(len(station_dict['DN']) // 2):    
-        #     if 0 <= station_dict['DN'][k][0] <= 8:
-        #         axes[0].text(station_dict['DN'][k][0], station_dict['DN'][k - 1][0] - 2.3, trains_dict['DN'][i], rotation = 'vertical', fontsize=9)
-        #         axes[0].arrow(station_dict['DN'][k][0], station_dict['DN'][k - 1][0], 0, 1, width = 0.005)
-        #     k += 2
-        
-        # ### ARROW UP        
-        # k = 1    
-        # for i in range(len(station_dict['UP']) // 2):    
-        #     if 0 <= station_dict['UP'][k][0] <= 8:
-        #         axes[0].text(station_dict['UP'][k][0], station_dict['UP'][k - 1][0] + 1.3, trains_dict['UP'][i], rotation = 'vertical', fontsize=9)
-        #         axes[0].arrow(station_dict['UP'][k][0], station_dict['UP'][k - 1][0], 0, -1, width = 0.005)
-        #     k += 2     
-        
-        axes[p][q].xaxis.grid(True, which='major', linestyle='-', color='black')
-        axes[p][q].xaxis.grid(True, which='minor', linestyle='-')
-        axes[p][q].xaxis.set_minor_locator(MultipleLocator(10 / 60))
-        axes[p][q].set_xticks(arr)
-        axes[p][q].set_xticklabels(arr)
-        print("length of y_axis",len(y_axis))
-        # slicing for subplots
-        sub_y_axis = y_axis[a:b]
-        axes[p][q].set_ylim(c, d)
-        print("sub 0 0", sub_y_axis)
-        ##print("for tick",sub_y_axis)
-        print("range",range(len(sub_y_axis)))
-        axes[p][q].set_yticks(range(len(sub_y_axis)))
-        # sub_y_axis[-4:] = "    "       # buffer at last
-        #print("for before fnkg",sub_y_axis)
-        
-        axes[p][q].set_yticklabels(sub_y_axis)
-        axes[p][q].tick_params(axis='x', which='minor', labelbottom=True)
-        axes[p][q].tick_params(labeltop=True, labelright=True)
+            axes[index_0][index_1].scatter(xa_0, ya, marker=',',color='blue', s=0.3)
 
+
+        axes[index_0][index_1].xaxis.grid(True, which='major', linestyle='-', color='black')
+        axes[index_0][index_1].xaxis.grid(True, which='minor', linestyle='-')
+        axes[index_0][index_1].xaxis.set_minor_locator(MultipleLocator(10 / 60))
+        axes[index_0][index_1].set_xticks(arr)
+        axes[index_0][index_1].set_xticklabels(arr)
+        
+        sub_y_axis = y_axis[start_sub_y_axis:end_sub_y_axis]
+        sub_y_axis = Reverse(sub_y_axis)
+        print(sub_y_axis)
+        axes[index_0][index_1].set_ylim(start_sub_y_axis,end_sub_y_axis)
+        print(start_sub_y_axis,end_sub_y_axis)
+        print(range(start_sub_y_axis,end_sub_y_axis))
+        # axes[index_0][index_1].set_yticks(range(start_sub_y_axis,end_sub_y_axis))
+        axes[index_0][index_1].set_yticks(range(start_sub_y_axis,end_sub_y_axis))
+        axes[index_0][index_1].set_yticklabels(sub_y_axis)
+
+
+        axes[index_0][index_1].tick_params(axis='x', which='minor', labelbottom=True)
+        axes[index_0][index_1].tick_params(labeltop=True, labelright=True)
         minor_labels = ["10", "20", "30", "40", "50"] * 8
         minor_labels.insert(0, "")
-        formatter = FixedFormatter(minor_labels)
-        axes[p][q].xaxis.set_minor_formatter(formatter)
-        axes[p][q].tick_params(axis='x', which='minor', labelsize=6)
-        axes[p][q].set_xlim(e,f)  
 
+        formatter = FixedFormatter(minor_labels)
+        axes[index_0][index_1].xaxis.set_minor_formatter(formatter)
+        axes[index_0][index_1].tick_params(axis='x', which='minor', labelsize=6)
+        axes[index_0][index_1].set_xlim(xlim_start,xlim_end)  
     arr1 = [0, 1, 2, 3, 4, 5, 6, 7, 8]
     arr2 = [8, 9, 10, 11, 12, 13, 14, 15, 16]
     arr3 = [16, 17, 18, 19, 20, 21, 22, 23, 24]
-
-    #plot(axes[i],[j],xticklables,yaxis,ylim,xlim)
     
-    plot(0,0,arr1,4,9,0,15,0,8)
-    plot(1,0,arr1,10,39,0,19,0,8)   
-    plot(2,0,arr1,30,49,0,19,0,8) 
+#   (index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end,xlim_start,xlim_end)
+    plot(0,0,arr1,4,15,      0,15,        0,8)
+    plot(1,0,arr1,14,35,    0,19,        0,8)   
+    plot(2,0,arr1,34,49,    0,19,        0,8) 
 
-    plot(0,1,arr2,4,9,0,15,8,16)
-    plot(1,1,arr2,10,39,0,19,8,16)   
-    plot(2,1,arr2,30,49,0,19,8,16)
+    plot(0,1,arr2,4,15,     0,15,        8,16)
+    plot(1,1,arr2,14,35,   0,19,        8,16)   
+    plot(2,1,arr2,34,49,   0,19,        8,16)
 
-    plot(0,2,arr3,4,9,0,15,16,24)
-    plot(1,2,arr3,10,39,0,19,16,24)   
-    plot(2,2,arr3,30,49,0,19,16,24)
+    plot(0,2,arr3,4,15,     0,15,       16,24)
+    plot(1,2,arr3,14,35,   0,19,       16,24)   
+    plot(2,2,arr3,34,49,   0,19,       16,24)
     
          
     plt.tight_layout()
@@ -195,6 +180,3 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
                     wspace=0.4,
                     hspace=0.4)
     plt.show()
-
-
-
