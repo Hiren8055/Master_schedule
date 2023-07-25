@@ -114,7 +114,17 @@ for key in dwn_upp:
     dwn_upp[key] = [value for value in dwn_upp[key]]
 
 
-
+print("down_up",down_up)
 down_up = conversion(down_up)
+# print("conversion down_up",down_up)
 down_up = add_24_down_up(down_up)
+# print("add_24_down_up down_up",down_up,dwn_upp)
 plot_trains(down_up, y_axis, y_labes, dwn_upp)
+# print("down station_dict",len(dwn_upp['DN']))
+# print("down station_dict",dwn_upp['DN'])
+# # print("up station_dict",len(dwn_upp['UP']))
+# # print("up station_dict",dwn_upp['UP'])
+# print("down station_dict",len(down_up['DN']))
+# print("down station_dict",down_up['DN'])
+# print("up station_dict",len(down_up['UP']))
+# print("up station_dict",down_up['UP'])
