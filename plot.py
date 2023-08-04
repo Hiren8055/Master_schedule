@@ -5,7 +5,13 @@ from matplotlib.ticker import FixedFormatter
 from adjustText import adjust_text
 import matplotlib.transforms as mtransforms
 
+
+
 def plot_trains(station_dict, y_axis, y_labes,trains_dict):
+    # print("station_dict",station_dict)
+    #print(" ")
+    # #print("Trains dictionary: ", trains_dict)
+    #print(" ")
 # Arrow:
 #     eg. axes[2].arrow(20, 25, 0, 1, width = 0.01, head_width=0.1, head_length=0.1, color = 'blue')
 #     20---> x axis
@@ -50,10 +56,10 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
         axes[index_0][index_1].set_xticklabels(arr)
         sub_y_axis = y_axis[start_sub_y_axis:end_sub_y_axis]
         # sub_y_axis = Reverse(sub_y_axis)
-        print(sub_y_axis)
+        # print(sub_y_axis)
         axes[index_0][index_1].set_ylim(start_sub_y_axis,end_sub_y_axis)
-        print(start_sub_y_axis,end_sub_y_axis)
-        print(range(start_sub_y_axis,end_sub_y_axis))
+        # print(start_sub_y_axis,end_sub_y_axis)
+        # print(range(start_sub_y_axis,end_sub_y_axis))
         # axes[index_0][index_1].set_yticks(range(start_sub_y_axis,end_sub_y_axis))
         axes[index_0][index_1].set_yticks(range(start_sub_y_axis,end_sub_y_axis))
         axes[index_0][index_1].set_yticklabels(sub_y_axis)
@@ -96,68 +102,72 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
 #         ax.set_title(f"Subplot {me+1}")
 #         # Save each subplot as a separate PDF
 #         plt.savefig(f"subplot_{me+1}.pdf")
-    buf = 0.001
-    fig.savefig(
-    "frac00.pdf",
-    bbox_inches = mtransforms.Bbox([[0, 0.666], [0.335,1]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        fig.transFigure - fig.dpi_scale_trans
-    ),format="pdf")
-    fig.savefig(
-    "frac01.pdf",
-    bbox_inches = mtransforms.Bbox([[0.335 - buf, 0.666], [0.667,1]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        fig.transFigure - fig.dpi_scale_trans
-    ),format="pdf")
-    fig.savefig(
-    "frac02.pdf",
-    bbox_inches = mtransforms.Bbox([[0.667, 0.666], [1.002,1]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        fig.transFigure - fig.dpi_scale_trans
-    ),format="pdf")
+    def saving_pdf():
+        buf = 0.001
+        fig.savefig(
+        "frac00.pdf",
+        bbox_inches = mtransforms.Bbox([[0, 0.666], [0.335,1]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
+        fig.savefig(
+        "frac01.pdf",
+        bbox_inches = mtransforms.Bbox([[0.335 - buf, 0.666], [0.667,1]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
+        fig.savefig(
+        "frac02.pdf",
+        bbox_inches = mtransforms.Bbox([[0.667, 0.666], [1.002,1]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
 
 
 
 
-    fig.savefig(
-    "frac10.pdf",
-    bbox_inches=mtransforms.Bbox([[0, 0.34 ], [0.335, 0.666 ]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        fig.transFigure - fig.dpi_scale_trans
-    ),format="pdf")
-    fig.savefig(
-    "frac11.pdf",
-    bbox_inches=mtransforms.Bbox([[0.335 - buf, 0.34], [0.667, 0.666]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        fig.transFigure - fig.dpi_scale_trans
-    ),format="pdf")
-    fig.savefig(
-    "frac12.pdf",
-    bbox_inches=mtransforms.Bbox([[0.667, 0.34 ], [1.002, 0.666 ]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        fig.transFigure - fig.dpi_scale_trans
-    ),format="pdf")
+        fig.savefig(
+        "frac10.pdf",
+        bbox_inches=mtransforms.Bbox([[0, 0.34 ], [0.335, 0.666 ]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
+        fig.savefig(
+        "frac11.pdf",
+        bbox_inches=mtransforms.Bbox([[0.335 - buf, 0.34], [0.667, 0.666]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
+        fig.savefig(
+        "frac12.pdf",
+        bbox_inches=mtransforms.Bbox([[0.667, 0.34 ], [1.002, 0.666 ]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
 
 
 
 
-    # fig.savefig(
-    # "frac2.pdf",
-    # bbox_inches=mtransforms.Bbox([[0, 0.25], [1, 0.5]]).transformed(
-    #     fig.transFigure - fig.dpi_scale_trans
-    # ),format="pdf")
+        # fig.savefig(
+        # "frac2.pdf",
+        # bbox_inches=mtransforms.Bbox([[0, 0.25], [1, 0.5]]).transformed(
+        #     fig.transFigure - fig.dpi_scale_trans
+        # ),format="pdf")
 
-    fig.savefig(
-    "frac20.pdf",
-    bbox_inches=mtransforms.Bbox([[0, 0], [0.335, 0.34-3*buf]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        fig.transFigure - fig.dpi_scale_trans
-    ),format="pdf")
-    fig.savefig(
-    "frac21.pdf",
-    bbox_inches=mtransforms.Bbox([[0.335 - buf, 0], [0.667, 0.34-3*buf]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        fig.transFigure - fig.dpi_scale_trans
-    ),format="pdf")
-    fig.savefig(
-    "frac22.pdf",
-    bbox_inches=mtransforms.Bbox([[0.667, 0], [1.002, 0.34-3*buf]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        fig.transFigure - fig.dpi_scale_trans
-    ),format="pdf")
-
-
+        fig.savefig(
+        "frac20.pdf",
+        bbox_inches=mtransforms.Bbox([[0, 0], [0.335, 0.34-3*buf]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
+        fig.savefig(
+        "frac21.pdf",
+        bbox_inches=mtransforms.Bbox([[0.335 - buf, 0], [0.667, 0.34-3*buf]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
+        fig.savefig(
+        "frac22.pdf",
+        bbox_inches=mtransforms.Bbox([[0.667, 0], [1.002, 0.34-3*buf]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
+    
+    # Make the boolean vallue false if saving is not required it makes the process slow
+    saving = False
+    if saving == True:
+        saving_pdf()
     #print("saved-------------------------")
     # for i, ax in enumerate(axes.flat):
     #     ax.set_title('Plot {}'.format(i+1))
@@ -170,6 +180,3 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
                     wspace=0.4,
                     hspace=0.4)
     plt.show()
-
-
-
