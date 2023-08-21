@@ -16,7 +16,7 @@ def add_lables(new_dict, train_dictionary):
         for i in range(range_):
             new_dict[key].insert(k, str(train_dictionary[key][i]))
             k += 3 
-    print("new_dict",new_dict)
+    print('new_dict: ', new_dict)
     return new_dict
 
 def sorting_array(new_dict):
@@ -139,7 +139,7 @@ def plot(index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end
     axes[index_0][index_1].invert_yaxis()
 
 def plot_trains(station_dict, y_axis, y_labes,trains_dict):
-    fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(10, 50))
+    fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(100, 500))
     # have to make  3 x 3 grid
     fig.set_figheight(100)
 # set width of each subplot as 8
@@ -472,6 +472,7 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
                 elif updn == "DN":
                     y_target = 10
                 # try:
+                arr_index = []
                 for i in range(0,len(station_dict[updn]),2):
                     print(i)
                     inter_arr = intercept_selection_pts(y_target,i, updn)
@@ -481,24 +482,36 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
                     elif inter_arr[1]!=y_target:
                         x_target, y_target = intercept(y_target, inter_arr[0] ,inter_arr[1])
                         inter_plot_arr.append([x_target, y_target])
+                        arr_index.append(i)
                     else:
                         x_target, y_target = inter_arr[0], inter_arr[1]
                         inter_plot_arr.append([x_target, y_target])
-                # except:
-                    # print("there should only two present in excel up and down")
-                return inter_plot_arr
-            # will have a intersection array for down and up
-            def intercept_plot(inter_plot_arr):
+                        arr_index.append(i)
+                        
+                print(len(inter_plot_arr),len(arr_index)) 
+                print(arr_index)      
+                print(trains_dict)
+                print(len(trains_dict["UP"]))
                 for i in range(len(inter_plot_arr)):
                     inx, iny,_,_ = add_arrow_labels_intercept(inter_plot_arr[i][0],inter_plot_arr[i][1])
                     # print("inx",inx, iny)
                     axes[inx][iny].plot(inter_plot_arr[i][0],inter_plot_arr[i][1], 'o-') # have to automate for all the
+                    axes[inx][iny].text(inter_plot_arr[i][0], inter_plot_arr[i][1] + 1, trains_dict[updn][arr_index[i]], rotation = 'vertical', fontsize=13)  # NOTE: INSIDE IF
+                    if inx == 1 and iny==0:
+                        print("intersection train",inx,iny,trains_dict[updn][i])
+                    axes[inx][iny].arrow(inter_plot_arr[i][0], inter_plot_arr[i][1], 0, 0.5, head_width = 0, width = 0.005, clip_on = False)   
+                # except:
+                    # print("there should only two present in excel up and down")
+                return inter_plot_arr
+            # will have a intersection array for down and up
+            # def intercept_plot(inter_plot_arr):
+                                  
             
             inter_plot_arr_up = intercept_pts("UP")
             inter_plot_arr_dn = intercept_pts("DN")
-            inter_plot_arr = inter_plot_arr_up+inter_plot_arr_dn
-            print("inter_plot_arr",inter_plot_arr)
-            intercept_plot(inter_plot_arr) 
+            # inter_plot_arr = inter_plot_arr_up+inter_plot_arr_dn
+            # print("inter_plot_arr",inter_plot_arr)
+            # intercept_plot(inter_plot_arr) 
         
         intersection(station_dict)
             
@@ -545,18 +558,16 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
         bbox_inches=mtransforms.Bbox([[0, 0.34 ], [0.335, 0.666 ]]).transformed( # [[xmin, ymin], [xmax, ymax]]
             fig.transFigure - fig.dpi_scale_trans
         ),format="pdf")
-
-        # fig.savefig(
-        # "frac11.pdf",
-        # bbox_inches=mtransforms.Bbox([[0.335 - buf, 0.34], [0.667, 0.666]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        #     fig.transFigure - fig.dpi_scale_trans
-        # ),format="pdf")
-
-        # fig.savefig(
-        # "frac12.pdf",
-        # bbox_inches=mtransforms.Bbox([[0.667, 0.34 ], [1.002, 0.666 ]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        #     fig.transFigure - fig.dpi_scale_trans
-        # ),format="pdf")
+        fig.savefig(
+        "frac11.pdf",
+        bbox_inches=mtransforms.Bbox([[0.335 - buf, 0.34], [0.667, 0.666]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
+        fig.savefig(
+        "frac12.pdf",
+        bbox_inches=mtransforms.Bbox([[0.667, 0.34 ], [1.002, 0.666 ]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
 
 
 
