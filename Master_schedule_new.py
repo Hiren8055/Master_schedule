@@ -7,7 +7,6 @@
 # 3. Numpy array to visualization.
 # %%
 import pandas as pd
-import copy
 # %%
 import matplotlib.pyplot as plt
 import numpy as np
@@ -151,12 +150,12 @@ def select(down_up):
     
     new_dict = {"DN":[],"UP":[]}
     # for i in range(1,len(down_up["DN"])):
-
+    sheet = "DN"
     i = 1
-    while i<len(down_up["UP"]):
-        if (9 < int(down_up["UP"][i][0][1:3]) <= 10):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
-            new_dict["UP"].append(down_up["UP"][i-1])
-            new_dict["UP"].append(down_up["UP"][i])
+    while i<len(down_up[sheet]):
+        if (16 < int(down_up[sheet][i][0][1:3]) <= 24):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
+            new_dict[sheet].append(down_up[sheet][i-1])
+            new_dict[sheet].append(down_up[sheet][i])
         i+=2
 
     # i = 1
@@ -167,17 +166,17 @@ def select(down_up):
     #     i+=2
 
     return new_dict
-new = select(down_up)
-print("new",new)
-down_up = conversion(new)
-down_up = add_24_down_up(down_up)
 
-plot_trains(down_up, y_axis, y_labes, dwn_upp)
-
-
-# # print("down_up",down_up)
-# down_up = conversion(down_up)
-# # print("conversion down_up",down_up)
+# new = select(down_up)
+# print("new",new)
+# down_up = conversion(new)
 # down_up = add_24_down_up(down_up)
-# # print("add_24_down_up down_up",down_up,dwn_upp)
 # plot_trains(down_up, y_axis, y_labes, dwn_upp)
+
+
+# print("down_up",down_up)
+down_up = conversion(down_up)
+# print("conversion down_up",down_up)
+down_up = add_24_down_up(down_up)
+# print("add_24_down_up down_up",down_up,dwn_upp)
+plot_trains(down_up, y_axis, y_labes, dwn_upp)
