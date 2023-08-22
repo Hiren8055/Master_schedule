@@ -11,7 +11,7 @@ import copy
 # %%
 import matplotlib.pyplot as plt
 import numpy as np
-from plot_new import plot_trains
+from plot import plot_trains
 # TODO: HAVE TO PERFORM IT FOR ALL THE COLUMNS IN SHEETS "DOWN"
 # HAVE TO ACCESS ANOTHER SHEET NAMED "UP"
 
@@ -152,19 +152,20 @@ def select(down_up):
     new_dict = {"DN":[],"UP":[]}
     # for i in range(1,len(down_up["DN"])):
 
-    i = 1
-    while i<len(down_up["UP"]):
-        if (9 < int(down_up["UP"][i][0][1:3]) < 13):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
-            new_dict["UP"].append(down_up["UP"][i-1])
-            new_dict["UP"].append(down_up["UP"][i])
-        i+=2
-
     # i = 1
-    # while i<len(down_up["DN"]):
-    #     # if (0 < int(down_up["UP"][i][0][1:3]) < 2):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
-    #     new_dict["DN"].append(down_up["DN"][i-1])
-    #     new_dict["DN"].append(down_up["DN"][i])
+    # while i<len(down_up["UP"]):
+    #     # if (9 < int(down_up["UP"][i][0][1:3]) < 13):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
+    #     new_dict["UP"].append(down_up["UP"][i-1])
+    #     new_dict["UP"].append(down_up["UP"][i])
     #     i+=2
+
+    i = 1
+    while i<len(down_up["DN"]):
+        # if (22 < int(down_up["DN"][i][0][1:3]) < 27):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
+        # if (8 < int(down_up["DN"][i][0][1:3]) < 20):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
+        new_dict["DN"].append(down_up["DN"][i-1])
+        new_dict["DN"].append(down_up["DN"][i])
+        i+=2
 
     return new_dict
 new = select(down_up)
