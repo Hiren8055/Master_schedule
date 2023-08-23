@@ -14,85 +14,46 @@ import numpy as np
 from plot import plot_trains
 # TODO: HAVE TO PERFORM IT FOR ALL THE COLUMNS IN SHEETS "DOWN"
 # HAVE TO ACCESS ANOTHER SHEET NAMED "UP"
+import re
 
 
 def excel_to_pandas(filename):
-    """
-    output
-    down_up: time and train in single array alternatively
-    y_axis:
-    y_labes:
-    dwn_upp:
-    """
     df_dict = pd.read_excel(filename, sheet_name=['DN', 'UP'], header=None)
     down_up = dict()
     dwn_upp = dict()
     for key, df in df_dict.items():
-        first_filled_row_index = df.first_valid_index()
-        df = df.loc[first_filled_row_index:]
-        df = df[2:]
-        df = df[:-3]
-        df = df.iloc[::-1]
-        first_non_empty_row = df.apply(lambda row: row.notnull().any(), axis=1).idxmax()
-        df = df.loc[first_non_empty_row:]
-        df = df.iloc[::-1]
-        df = df.loc[~(df.iloc[:, 0].isna() & df.iloc[:, 0].shift().isin(["EA", "TRT"]))]
-        df = df.loc[~df.iloc[:, 0].isin(["EA", "TRT"])]
+        df.drop(1, axis=1, inplace=True)
+        df.columns = range(df.columns.size)
+        trains_list = df.iloc[0,1:].copy(deep=False)
+        df.drop(0, axis=0, inplace=True)
+        df.reset_index(drop=True, inplace=True)
         df.iloc[:, 0].fillna(method="ffill", inplace=True)
-        df = df.dropna(subset=df.columns[2:], how="all")
-        df = df.reset_index(drop=True)
-        df = df.drop(df.columns[1], axis=1)
-        df.iloc[0, 0] = np.nan
-        df.columns = df.iloc[0]
-        df = df.drop(0)
-        first_column_series = df.iloc[:, 0]
-        df = df.iloc[:, 1:]
-        first_column_series = first_column_series.rename(None)
-        first_column_series = first_column_series.str.strip()
-        df = df.set_index(first_column_series)
-        trains_list = df.columns.tolist()
+        df.iloc[:, 0]= df.iloc[:, 0].str.strip()
+        first_column_series = df.iloc[:,0].copy(deep=False).rename(None)
+        df.set_index(first_column_series,drop = True, inplace=True)
+        df.drop(0, axis=1, inplace=True)
+        df.columns = range(df.columns.size)
+        df = df.astype(str)
+        p1, p2 = r'\d\d:\d\d:\d\d', r'\d:\d\d:\d\d'
+        for label, column in df.items():
+            bool_index = column.str.contains(p2, regex=True, na=False)
+            df.loc[~bool_index, label] = np.nan
+        regex = lambda x,p: re.findall(p,x)
+        df = df.applymap(lambda cell: regex(cell,p1)[0] if regex(cell,p1) else (regex(cell,p2)[0] if regex(cell,p2) else print(f"Regex error {cell}")), na_action = 'ignore')
         list_2d = []
-        df = df.loc[:,~df.columns.duplicated()].copy()
-
-        for column_name in df.columns:
-            
-            column_df = df[column_name]
-            column_df = column_df.dropna()
-            column_df = column_df.astype(str)
-            column_df = column_df.str.replace('01-01-1900', '')
-            column_df = column_df.str.replace('1900-01-01', '')
-            column_df = column_df.str.replace('1900-01-02', '')
-            column_df = column_df.str.replace('1900-01-08', '')
-            column_df = column_df.str.replace('1900-01-24', '')
-            column_df = column_df.str.replace('1900-01-22', '')
-            column_df = column_df.replace(r'([\s_-]+^$(\.))', np.nan, regex=True)
-#             column_df = column_df.dropna()
-#             mask = column_df.str.contains(r'\.+')
-#             column_df[mask] = np.nan
-            column_df = column_df.dropna()
-#             column_df = column_df[column_df != "......"]
-            column_df = column_df[column_df.astype(str).str.contains(r'\d\d:\d\d:\d\d', na=False)]
-            column_df = pd.DataFrame(column_df)
-            row_indices = column_df.index.tolist()
-            datapoints = column_df.iloc[:, 0].tolist()
-
-            # Create the 2-dimensional list
-            list_2d = list_2d + [row_indices, datapoints]
-            
+        #TODO: add warning for duplicate train numbers
+        # df = df.loc[:,~df.columns.duplicated()].copy()
+        for label, column in df.items():
+            column.dropna(inplace=True)
+            row_indices = column.index.tolist()
+            datapoints = column.tolist()
+            list_2d = list_2d + [row_indices, datapoints] #Create the 2-dimensional list
             #TODO: add try and except raise error in panel to user for formating issue
-            if len(column_df) == 1:
-                # print(column_df)
-                print("Formatting problem check the Dates format.")
-            
         down_up[key] = list_2d
-        down_up[key + key] = df.index # WHY
         dwn_upp[key] = trains_list
     y_axis = ["CCG","BCT","DDR","BA","BDTS","ADH","BVI","BYR","BSR","NSP","VR","VTN","SAH","KLV","PLG","UOI","BOR","VGN","DRD","GVD","BRRD","UBR","SJN","BLD","KEB","VAPI","BAGD","UVD","PAD","ATUL","BL","DGI","JRS","BIM","AML","ACL","VDH","HXR","GNST","NVS","MRL","SCH","BHET","UDN","ST"]
-    y_labes = ["CCG 0.0","BCT 14.66","DDR 10.17","BA 14.66","BDTS 15.29","ADH 29.32","BVI 33.98","BYR 43.11","BSR 51.78","NSP 55.85","VR 59.98","VTN 68.42","SAH 76.74","KLV 82.55","PLG 90.92","UOI 97.15","BOR 102.8","VGN 111.5","DRD 123.7","GVD 134.8","BRRD 139.0","UBR 144.0","SJN 149.4","BLD 160.9","KEB 165.8","VAPI 172.0","BAGD 179.0","UVD 182.0","PAD 187.7","ATUL 191.0","BL 198.22","DGI 207.21","JRS 212.28","BIM 216.41","AML 221.72","ACL 225.33","VDH 228.87","HXR 232.0","GNST 234.0","NVS 237.33","MRL 245.63","SCH 252.26","BHET 257.3","UDN 262.77","ST 266.78"]
-    down_up.pop("DNDN") 
-    down_up.pop("UPUP")
-    # print(down_up)
-    return down_up,y_axis,y_labes, dwn_upp
+    y_labes = ["CCG 0.0","BCT 14.66","DDR 10.17","BA 14.66","BDTS 15.29","ADH 29.32","BVI 33.98","BYR 43.11","BSR 51.78","NSP 55.85","VR 59.98","VTN 68.42","SAH 76.74","KLV 82.55","PLG 90.92","UOI 97.15","BOR 102.8","VGN 111.5","DRD 123.7","GVD 134.8","BRRD 139.0","UBR 144.0","SJN 149.4","BLD 160.9","KEB 165.8","VAPI 172.0","BAGD 179.0","UVD 182.0","PAD 187.7","ATUL 191.0","BL 198.22","DGI 207.21","JRS 212.28","BIM 216.41","AML 221.72","ACL 225.33","VDH 228.87","HXR 232.0","GNST 234.0","NVS 237.33","MRL 245.63","SCH 252.26","BHET 257.3","UDN 262.77","ST 266.78"]    # print(down_up)
+    return down_up,y_axis, y_labes, dwn_upp
 
 def conversion(station_dict):
     # this wil multiply with ratios for plotting
@@ -132,7 +93,7 @@ def add_24_down_up(down_up):
     # print("add_24",down_up)
     return down_up
 
-down_up, y_axis, y_labes, dwn_upp =  excel_to_pandas('HIREN_new.xlsx')
+down_up, y_axis, y_labes, dwn_upp =  excel_to_pandas('HIREN2.xlsx')
 
 for key in dwn_upp:
     dwn_upp[key] = [value for value in dwn_upp[key]]
@@ -168,16 +129,16 @@ def select(down_up):
         i+=2
 
     return new_dict
-new = select(down_up)
+# new = select(down_up)
 
-down_up = conversion(new)
-down_up = add_24_down_up(down_up)
-plot_trains(down_up, y_axis, y_labes, dwn_upp)
-
-
-# # print("down_up",down_up)
-# down_up = conversion(down_up)
-# # print("conversion down_up",down_up)
+# down_up = conversion(new)
 # down_up = add_24_down_up(down_up)
-# # print("add_24_down_up down_up",down_up,dwn_upp)
 # plot_trains(down_up, y_axis, y_labes, dwn_upp)
+
+
+# print("down_up",down_up)
+down_up = conversion(down_up)
+# print("conversion down_up",down_up)
+down_up = add_24_down_up(down_up)
+# print("add_24_down_up down_up",down_up,dwn_upp)
+plot_trains(down_up, y_axis, y_labes, dwn_upp)
