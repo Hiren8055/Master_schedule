@@ -5,6 +5,7 @@ from matplotlib.ticker import FixedFormatter
 import copy
 import matplotlib.transforms as mtransforms
 from collide_labels import collision_text_updn, collision_text_updn1
+from intersection import intersection
 
 def add_lables(new_dict, train_dictionary):
     """Add lables in dictionary"""
@@ -286,6 +287,7 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     ########################################## collision text for up and down #################################################\
         collision_text_updn(collision_merged, axes)  
         collision_text_updn1(collision_merged1, axes)  
+        intersection(station_dict, axes, trains_dict)
 
     plot_labels() 
 ####################################################################################################################
