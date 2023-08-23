@@ -10,7 +10,7 @@ def intersection(station_dict, axes, trains_dict):
     def intercept_selection_pts(y_target,index,updn):
         # add try and except in function 
         # index = 2 # have to automate for other even indexes
-
+        
         above_intercept_station = y_target - 1
         below_intercept_station = y_target + 1
         # print(station_dict["UP"][index],station_dict["UP"][1])
@@ -58,44 +58,60 @@ def intersection(station_dict, axes, trains_dict):
         x_target = np.interp(y_target,x,y)
         # print("The x-value for y = 18 virar is:", x_target)
         return x_target, y_target
+
     def add_arrow_labels_intercept(x, y):
-        inx = 0   #NOTE: not necessary
+        # selection of graph for inx and iny
+        inx, iny = 0, 0   #NOTE: not necessary
         # for 0, 0
-        if (0 <= x < 8 and 0 <= y <= 11 ) :
-            inx =   0
-        elif (24 <= x <= 32 and 0 <= y <= 11):
+        if (0 <= x < 8 and 0 <= y <= 9 ) :
+            # print("condition triggered for label")
+            inx = 0;iny = 0 
+            # print(x,y) 
+        elif (24 <= x <= 32 and 0 <= y <= 9):
+            # print("condition triggered for label MINUSING")
             x = x - 24
+            # inx = 0;iny = 0
         # for 0, 1
-        elif (8 <= x < 16 and 0 <= y <= 11) :
-            inx = 1
+        elif (8 <= x < 16 and 0 <= y <= 9) :
+            # print("condition triggered for label")
+            inx = 0;iny = 1
         # for 0, 2
-        elif (16 <= x <= 24 and 0 <= y <= 11) :
-            inx = 2
+        elif (16 <= x <= 24 and 0 <= y <= 9) :
+            # print("condition triggered for label")
+            inx = 0;iny = 2
         # for 1, 0
-        elif (0 <= x < 8 and 11 < y <= 31) :
-            inx = 3
-        elif (24 <= x <= 32 and 11 < y <= 31):
+        elif (0 <= x < 8 and 10 <= y <= 31) :
+            # print("condition triggered for label")
+            inx = 1;iny = 0
+        elif (24 <= x <= 32 and 10 <= y <= 31):
+            # print("condition triggered for label MINUSING")
             x = x - 24
-            inx = 3
+            inx = 1;iny = 0
         # for 1, 1
-        elif (8 <= x < 16 and 11 < y <= 31) :
-            inx = 4
+        elif (8 <= x < 16 and 10 <= y <= 31) :
+            # print("condition triggered for label")
+            inx = 1;iny = 1
         # for 1, 2
-        elif (16 <= x <= 24 and 11 < y <= 31) :
-            inx = 5
+        elif (16 <= x <= 24 and 10 <= y <= 31) :
+            # print("condition triggered for label")
+            inx = 1;iny = 2
         # for 2, 0
         elif (0 <= x < 8 and 31 < y <= 45) :
-            inx = 6
+            # print("condition triggered for label")
+            inx = 2;iny = 0
         elif (24 <= x <= 32 and 31 < y <= 45):
+            # print("condition triggered for label MINUSING")
             x = x - 24
-            inx = 6
+            inx = 2;iny = 0
         # for 2, 1
         elif (8 <= x < 16 and 31 < y <= 45) :
-            inx = 7
+            # print("condition triggered for label")
+            inx = 2;iny = 1
         # for 2, 2
         elif (16 <= x <= 24 and 31 < y <= 45) :
-            inx =  8
-        return inx, x, y
+            # print("condition triggered for label")
+            inx = 2;iny = 2 
+        return inx, iny, x, y
     # have to make for every train which is going up
     # put this intersection point in bottom 
     # send the array to arpit of intersection for labels and arrow
@@ -135,14 +151,14 @@ def intersection(station_dict, axes, trains_dict):
         # print(trains_dict)
         print(len(trains_dict["UP"]))
         for i in range(len(inter_plot_arr)):
-            inx, _,_ = add_arrow_labels_intercept(inter_plot_arr[i][0],inter_plot_arr[i][1])
+            inx, iny,_,_ = add_arrow_labels_intercept(inter_plot_arr[i][0],inter_plot_arr[i][1])
             # print("inx",inx, iny)
-            # axes[inx].plot(inter_plot_arr[i][0],inter_plot_arr[i][1], 'o-') # have to automate for all the
+            # axes[inx][iny].plot(inter_plot_arr[i][0],inter_plot_arr[i][1], 'o-') # have to automate for all the
             # print("arr_index[i]//2",arr_index[i],arr_index[i]//2)
-            axes[inx].text(inter_plot_arr[i][0], inter_plot_arr[i][1] + 1, trains_dict[updn][arr_index[i]//2], rotation = 'vertical', fontsize=13)  # NOTE: INSIDE IF
+            axes[inx][iny].text(inter_plot_arr[i][0], inter_plot_arr[i][1] + 1, trains_dict[updn][arr_index[i]//2], rotation = 'vertical', fontsize=13)  # NOTE: INSIDE IF
             # if inx == 1 and iny==0:
                 # print("intersection train",inx,iny,trains_dict[updn][i])
-            axes[inx].arrow(inter_plot_arr[i][0], inter_plot_arr[i][1], 0, 0.5, head_width = 0, width = 0.005, clip_on = False)   
+            axes[inx][iny].arrow(inter_plot_arr[i][0], inter_plot_arr[i][1], 0, 0.5, head_width = 0, width = 0.005, clip_on = False)   
         # except:
             # print("there should only two present in excel up and down")
         return inter_plot_arr
