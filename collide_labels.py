@@ -56,7 +56,7 @@ def add_arrow_labels(x, y):
         inx = 2;iny = 2 
     return inx, iny, x, y
 
-def collision_text_updn(collision_updn, collision_updn_for_last, collision_merged, new_dict, axes):   
+def collision_text_updn(collision_merged, axes):   
     # def collision_text_updn(collision_updn,  new_dict):   
         """ this function takes cares in overlapping of labels"""
 
@@ -120,11 +120,11 @@ def collision_text_updn(collision_updn, collision_updn_for_last, collision_merge
             #     if start_end == 'start':
 
             print(previous_x, x, previous_y, y)
-            if x == previous_x and y == previous_y:
+            if abs(x - previous_x) <= 0.01 and y == previous_y:
                 print('label is overlapping')
                 label_var = '/'
                 len_of_labels = len(label_)
-                y_buffer_both_up = y_buffer_both_up + (0.06 * len_of_labels)
+                y_buffer_both_up = y_buffer_both_up + (0.06 * len_of_labels) + 0.12
                 """y_overlap_both_up is y axis for text which is different in arrows y axis that is original 'y' """
                 y_overlap_both_up = y + y_buffer_both_up 
             else:
@@ -138,7 +138,7 @@ def collision_text_updn(collision_updn, collision_updn_for_last, collision_merge
 
             original_x = x
             inx, iny, x, y = add_arrow_labels(x, y)
-            axes[inx][iny].text(x, y_overlap_both_up + 0.8, label, rotation = 'vertical', fontsize=13)  # NOTE: INSIDE IF
+            axes[inx][iny].text(x, y_overlap_both_up + 0.9, label, rotation = 'vertical', fontsize=13)  # NOTE: INSIDE IF
             axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False)
 
             previous_x, previous_y = original_x, y
