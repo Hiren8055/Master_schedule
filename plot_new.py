@@ -4,11 +4,10 @@ from matplotlib.ticker import MultipleLocator
 from matplotlib.ticker import FixedFormatter
 import copy
 import matplotlib.transforms as mtransforms
-
+from collide_labels import collision_text_updn
 
 def add_lables(new_dict, train_dictionary):
     """Add lables in dictionary"""
-    
     for key in new_dict:
         k = 0
         # range_ = (2 * len(new_dict[key]) - int(1/2 * len(new_dict[key]))) // 3
@@ -16,82 +15,103 @@ def add_lables(new_dict, train_dictionary):
         for i in range(range_):
             new_dict[key].insert(k, str(train_dictionary[key][i]))
             k += 3 
-    print('new_dict: ', new_dict)
     return new_dict
 
-def sorting_array(new_dict):
-    """ Sorting in ascending and decending order"""
-
-    # for key in new_dict:
-    pairs = []
-    k = 1
-    for i in range(len(new_dict['UPDN']) // 3):
-        x = new_dict['UPDN'][k]
-        y = new_dict['UPDN'][k+1]
-        z = new_dict['UPDN'][k - 1]
-        pairs.append([z, x, y])
-        k += 3
-    pairs.sort(key=lambda pair: pair[1][0])
-
-    sorted_list = [elem for pair in pairs for elem in pair]
-    new_dict['UPDN'] = sorted_list
-
+def add_keys(new_dict):
+    """Add keys in dictionary"""
+    for key in new_dict:
+        k = 1
+        for i in range(len(new_dict[key]) // 3):
+            new_dict[key].insert(k + 2, key)
+            k += 4
     return new_dict
 
 def extract_first_elem(new_dict):
     """Extracting first element of array  """
 
-    collision_updn = [[], []] # Extracting first element of x and y
+    collision_updn = [[], [], [], [], []] # Extracting first element of x and y
 
     k = 1 
-    for i in range(len(new_dict["UPDN"]) // 3):
-            collision_updn[0].append(new_dict['UPDN'][k + 1][0])
-            collision_updn[1].append(new_dict['UPDN'][k][0])
-            k += 3 
+    for i in range(len(new_dict["UP"]) // 4):
+            collision_updn[0].append(new_dict['UP'][k - 1])
+            if new_dict['DN'][k + 1][-1] >= 24: 
+                collision_updn[1].append(new_dict['UP'][k + 1][-1] - 24)
+            else: 
+                collision_updn[1].append(new_dict['UP'][k + 1][-1])            
+            collision_updn[2].append(new_dict['UP'][k][0])
+            k += 4
 
     new_data = []
     for i in range(len(collision_updn[0])):
-        new_data.append([collision_updn[0][i], collision_updn[1][i]])
-    new_data.sort(key=lambda row: (row[1], row[0]))
+        new_data.append([collision_updn[0][i], collision_updn[1][i], collision_updn[2][i],])
+    new_data.sort(key=lambda row: (row[2], row[1]))
 
     data1 = new_data.copy()
 
     new_data0 = [data1[i][0] for i in range(len(new_data))]
     new_data1 = [data1[i][1] for i in range(len(new_data))]
-    new_data = [new_data0, new_data1]
+    new_data2 = [data1[i][2] for i in range(len(new_data))]
+    new_data = [new_data0, new_data1, new_data2]
+
     collision_updn = new_data.copy()
-
-    print('collision updn: ', collision_updn)
-
+    print("extract first element: ", collision_updn)
     return collision_updn
 
 def extract_last_elem(new_dict):
     """Extracting first element of array  """
-    collision_updn_for_last = [[], []] # Extracting last element of x and y
+
+    collision_updn_for_last = [[], [], [], [], []] # Extracting first element of x and y
+
     k = 1 
-    for i in range(len(new_dict["UPDN"]) // 3):
-            collision_updn_for_last[0].append(new_dict['UPDN'][k + 1][-1])
-            collision_updn_for_last[1].append(new_dict['UPDN'][k][-1])
-            k += 3 
-    print('collision updn_for_last: before', collision_updn_for_last)
+    for i in range(len(new_dict["DN"]) // 4):
+            collision_updn_for_last[0].append(new_dict['DN'][k - 1])
+            if new_dict['DN'][k + 1][-1] >= 24: 
+                collision_updn_for_last[1].append(new_dict['DN'][k + 1][-1] - 24)
+            else: 
+                collision_updn_for_last[1].append(new_dict['DN'][k + 1][-1])
+                
+            collision_updn_for_last[2].append(new_dict['DN'][k][-1])
+            k += 4
+
     new_data = []
     for i in range(len(collision_updn_for_last[0])):
-        new_data.append([collision_updn_for_last[0][i], collision_updn_for_last[1][i]])
-    new_data.sort(key=lambda row: (row[1], row[0]))            
+        new_data.append([collision_updn_for_last[0][i], collision_updn_for_last[1][i], collision_updn_for_last[2][i]])
+    new_data.sort(key=lambda row: (row[2], row[1]))
 
     data1 = new_data.copy()
 
     new_data0 = [data1[i][0] for i in range(len(new_data))]
     new_data1 = [data1[i][1] for i in range(len(new_data))]
-    new_data = [new_data0, new_data1]
-    collision_updn_for_last = new_data.copy()
+    new_data2 = [data1[i][2] for i in range(len(new_data))]
+    new_data = [new_data0, new_data1, new_data2]
 
-    print("collision_updn_for_last: ", collision_updn_for_last)
+    collision_updn_for_last = new_data.copy()
+    print("extract last element: ", collision_updn_for_last)    
     return collision_updn_for_last
 
-def is_sorted_ascending(lst):
-    """this function checkes the list is sorted in ascending or not if yes then it is 'DN' list"""
-    return lst == sorted(lst)
+
+def merging_fist_and_last_element(collision_updn, collsion_updn_for_last):
+
+    collision_merged = [[], [], [], [], []]
+    for i in range(len(collsion_updn_for_last)):
+        collision_merged[i] = collision_updn[i] + collsion_updn_for_last[i]
+
+    new_data = []
+    for i in range(len(collision_merged[0])):
+        new_data.append([collision_merged[0][i], collision_merged[1][i], collision_merged[2][i]])
+    new_data.sort(key=lambda row: (row[2], row[1]))
+
+    data1 = new_data.copy()
+
+    new_data0 = [data1[i][0] for i in range(len(new_data))]
+    new_data1 = [data1[i][1] for i in range(len(new_data))]
+    new_data2 = [data1[i][2] for i in range(len(new_data))]
+    new_data = [new_data0, new_data1, new_data2]
+
+    collision_merged = new_data.copy()
+
+    return collision_merged
+
 # Subplot 1: 0-8
 def plot(index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end,xlim_start,xlim_end, axes, station_dict, y_axis):
     axes[index_0][index_1].minorticks_on()
@@ -139,7 +159,7 @@ def plot(index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end
     axes[index_0][index_1].invert_yaxis()
 
 def plot_trains(station_dict, y_axis, y_labes,trains_dict):
-    fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(100, 500))
+    fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(10, 50))
     # have to make  3 x 3 grid
     fig.set_figheight(100)
 # set width of each subplot as 8
@@ -176,176 +196,25 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
         """ Called a func"""
         new_dict = add_lables(new_dict, trains_dict)
         
-        new_dict['UPDN'] = new_dict['UP'] + new_dict['DN']
-            
         """ Called a func"""
-        new_dict = sorting_array(new_dict)
+        new_dict = add_keys(new_dict)
+        
+        new_dict['UPDN'] = new_dict['UP'] + new_dict['DN']
+
+        """ Called a func"""
+        collision_updn = extract_first_elem(new_dict)
 
         """ Called a func"""        
         collision_updn_for_last = extract_last_elem(new_dict)
 
         """ Called a func"""
-        collision_updn= extract_first_elem(new_dict)
-        # print("printing collsion array after calling ", collision_updn)
-    ########################################## collision text for up and down #################################################
-    ####################################################### UP Text ###########################################################
-        # def collision_text_updn(collision_updn, collision_updn_for_last, new_dict):   
-        def collision_text_updn(collision_updn,  new_dict):   
-            """ this function takes cares in overlapping of labels"""
-            """ Variables Declaration"""
-            k = 1
-            last_y = 0
-            # print("value of collision array are: ", collision_updn)
-            dup_x = np.array(collision_updn[0])        # having x co-ordinates      
-            # print("value of dupx are: ", dup_x)
-            dup_y = np.array(collision_updn[1])        # having y co-ordinates      
-            previous_x, previous_y= 0, 0
-            label_var = ''
-            y_overlap_both_up = 0
-            y_buffer_both_up = 0
-
-            for i in range(len(new_dict['UPDN']) // 3):
-                
-                # print('i am printing i: ', i)
-                # print('dup_x: ', dup_x)
-                x = dup_x[0]
-                y = dup_y[0]
-                
-                dup_x = np.delete(dup_x, 0)
-                dup_y = np.delete(dup_y, 0)
-
-                y_last = new_dict['UPDN'][k][-1] 
-                x_last = new_dict['UPDN'][k + 1][-1] 
-
-                range_of_x = x + 0.12            # 0.7 is x size of labels
-                range_of_y = y + 0.9
-
-                # if i == 0:                       # NOTE: THIS IS REQ
-                #     overlap_increment = i
-
-                # if len(dup_x[dup_x < range_of_x]) == 0 or len(dup_y[dup_y < range_of_y]) == 0:     # NOTE: IF IS REQUIRED
-                #     if y == last_y :
-                #         # axes[2].text(x + overlap_increment, y - 2.5, trains_dict['DN'][i], rotation = 'vertical', fontsize=9)
-                #         axes[index_0][index_1].text(x + overlap_increment, y + 1, new_dict['UP'][k - 1], rotation = 'vertical', fontsize=9)
-                #         # print("I am in FIRST shifting plot ", new_dict['DN'][k - 1], x)    
-                #     else:
-                #     #     ## normal text
-                #         axes[index_0][index_1].text(x, y + 1, new_dict['UP'][k - 1], rotation = 'vertical', fontsize=9) 
-                #         overlap_increment = 0   
-                #         # print("I am in normal plot ", new_dict['DN'][k - 1], x)
-                # else:              
-                #     ## perform shifting
-                #     axes[index_0][index_1].text(x + overlap_increment, y + 1, new_dict['UP'][k - 1], rotation = 'vertical', fontsize=9) 
-                #     # print("I am in shifting plot ", new_dict['DN'][k - 1], x)                
-                #     overlap_increment += 0.12   
-                #     last_y = y
-                # print("this",x, y + 1, new_dict['UP'][k - 1])               # NOTE: INSIDE IF
-                # axes[0][0].text(x, y + 1, new_dict['UP'][k - 1], rotation = 'vertical', fontsize=9) 
-
-    #-------------------------FOR LABELS
-                def add_arrow_labels(x, y):
-                    inx, iny = 0, 0   #NOTE: not necessary
-                    # for 0, 0
-                    if (0 <= x < 8 and 0 <= y <= 11 ) :
-                        # print("condition triggered for label")
-                        inx = 0;iny = 0  
-                    elif (24 <= x <= 32 and 0 <= y <= 11):
-                        # print("condition triggered for label MINUSING")
-                        x = x - 24
-                        # inx = 0;iny = 0
-                    # for 0, 1
-                    elif (8 <= x < 16 and 0 <= y <= 11) :
-                        # print("condition triggered for label")
-                        inx = 0;iny = 1
-                    # for 0, 2
-                    elif (16 <= x <= 24 and 0 <= y <= 11) :
-                        # print("condition triggered for label")
-                        inx = 0;iny = 2
-                    # for 1, 0
-                    elif (0 <= x < 8 and 11 < y <= 31) :
-                        # print("condition triggered for label")
-                        inx = 1;iny = 0
-                    elif (24 <= x <= 32 and 11 < y <= 31):
-                        # print("condition triggered for label MINUSING")
-                        x = x - 24
-                        inx = 1;iny = 0
-                    # for 1, 1
-                    elif (8 <= x < 16 and 11 < y <= 31) :
-                        # print("condition triggered for label")
-                        inx = 1;iny = 1
-                    # for 1, 2
-                    elif (16 <= x <= 24 and 11 < y <= 31) :
-                        # print("condition triggered for label")
-                        inx = 1;iny = 2
-                    # for 2, 0
-                    elif (0 <= x < 8 and 31 < y <= 45) :
-                        # print("condition triggered for label")
-                        inx = 2;iny = 0
-                    elif (24 <= x <= 32 and 31 < y <= 45):
-                        # print("condition triggered for label MINUSING")
-                        x = x - 24
-                        inx = 2;iny = 0
-                    # for 2, 1
-                    elif (8 <= x < 16 and 31 < y <= 45) :
-                        # print("condition triggered for label")
-                        inx = 2;iny = 1
-                    # for 2, 2
-                    elif (16 <= x <= 24 and 31 < y <= 45) :
-                        # print("condition triggered for label")
-                        inx = 2;iny = 2 
-                    return inx, iny, x, y
-
-                    """ This is for 'DOWN' """
-                if is_sorted_ascending(new_dict['UPDN'][k]) and len(new_dict['UPDN'][k + 1]) != 1:       
-                    c = 0 
-                    """Label for end"""
-                    inx, iny, x, y = add_arrow_labels(x, y)
-                    axes[inx][iny].text(x, y - 0.7, new_dict['UPDN'][k - 1], rotation = 'vertical', fontsize=13)  # NOTE: INSIDE IF
-                    axes[inx][iny].arrow(x, y, 0, -0.5, width = 0.005, clip_on = False)
-
-                    """Label for End"""
-                    inx, iny, x_last, y_last = add_arrow_labels(x_last, y_last)
-                    axes[inx][iny].text(x_last, y_last + 1, new_dict['UPDN'][k - 1], rotation = 'vertical', fontsize=13)  # NOTE: INSIDE IF
-                    axes[inx][iny].arrow(x_last, y_last, 0, 0.5, head_width = 0, width = 0.005, clip_on = False) 
-
-                    """ This is for 'UP' """
-                else:
-                    c = 1
-                    """Label for start"""
-                    """CASE 1: ABOIDING OVERLAPPING FOR BOTH UP"""
-                    if x == previous_x and y == previous_y:
-                        label_var = '/'
-                        len_of_labels = len(new_dict['UPDN'][k - 1])
-                        y_buffer_both_up = y_buffer_both_up + (0.06 * len_of_labels)
-                        """y_overlap_both_up is y axis for text which is different in arrows y axis that is original 'y' """
-                        y_overlap_both_up = y + y_buffer_both_up 
-                    else:
-                        label_var = ''
-                        y_buffer_both_up = 0
-                        y_overlap_both_up = y + y_buffer_both_up                         
-
-                    label = new_dict['UPDN'][k - 1] + label_var
-
-                    inx, iny, x, y = add_arrow_labels(x, y)
-                    # print('value of both y are: ', y, y_overlap_both_up)
-                    axes[inx][iny].text(x, y_overlap_both_up + 0.8, label, rotation = 'vertical', fontsize=13)  # NOTE: INSIDE IF
-                    axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False)
-
-                    """Label for End"""
-                    inx, iny, x_last, y_last = add_arrow_labels(x_last, y_last)
-                    axes[inx][iny].text(x_last, y_last - 0.6, new_dict['UPDN'][k - 1], rotation = 'vertical', fontsize=13)  # NOTE: INSIDE IF
-                    axes[inx][iny].arrow(x_last, y_last, 0, - 0.5, head_width = 0, width = 0.005, clip_on = False)
-
-                # for case 1
-                if c:
-                    previous_x, previous_y = x, y
-                ###############################################################################
-                k += 3
-        # collision_text_updn(collision_updn, collision_updn_for_last, new_dict)  
-        collision_text_updn(collision_updn, new_dict) 
+        collision_merged = merging_fist_and_last_element(collision_updn, collision_updn_for_last)
+        # print('merged_func: ', len(collision_merged[0]), len(collision_merged[1]), len(collision_merged[2]))
+        # print('merged_func: ', collision_merged)
+    ########################################## collision text for up and down #################################################\
         
-        print("station_dict",station_dict)
-
+        collision_text_updn(collision_updn, collision_updn_for_last, collision_merged, new_dict, axes)  
+        # collision_text_updn(collision_updn, new_dict)  
         def intersection(station_dict):
             # "Input with train array and output plot intersection at particular y"
             # have to use conversion function in between to convert the time and axis domain
@@ -401,11 +270,13 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
 
 
             def intercept(y_target, x ,y):
+                # find the points for intersection
                 x_target = np.interp(y_target,x,y)
                 print("The x-value for y = 18 virar is:", x_target)
                 return x_target, y_target
 
             def add_arrow_labels_intercept(x, y):
+                # selection of graph for inx and iny
                 inx, iny = 0, 0   #NOTE: not necessary
                 # for 0, 0
                 if (0 <= x < 8 and 0 <= y <= 9 ) :
@@ -463,6 +334,7 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
             print("station_dict",station_dict)
             # VR 18
             def intercept_pts(updn):
+                # drawing fucntion for intersecting points
                 inter_plot_arr = []
                 print(len(station_dict))
                 # updn = "UP"
@@ -510,48 +382,37 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
             # def intercept_plot(inter_plot_arr):
                                   
             
-            inter_plot_arr_up = intercept_pts("UP")
-            inter_plot_arr_dn = intercept_pts("DN")
+            intercept_pts("UP")
+            intercept_pts("DN")
             # inter_plot_arr = inter_plot_arr_up+inter_plot_arr_dn
             # print("inter_plot_arr",inter_plot_arr)
             # intercept_plot(inter_plot_arr) 
         
         intersection(station_dict)
-            
-
-
-
     plot_labels() 
 ####################################################################################################################
     plt.tight_layout()
-    plt.subplots_adjust(left=0.1,
-                    bottom=0.1,
-                    right=0.9,
-                    top=0.9,
-                    wspace=0.4,
-                    hspace=0.4)
-    plt.show()
 #     for me, ax in enumerate(axes):
 #         ax.set_title(f"Subplot {me+1}")
 #         # Save each subplot as a separate PDF
 #         plt.savefig(f"subplot_{me+1}.pdf")
     def saving_pdf():
         buf = 0.001
-        # fig.savefig(
-        # "frac00.pdf",
-        # bbox_inches = mtransforms.Bbox([[0, 0.666], [0.335,1]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        #     fig.transFigure - fig.dpi_scale_trans
-        # ),format="pdf")
-        # fig.savefig(
-        # "frac01.pdf",
-        # bbox_inches = mtransforms.Bbox([[0.335 - buf, 0.666], [0.667,1]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        #     fig.transFigure - fig.dpi_scale_trans
-        # ),format="pdf")
-        # fig.savefig(
-        # "frac02.pdf",
-        # bbox_inches = mtransforms.Bbox([[0.667, 0.666], [1.002,1]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        #     fig.transFigure - fig.dpi_scale_trans
-        # ),format="pdf")
+        fig.savefig(
+        "frac00.pdf",
+        bbox_inches = mtransforms.Bbox([[0, 0.666], [0.335,1]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
+        fig.savefig(
+        "frac01.pdf",
+        bbox_inches = mtransforms.Bbox([[0.335 - buf, 0.666], [0.667,1]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
+        fig.savefig(
+        "frac02.pdf",
+        bbox_inches = mtransforms.Bbox([[0.667, 0.666], [1.002,1]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
 
 
 
@@ -581,21 +442,21 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
         #     fig.transFigure - fig.dpi_scale_trans
         # ),format="pdf")
 
-        # fig.savefig(
-        # "frac20.pdf",
-        # bbox_inches=mtransforms.Bbox([[0, 0], [0.335, 0.34-3*buf]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        #     fig.transFigure - fig.dpi_scale_trans
-        # ),format="pdf")
-        # fig.savefig(
-        # "frac21.pdf",
-        # bbox_inches=mtransforms.Bbox([[0.335 - buf, 0], [0.667, 0.34-3*buf]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        #     fig.transFigure - fig.dpi_scale_trans
-        # ),format="pdf")
-        # fig.savefig(
-        # "frac22.pdf",
-        # bbox_inches=mtransforms.Bbox([[0.667, 0], [1.002, 0.34-3*buf]]).transformed( # [[xmin, ymin], [xmax, ymax]]
-        #     fig.transFigure - fig.dpi_scale_trans
-        # ),format="pdf")
+        fig.savefig(
+        "frac20.pdf",
+        bbox_inches=mtransforms.Bbox([[0, 0], [0.335, 0.34-3*buf]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
+        fig.savefig(
+        "frac21.pdf",
+        bbox_inches=mtransforms.Bbox([[0.335 - buf, 0], [0.667, 0.34-3*buf]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
+        fig.savefig(
+        "frac22.pdf",
+        bbox_inches=mtransforms.Bbox([[0.667, 0], [1.002, 0.34-3*buf]]).transformed( # [[xmin, ymin], [xmax, ymax]]
+            fig.transFigure - fig.dpi_scale_trans
+        ),format="pdf")
     
     # Make the boolean vallue false if saving is not required it makes the process slow
     saving = True
@@ -606,8 +467,13 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     #     ax.set_title('Plot {}'.format(i+1))
     #     plt.savefig('subplot_{}.pdf'.format(i+1), format="pdf")
     #     ax.clear()
-    
-
+    plt.subplots_adjust(left=0.1,
+                    bottom=0.1,
+                    right=0.9,
+                    top=0.9,
+                    wspace=0.4,
+                    hspace=0.4)
+    plt.show()
 
 ######################################################## RECYCLE BIN ######################################################################
 # 1. ############################## collision text function ##########################################
