@@ -202,7 +202,7 @@ def merging_dn_fist_and_up_last_element(collision_up1, collision_dn1):
 
     return collision_merged1
 # Subplot 1: 0-8
-def plot(index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end,xlim_start,xlim_end, axes, station_dict, y_axis):
+def plot(index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end,xlim_start,xlim_end, axes, station_dict, y_axis,y_labes):
     axes[index_0][index_1].minorticks_on()
 
     # xa_0 = np.linspace(0, 8, 200)
@@ -225,7 +225,7 @@ def plot(index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end
     axes[index_0][index_1].xaxis.set_minor_locator(MultipleLocator(10 / 60))
     axes[index_0][index_1].set_xticks(arr)
     axes[index_0][index_1].set_xticklabels(arr)
-    sub_y_axis = y_axis[start_sub_y_axis:end_sub_y_axis]
+    sub_y_axis = y_labes[start_sub_y_axis:end_sub_y_axis]
     # sub_y_axis = Reverse(sub_y_axis)
     # print(sub_y_axis)
     axes[index_0][index_1].set_ylim(start_sub_y_axis,end_sub_y_axis)
@@ -265,17 +265,17 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     arr3 = [16, 17, 18, 19, 20, 21, 22, 23, 24]
     
 #   (index_0, index_1, arr, start_sub_y_axis, end_sub_y_axis, ylim_start, ylim_end, xlim_start, xlim_end)
-    plot(0,0,arr1,0,11,      0,15,        0,8, axes, station_dict, y_axis)
-    plot(1,0,arr1,10,31,    0,19,        0,8, axes, station_dict, y_axis)   
-    plot(2,0,arr1,30,45,    0,19,        0,8, axes, station_dict, y_axis) 
+    plot(0,0,arr1,0,11,      0,15,        0,8, axes, station_dict, y_axis,y_labes)
+    plot(1,0,arr1,10,31,    0,19,        0,8, axes, station_dict, y_axis,y_labes)   
+    plot(2,0,arr1,30,45,    0,19,        0,8, axes, station_dict, y_axis,y_labes) 
 
-    plot(0,1,arr2,0,11,     0,15,        8,16, axes, station_dict, y_axis)
-    plot(1,1,arr2,10,31,  0,19,        8,16, axes, station_dict, y_axis)   
-    plot(2,1,arr2,30,45,   0,19,        8,16, axes, station_dict, y_axis)
+    plot(0,1,arr2,0,11,     0,15,        8,16, axes, station_dict, y_axis,y_labes)
+    plot(1,1,arr2,10,31,  0,19,        8,16, axes, station_dict, y_axis,y_labes)   
+    plot(2,1,arr2,30,45,   0,19,        8,16, axes, station_dict, y_axis,y_labes)
 
-    plot(0,2,arr3,0,11,     0,15,       16,24, axes, station_dict, y_axis)
-    plot(1,2,arr3,10,31,   0,19,       16,24, axes, station_dict, y_axis)   
-    plot(2,2,arr3,30,45,   0,19,       16,24, axes, station_dict, y_axis)
+    plot(0,2,arr3,0,11,     0,15,       16,24, axes, station_dict, y_axis,y_labes)
+    plot(1,2,arr3,10,31,   0,19,       16,24, axes, station_dict, y_axis,y_labes)   
+    plot(2,2,arr3,30,45,   0,19,       16,24, axes, station_dict, y_axis,y_labes)
 
 #########################################################################################
     def plot_labels():
@@ -305,7 +305,7 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     ########################################## collision text for up and down #################################################\
         collision_text_updn(collision_merged, axes)  
         collision_text_updn1(collision_merged1, axes)  
-        intersection(station_dict, axes, trains_dict)
+        # intersection(station_dict, axes, trains_dict)
 
     plot_labels() 
 ####################################################################################################################
