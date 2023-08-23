@@ -5,7 +5,7 @@ from matplotlib.ticker import FixedFormatter
 import copy
 import matplotlib.transforms as mtransforms
 from collide_labels import collision_text_updn
-
+from intersection import intersection
 def add_lables(new_dict, train_dictionary):
     """Add lables in dictionary"""
     for key in new_dict:
@@ -26,7 +26,7 @@ def add_keys(new_dict):
             k += 4
     return new_dict
 
-def extract_first_elem(new_dict):
+def extract_up_elem(new_dict):
     """Extracting first element of array  """
 
     collision_updn = [[], [], [], [], []] # Extracting first element of x and y
@@ -34,7 +34,7 @@ def extract_first_elem(new_dict):
     k = 1 
     for i in range(len(new_dict["UP"]) // 4):
             collision_updn[0].append(new_dict['UP'][k - 1])
-            if new_dict['DN'][k + 1][-1] >= 24: 
+            if new_dict['UP'][k + 1][-1] >= 24: 
                 collision_updn[1].append(new_dict['UP'][k + 1][-1] - 24)
             else: 
                 collision_updn[1].append(new_dict['UP'][k + 1][-1])            
@@ -54,10 +54,10 @@ def extract_first_elem(new_dict):
     new_data = [new_data0, new_data1, new_data2]
 
     collision_updn = new_data.copy()
-    print("extract first element: ", collision_updn)
+
     return collision_updn
 
-def extract_last_elem(new_dict):
+def extract_up_elem(new_dict):
     """Extracting first element of array  """
 
     collision_updn_for_last = [[], [], [], [], []] # Extracting first element of x and y
@@ -86,7 +86,7 @@ def extract_last_elem(new_dict):
     new_data = [new_data0, new_data1, new_data2]
 
     collision_updn_for_last = new_data.copy()
-    print("extract last element: ", collision_updn_for_last)    
+    # print("extract last element: ", collision_updn_for_last)    
     return collision_updn_for_last
 
 
@@ -202,20 +202,21 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
         new_dict['UPDN'] = new_dict['UP'] + new_dict['DN']
 
         """ Called a func"""
-        collision_updn = extract_first_elem(new_dict)
+        collision_dn_elements = extract_up_elem(new_dict)
 
         """ Called a func"""        
-        collision_updn_for_last = extract_last_elem(new_dict)
+        collision_up_elements = extract_up_elem(new_dict)
 
         """ Called a func"""
-        collision_merged = merging_fist_and_last_element(collision_updn, collision_updn_for_last)
-        # print('merged_func: ', len(collision_merged[0]), len(collision_merged[1]), len(collision_merged[2]))
-        # print('merged_func: ', collision_merged)
+        collision_merged = merging_fist_and_last_element(collision_dn_elements, collision_up_elements)
+
     ########################################## collision text for up and down #################################################\
         
-        collision_text_updn(collision_updn, collision_updn_for_last, collision_merged, new_dict, axes)  
+        collision_text_updn(collision_merged, axes)  
         # collision_text_updn(collision_updn, new_dict)  
 
+        intersection(station_dict, axes, trains_dict)
+    
     plot_labels() 
 ####################################################################################################################
     plt.tight_layout()
