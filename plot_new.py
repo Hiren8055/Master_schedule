@@ -474,7 +474,9 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
                 # try:
                 arr_index = []
                 for i in range(0,len(station_dict[updn]),2):
-                    print(i)
+                    # print(i)
+                    # trains_dict[updn][]
+                    print("station_dict",station_dict[updn][i])
                     inter_arr = intercept_selection_pts(y_target,i, updn)
                     print("inter_arr",inter_arr)
                     if inter_arr == False:
@@ -496,7 +498,8 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
                     inx, iny,_,_ = add_arrow_labels_intercept(inter_plot_arr[i][0],inter_plot_arr[i][1])
                     # print("inx",inx, iny)
                     axes[inx][iny].plot(inter_plot_arr[i][0],inter_plot_arr[i][1], 'o-') # have to automate for all the
-                    axes[inx][iny].text(inter_plot_arr[i][0], inter_plot_arr[i][1] + 1, trains_dict[updn][arr_index[i]], rotation = 'vertical', fontsize=13)  # NOTE: INSIDE IF
+                    print("arr_index[i]//2",arr_index[i],arr_index[i]//2)
+                    axes[inx][iny].text(inter_plot_arr[i][0], inter_plot_arr[i][1] + 1, trains_dict[updn][arr_index[i]//2], rotation = 'vertical', fontsize=13)  # NOTE: INSIDE IF
                     if inx == 1 and iny==0:
                         print("intersection train",inx,iny,trains_dict[updn][i])
                     axes[inx][iny].arrow(inter_plot_arr[i][0], inter_plot_arr[i][1], 0, 0.5, head_width = 0, width = 0.005, clip_on = False)   
