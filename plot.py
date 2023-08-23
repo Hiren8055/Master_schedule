@@ -7,7 +7,7 @@ import matplotlib.transforms as mtransforms
 from collide_labels import collision_text_updn, collision_text_updn1
 from matplotlib.backends.backend_pdf import PdfPages
 global fig, axes
-from intersection imoprt intersection
+from intersection import intersection
 
 def add_lables(new_dict, train_dictionary):
     """Add lables in dictionary"""
