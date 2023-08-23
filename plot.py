@@ -4,8 +4,8 @@ from matplotlib.ticker import MultipleLocator
 from matplotlib.ticker import FixedFormatter
 import copy
 import matplotlib.transforms as mtransforms
-from collide_labels import collision_text_updn
-from intersection import intersection
+from collide_labels import collision_text_updn, collision_text_updn1
+
 def add_lables(new_dict, train_dictionary):
     """Add lables in dictionary"""
     for key in new_dict:
@@ -29,15 +29,19 @@ def add_keys(new_dict):
 def extract_up_elem(new_dict):
     """Extracting first element of array  """
 
-    collision_updn = [[], [], [], [], []] # Extracting first element of x and y
+    """for up start"""
+    collision_updn = [[], [], []] # Extracting first element of x and y
 
     k = 1 
-    for i in range(len(new_dict["UP"]) // 4):
-            collision_updn[0].append(new_dict['UP'][k - 1])
-            if new_dict['UP'][k + 1][-1] >= 24: 
-                collision_updn[1].append(new_dict['UP'][k + 1][-1] - 24)
-            else: 
-                collision_updn[1].append(new_dict['UP'][k + 1][-1])            
+    for i in range(len(new_dict["UP"]) // 4):         
+            # print("length: ", len(new_dict['UP'][k + 1]))
+            # print("y axis", new_dict['UP'][k + 1])
+            # print("last elem", new_dict['UP'][k + 1][0])                                               
+            collision_updn[0].append(new_dict['UP'][k - 1])                                        
+            if new_dict['UP'][k + 1][0] >= 24:                                                        
+                collision_updn[1].append(new_dict['UP'][k + 1][0] - 24)                           
+            else:                                                                                    
+                collision_updn[1].append(new_dict['UP'][k + 1][0])            
             collision_updn[2].append(new_dict['UP'][k][0])
             k += 4
 
@@ -55,15 +59,48 @@ def extract_up_elem(new_dict):
 
     collision_updn = new_data.copy()
 
-    return collision_updn
+    """for up end"""    
 
-def extract_up_elem(new_dict):
+    collision_updn1 = [[], [], []] # Extracting first element of x and y
+
+    k = 1 
+    for i in range(len(new_dict["UP"]) // 4):         
+            # print("length: ", len(new_dict['UP'][k + 1]))
+            # print("y axis", new_dict['UP'][k + 1])
+            # print("last elem", new_dict['UP'][k + 1][0])                                               
+            collision_updn1[0].append(new_dict['UP'][k - 1])                                        
+            if new_dict['UP'][k + 1][-1] >= 24:                                                        
+                collision_updn1[1].append(new_dict['UP'][k + 1][-1] - 24)                           
+            else:                                                                                    
+                collision_updn1[1].append(new_dict['UP'][k + 1][-1])            
+            collision_updn1[2].append(new_dict['UP'][k][-1])
+            k += 4
+
+    new_data = []
+    for i in range(len(collision_updn1[0])):
+        new_data.append([collision_updn1[0][i], collision_updn1[1][i], collision_updn1[2][i],])
+    new_data.sort(key=lambda row: (row[2], row[1]))
+
+    data1 = new_data.copy()
+
+    new_data0 = [data1[i][0] for i in range(len(new_data))]
+    new_data1 = [data1[i][1] for i in range(len(new_data))]
+    new_data2 = [data1[i][2] for i in range(len(new_data))]
+    new_data = [new_data0, new_data1, new_data2]
+
+    collision_updn1 = new_data.copy()
+
+    return collision_updn, collision_updn1    #start, end
+
+def extract_dn_elem(new_dict):
     """Extracting first element of array  """
 
-    collision_updn_for_last = [[], [], [], [], []] # Extracting first element of x and y
+    """for dn end"""
+    collision_updn_for_last = [[], [], []] # Extracting first element of x and y
 
     k = 1 
     for i in range(len(new_dict["DN"]) // 4):
+
             collision_updn_for_last[0].append(new_dict['DN'][k - 1])
             if new_dict['DN'][k + 1][-1] >= 24: 
                 collision_updn_for_last[1].append(new_dict['DN'][k + 1][-1] - 24)
@@ -85,16 +122,44 @@ def extract_up_elem(new_dict):
     new_data2 = [data1[i][2] for i in range(len(new_data))]
     new_data = [new_data0, new_data1, new_data2]
 
-    collision_updn_for_last = new_data.copy()
-    # print("extract last element: ", collision_updn_for_last)    
-    return collision_updn_for_last
+    collision_updn_for_last = new_data.copy()   #down end
+
+    """for dn start"""
+    collision_updn_for_last1 = [[], [], []] # Extracting first element of x and y
+
+    k = 1 
+    for i in range(len(new_dict["DN"]) // 4):
+            collision_updn_for_last1[0].append(new_dict['DN'][k - 1])
+            if new_dict['DN'][k + 1][0] >= 24: 
+                collision_updn_for_last1[1].append(new_dict['DN'][k + 1][0] - 24)
+            else: 
+                collision_updn_for_last1[1].append(new_dict['DN'][k + 1][0])
+                
+            collision_updn_for_last1[2].append(new_dict['DN'][k][0])
+            k += 4
+
+    new_data = []
+    for i in range(len(collision_updn_for_last1[0])):
+        new_data.append([collision_updn_for_last1[0][i], collision_updn_for_last1[1][i], collision_updn_for_last1[2][i]])
+    new_data.sort(key=lambda row: (row[2], row[1]))
+
+    data1 = new_data.copy()
+
+    new_data0 = [data1[i][0] for i in range(len(new_data))]
+    new_data1 = [data1[i][1] for i in range(len(new_data))]
+    new_data2 = [data1[i][2] for i in range(len(new_data))]
+    new_data = [new_data0, new_data1, new_data2]
+
+    collision_updn_for_last1 = new_data.copy()   # down start
+
+    return collision_updn_for_last1, collision_updn_for_last       #start, end
 
 
-def merging_fist_and_last_element(collision_updn, collsion_updn_for_last):
+def merging_up_fist_and_dn_last_element(collision_up, collision_dn):
 
-    collision_merged = [[], [], [], [], []]
-    for i in range(len(collsion_updn_for_last)):
-        collision_merged[i] = collision_updn[i] + collsion_updn_for_last[i]
+    collision_merged = [[], [], []]
+    for i in range(len(collision_dn)):
+        collision_merged[i] = collision_up[i] + collision_dn[i]
 
     new_data = []
     for i in range(len(collision_merged[0])):
@@ -112,6 +177,27 @@ def merging_fist_and_last_element(collision_updn, collsion_updn_for_last):
 
     return collision_merged
 
+def merging_dn_fist_and_up_last_element(collision_up1, collision_dn1):
+
+    collision_merged1 = [[], [], []]
+    for i in range(len(collision_dn1)):
+        collision_merged1[i] = collision_up1[i] + collision_dn1[i]
+
+    new_data = []
+    for i in range(len(collision_merged1[0])):
+        new_data.append([collision_merged1[0][i], collision_merged1[1][i], collision_merged1[2][i]])
+    new_data.sort(key=lambda row: (row[2], row[1]))
+
+    data1 = new_data.copy()
+
+    new_data0 = [data1[i][0] for i in range(len(new_data))]
+    new_data1 = [data1[i][1] for i in range(len(new_data))]
+    new_data2 = [data1[i][2] for i in range(len(new_data))]
+    new_data = [new_data0, new_data1, new_data2]
+
+    collision_merged1 = new_data.copy()
+
+    return collision_merged1
 # Subplot 1: 0-8
 def plot(index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end,xlim_start,xlim_end, axes, station_dict, y_axis):
     axes[index_0][index_1].minorticks_on()
@@ -170,7 +256,6 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
                 arr_2d[i][j] = y_axis.index(arr_2d[i][j])
     dup_train_dict = copy.deepcopy(trains_dict)
 
-
 ######################################################################################################    
     arr1 = [0, 1, 2, 3, 4, 5, 6, 7, 8]
     arr2 = [8, 9, 10, 11, 12, 13, 14, 15, 16]
@@ -202,21 +287,22 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
         new_dict['UPDN'] = new_dict['UP'] + new_dict['DN']
 
         """ Called a func"""
-        collision_dn_elements = extract_up_elem(new_dict)
+        # collision_updn = [[], [], []]
+        collision_up, collision_up1 = extract_up_elem(new_dict)
 
         """ Called a func"""        
-        collision_up_elements = extract_up_elem(new_dict)
+        collision_dn, collision_dn1 = extract_dn_elem(new_dict)
 
         """ Called a func"""
-        collision_merged = merging_fist_and_last_element(collision_dn_elements, collision_up_elements)
+        collision_merged = merging_up_fist_and_dn_last_element(collision_up, collision_dn1)
+
+        """ Called a func"""        
+        collision_merged1 = merging_dn_fist_and_up_last_element(collision_dn, collision_up1)
 
     ########################################## collision text for up and down #################################################\
-        
         collision_text_updn(collision_merged, axes)  
-        # collision_text_updn(collision_updn, new_dict)  
+        collision_text_updn1(collision_merged1, axes)  
 
-        intersection(station_dict, axes, trains_dict)
-    
     plot_labels() 
 ####################################################################################################################
     plt.tight_layout()
@@ -368,4 +454,3 @@ def plot_trains(station_dict, y_axis, y_labes,trains_dict):
     #     k += 3        
 
 # After this collision array is there
-####################################################################################################################
