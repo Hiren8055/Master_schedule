@@ -15,21 +15,42 @@ from plot import plot_trains
 # TODO: HAVE TO PERFORM IT FOR ALL THE COLUMNS IN SHEETS "DOWN"
 # HAVE TO ACCESS ANOTHER SHEET NAMED "UP"
 import re
+from collections import Counter
 
+class DuplicateTrainError(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
+class WrongStationError(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
 
 def excel_to_pandas(filename):
     df_dict = pd.read_excel(filename, sheet_name=['DN', 'UP'], header=None)
+    y_axis = ["CCG","BCT","DDR","BA","BDTS","ADH","BVI","BYR","BSR","NSP","VR","VTN","SAH","KLV","PLG","UOI","BOR","VGN","DRD","GVD","BRRD","UBR","SJN","BLD","KEB","VAPI","BAGD","UVD","PAD","ATUL","BL","DGI","JRS","BIM","AML","ACL","VDH","HXR","GNST","NVS","MRL","SCH","BHET","UDN","ST"]
+    y_labes = ["CCG 0.0","BCT 14.66","DDR 10.17","BA 14.66","BDTS 15.29","ADH 29.32","BVI 33.98","BYR 43.11","BSR 51.78","NSP 55.85","VR 59.98","VTN 68.42","SAH 76.74","KLV 82.55","PLG 90.92","UOI 97.15","BOR 102.8","VGN 111.5","DRD 123.7","GVD 134.8","BRRD 139.0","UBR 144.0","SJN 149.4","BLD 160.9","KEB 165.8","VAPI 172.0","BAGD 179.0","UVD 182.0","PAD 187.7","ATUL 191.0","BL 198.22","DGI 207.21","JRS 212.28","BIM 216.41","AML 221.72","ACL 225.33","VDH 228.87","HXR 232.0","GNST 234.0","NVS 237.33","MRL 245.63","SCH 252.26","BHET 257.3","UDN 262.77","ST 266.78"]    # print(down_up)
     down_up = dict()
     dwn_upp = dict()
     for key, df in df_dict.items():
         df.drop(1, axis=1, inplace=True)
         df.columns = range(df.columns.size)
-        trains_list = df.iloc[0,1:].copy(deep=False)
+        trains_list = df.iloc[0,1:].copy(deep=False).tolist()
+        trains_list = trains_list.tolist()
+        counter = Counter(trains_list)
+        duplicates = [item for item, count in counter.items() if count > 1]
+        if duplicates:
+            raise DuplicateTrainError(f"Following duplicate trains are present in spread sheet: {', '.join(duplicates)}")
         df.drop(0, axis=0, inplace=True)
         df.reset_index(drop=True, inplace=True)
         df.iloc[:, 0].fillna(method="ffill", inplace=True)
         df.iloc[:, 0]= df.iloc[:, 0].str.strip()
         first_column_series = df.iloc[:,0].copy(deep=False).rename(None)
+        wrong_stations = first_column_series.isin(y_axis)
+        if (wrong_stations==False).any():
+            wrong_stations = first_column_series[~wrong_stations].tolist
+            raise WrongStationError(f"The following stations in the excel sheet are wrong:{', '.join(wrong_stations)}.\nPlease use only use from the following station names: {', '.join(y_axis)}.")
         df.set_index(first_column_series,drop = True, inplace=True)
         df.drop(0, axis=1, inplace=True)
         df.columns = range(df.columns.size)
@@ -51,9 +72,7 @@ def excel_to_pandas(filename):
             #TODO: add try and except raise error in panel to user for formating issue
         down_up[key] = list_2d
         dwn_upp[key] = trains_list
-    y_axis = ["CCG","BCT","DDR","BA","BDTS","ADH","BVI","BYR","BSR","NSP","VR","VTN","SAH","KLV","PLG","UOI","BOR","VGN","DRD","GVD","BRRD","UBR","SJN","BLD","KEB","VAPI","BAGD","UVD","PAD","ATUL","BL","DGI","JRS","BIM","AML","ACL","VDH","HXR","GNST","NVS","MRL","SCH","BHET","UDN","ST"]
-    y_labes = ["CCG 0.0","BCT 14.66","DDR 10.17","BA 14.66","BDTS 15.29","ADH 29.32","BVI 33.98","BYR 43.11","BSR 51.78","NSP 55.85","VR 59.98","VTN 68.42","SAH 76.74","KLV 82.55","PLG 90.92","UOI 97.15","BOR 102.8","VGN 111.5","DRD 123.7","GVD 134.8","BRRD 139.0","UBR 144.0","SJN 149.4","BLD 160.9","KEB 165.8","VAPI 172.0","BAGD 179.0","UVD 182.0","PAD 187.7","ATUL 191.0","BL 198.22","DGI 207.21","JRS 212.28","BIM 216.41","AML 221.72","ACL 225.33","VDH 228.87","HXR 232.0","GNST 234.0","NVS 237.33","MRL 245.63","SCH 252.26","BHET 257.3","UDN 262.77","ST 266.78"]    # print(down_up)
-    return down_up,y_axis, y_labes, dwn_upp
+    return down_up,y_axis, y_labes, dwn_upp 
 
 def conversion(station_dict):
     # this wil multiply with ratios for plotting
@@ -137,7 +156,12 @@ def select(down_up):
 
 
 # print("down_up",down_up)
-down_up = conversion(down_up)
+try:
+    down_up = conversion(down_up)
+except DuplicateTrainError as e:
+    print(e)
+except WrongStationError as e:
+    print(e)
 # print("conversion down_up",down_up)
 down_up = add_24_down_up(down_up)
 # print("add_24_down_up down_up",down_up,dwn_upp)
