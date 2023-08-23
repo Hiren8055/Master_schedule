@@ -206,7 +206,7 @@ def plot(index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end
     axes[index_0][index_1].minorticks_on()
 
     # xa_0 = np.linspace(0, 8, 200)
-    xa_0 = np.arange(0, 8, 0.03333)
+    xa_0 = np.arange(xlim_start, xlim_end, 0.03333)
     for key, arr_2d in station_dict.items():
         for i in range(0, len(arr_2d), 2):
             arr_minus = np.array(arr_2d[i+1])
