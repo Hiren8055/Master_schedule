@@ -39,12 +39,14 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
         self.conversion = conversion
         self.add_24_down_up = add_24_down_up
         self.add_arrow_labels = add_arrow_labels
+        self.exact_current_axes = extract_current_axes
         self.merging_dn_fist_and_up_last_element = merging_dn_fist_and_up_last_element
         self.merging_up_fist_and_dn_last_element = merging_up_fist_and_dn_last_element
         self.extract_dn_elem= extract_dn_elem
         self.extract_up_elem = extract_up_elem
         self.add_keys= add_keys
         self.add_lables = add_lables
+
         # labels
         self.figure = Figure(figsize=(10, 50), tight_layout=True)
         self.y_axis = ["CCG","BCT","DDR","BA","BDTS","ADH","BVI","BYR","BSR","NSP","VR","VTN","SAH","KLV","PLG","UOI","BOR","VGN","DRD","GVD","BRRD","UBR","SJN","BLD","KEB","VAPI","BAGD","UVD","PAD","ATUL","BL","DGI","JRS","BIM","AML","ACL","VDH","HXR","GNST","NVS","MRL","SCH","BHET","UDN","ST"]
@@ -97,7 +99,7 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
                 if select_flag:                    
                     down_up, dwn_upp = self.select(down_up, dwn_upp)
                 down_up = self.conversion(down_up)
-                down_up = self.add_24_down_up(down_up)            
+                down_up = self.add_24_down_up(down_up)        
                 self.figure.clear()
                 self.plot_trains(down_up, dwn_upp)
                 self.export_button.setEnabled(True)
