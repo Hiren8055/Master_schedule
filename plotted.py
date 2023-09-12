@@ -26,7 +26,8 @@ class plotted_():
         # self.conversion = conversion
         # self.add_24_down_up = add_24_down_up
         self.add_arrow_labels = add_arrow_labels
-        self.extract_current_axes = extract_current_axes
+        self.extract_current_axes = extract_current_axes_us_de
+        self.extract_current_axes = extract_current_axes_ue_ds
         self.merging_dn_fist_and_up_last_element = merging_dn_fist_and_up_last_element
         self.merging_up_fist_and_dn_last_element = merging_up_fist_and_dn_last_element
         self.extract_dn_elem= extract_dn_elem
@@ -144,6 +145,7 @@ class plotted_():
             collision_merged1 = self.merging_dn_fist_and_up_last_element(collision_dn, collision_up1)
 
 ########################################## collision text for up and down ############################################
+            print('print collision merged us de: ', collision_merged)
 
             def collision_text_updn1(collision_merged1):
                 """ this function takes care of labels up-end and down-start """
@@ -160,11 +162,11 @@ class plotted_():
                     x = collision_merged1[1][i]
                     y = collision_merged1[2][i]
 
-                    if abs(x - previous_x) <= 0.03 and y == previous_y:
+                    if abs(x - previous_x) <= 0.06 and y == previous_y:
                         # print('label is overlapping')
                         label_var = '/'
                         len_of_labels = len(label_)
-                        y_buffer_both_up = y_buffer_both_up + (extract_current_axes(x, y) * len_of_labels) + 1
+                        y_buffer_both_up = y_buffer_both_up + (extract_current_axes_ue_ds(x, y) * len_of_labels) + 1
                         # y_buffer_both_up = y_buffer_both_up + (0.07 * len_of_labels) + 1
                         """y_overlap_both_up is y axis for text which is different in arrows y axis that is original 'y' """
                         y_overlap_both_up = y - y_buffer_both_up 
@@ -182,8 +184,7 @@ class plotted_():
                     previous_x, previous_y = x, y
 
                     k += 3
-
-
+                    
 
             def collision_text_updn( collision_merged):   
                 """ this function takes care of labels up-start and down-end"""
@@ -195,15 +196,15 @@ class plotted_():
                 # original_x = 0
 
                 for i in range(len(collision_merged[0])):
-                    
                     label_ = collision_merged[0][i]
                     x = collision_merged[1][i]
                     y = collision_merged[2][i]
 
-                    if abs(x - previous_x) <= 0.03 and y == previous_y:
+                    # if abs(x - previous_x) <= 0.06 and y == previous_y:
+                    if abs(x - previous_x) <= 0.06 and abs(previous_y - y) <= 2:
                         label_var = '/'
                         len_of_labels = len(label_)
-                        y_buffer_both_up = y_buffer_both_up + (extract_current_axes(x, y) * len_of_labels) + 1.4
+                        y_buffer_both_up = y_buffer_both_up + (extract_current_axes_us_de(x, y) * len_of_labels) + 1.4
                         # y_buffer_both_up = y_buffer_both_up + (0.08 * len_of_labels) + 1.4
                         """y_overlap_both_up is y axis for text which is different in arrows y axis that is 'y' """
                         y_overlap_both_up = y + y_buffer_both_up 
@@ -214,8 +215,6 @@ class plotted_():
 
                     # label = new_dict['UPDN'][k - 1] + label_var
                     label = label_ + label_var
-
-                    # original_x = x
                     inx, iny, x, y = self.add_arrow_labels(x, y)
                     self.axes[inx][iny].text(x - 0.05, y_overlap_both_up + 1.9, label, rotation = 'vertical', fontsize=13)  # NOTE: INSIDE IF
                     self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False)
