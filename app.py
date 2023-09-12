@@ -39,7 +39,8 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
         self.conversion = conversion
         self.add_24_down_up = add_24_down_up
         self.add_arrow_labels = add_arrow_labels
-        self.exact_current_axes = extract_current_axes
+        self.exact_current_axes = extract_current_axes_ue_ds
+        self.exact_current_axes = extract_current_axes_us_de
         self.merging_dn_fist_and_up_last_element = merging_dn_fist_and_up_last_element
         self.merging_up_fist_and_dn_last_element = merging_up_fist_and_dn_last_element
         self.extract_dn_elem= extract_dn_elem
