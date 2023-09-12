@@ -146,7 +146,7 @@ class plotted_():
 ########################################## collision text for up and down ############################################
 
             def collision_text_updn1(collision_merged1):
-                """ this function takes care of labels up-end and down-start"""
+                """ this function takes care of labels up-end and down-start """
                 k = 1
                 previous_x, previous_y= 0, 0
                 label_var = ''
@@ -164,8 +164,8 @@ class plotted_():
                         # print('label is overlapping')
                         label_var = '/'
                         len_of_labels = len(label_)
-                        # y_buffer_both_up = y_buffer_both_up + (extract_current_axes(x, y) * len_of_labels) + 1
-                        y_buffer_both_up = y_buffer_both_up + (0.045 * len_of_labels) + 1
+                        y_buffer_both_up = y_buffer_both_up + (extract_current_axes(x, y) * len_of_labels) + 1
+                        # y_buffer_both_up = y_buffer_both_up + (0.07 * len_of_labels) + 1
                         """y_overlap_both_up is y axis for text which is different in arrows y axis that is original 'y' """
                         y_overlap_both_up = y - y_buffer_both_up 
                     else:
@@ -176,7 +176,7 @@ class plotted_():
                     label = label_var + label_
 
                     inx, iny, x, y = self.add_arrow_labels(x, y)
-                    self.axes[inx][iny].text(x - 0.05, y_overlap_both_up - 0.6, label, rotation = 'vertical', fontsize=13) 
+                    self.axes[inx][iny].text(x - 0.05, y_overlap_both_up - 0.7, label, rotation = 'vertical', fontsize=13) 
                     self.axes[inx][iny].arrow(x, y, 0, - 0.5, width = 0.005, clip_on = False)
 
                     previous_x, previous_y = x, y
@@ -203,8 +203,8 @@ class plotted_():
                     if abs(x - previous_x) <= 0.03 and y == previous_y:
                         label_var = '/'
                         len_of_labels = len(label_)
-                        # y_buffer_both_up = y_buffer_both_up + (extract_current_axes(x, y) * len_of_labels) + 1.4
-                        y_buffer_both_up = y_buffer_both_up + (0.60 * len_of_labels) + 1.4
+                        y_buffer_both_up = y_buffer_both_up + (extract_current_axes(x, y) * len_of_labels) + 1.4
+                        # y_buffer_both_up = y_buffer_both_up + (0.08 * len_of_labels) + 1.4
                         """y_overlap_both_up is y axis for text which is different in arrows y axis that is 'y' """
                         y_overlap_both_up = y + y_buffer_both_up 
                     else:
