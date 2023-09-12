@@ -21,7 +21,6 @@ def add_keys( new_dict):
 
 def extract_up_elem(new_dict):
     """Extracting first element of array  """
-
     """for up start"""
     collision_updn = [[], [], []] # Extracting first element of x and y
 
@@ -192,7 +191,60 @@ def merging_dn_fist_and_up_last_element( collision_up1, collision_dn1):
 
     return collision_merged1
 
-def extract_current_axes(x, y):
+def extract_current_axes_ue_ds(x, y):
+    # for 0, 0
+    if (0 <= x < 8 and 0 <= y <= 11 ) :
+        # print("condition triggered for label")
+        inx = 0;iny = 0  
+    elif (24 <= x <= 32 and 0 <= y <= 11):
+        # print("condition triggered for label MINUSING")
+        inx = 0;iny = 0
+    # for 0, 1
+    elif (8 <= x < 16 and 0 <= y <= 11) :
+        # print("condition triggered for label")
+        inx = 0;iny = 1
+    # for 0, 2
+    elif (16 <= x <= 24 and 0 <= y <= 11) :
+        # print("condition triggered for label")
+        inx = 0;iny = 2
+    # for 1, 0
+    elif (0 <= x < 8 and 11 < y <= 31) :
+        # print("condition triggered for label")
+        inx = 1;iny = 0
+    elif (24 <= x <= 32 and 11 < y <= 31):
+        # print("condition triggered for label MINUSING")
+        inx = 1;iny = 0
+    # for 1, 1
+    elif (8 <= x < 16 and 11 < y <= 31) :
+        # print("condition triggered for label")
+        inx = 1;iny = 1
+    # for 1, 2
+    elif (16 <= x <= 24 and 11 < y <= 31) :
+        # print("condition triggered for label")
+        inx = 1;iny = 2
+    # for 2, 0
+    elif (0 <= x < 8 and 31 < y <= 45) :
+        # print("condition triggered for label")
+        inx = 2;iny = 0
+    elif (24 <= x <= 32 and 31 < y <= 45):
+        # print("condition triggered for label MINUSING")
+        inx = 2;iny = 0
+    # for 2, 1
+    elif (8 <= x < 16 and 31 < y <= 45) :
+        # print("condition triggered for label")
+        inx = 2;iny = 1
+    # for 2, 2
+    elif (16 <= x <= 24 and 31 < y <= 45) :
+        # print("condition triggered for label")
+        inx = 2;iny = 2 
+
+    if inx == 0:
+        return 0.07
+    elif inx == 1 or inx == 2:
+        return 0.14
+    
+
+def extract_current_axes_us_de(x, y):
     # for 0, 0
     if (0 <= x < 8 and 0 <= y <= 11 ) :
         # print("condition triggered for label")
@@ -243,6 +295,7 @@ def extract_current_axes(x, y):
         return 0.07
     elif inx == 1 or inx == 2:
         return 0.08
+
 
 
 
