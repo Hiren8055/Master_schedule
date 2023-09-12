@@ -240,9 +240,9 @@ def extract_current_axes(x, y):
         inx = 2;iny = 2 
 
     if inx == 0:
-        return 0.045
+        return 0.07
     elif inx == 1 or inx == 2:
-        return 0.13
+        return 0.08
 
 
 
