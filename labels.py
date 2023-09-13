@@ -239,9 +239,9 @@ def extract_current_axes_ue_ds(x, y):
         inx = 2;iny = 2 
 
     if inx == 0:
-        return 0.07
+        return 0.24
     elif inx == 1 or inx == 2:
-        return 0.14
+        return 0.33
     
 
 def extract_current_axes_us_de(x, y):
@@ -292,9 +292,9 @@ def extract_current_axes_us_de(x, y):
         inx = 2;iny = 2 
 
     if inx == 0:
-        return 0.07
+        return 0.33
     elif inx == 1 or inx == 2:
-        return 0.08
+        return 0.33
 
 
 
