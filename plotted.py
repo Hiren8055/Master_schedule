@@ -146,6 +146,8 @@ class plotted_():
 
 ########################################## collision text for up and down ############################################
             print('print collision merged us de: ', collision_merged)
+            print()
+            print('print collision merged ue ds: ', collision_merged1)
 
             def collision_text_updn1(collision_merged1):
                 """ this function takes care of labels up-end and down-start """
@@ -178,7 +180,7 @@ class plotted_():
                     label = label_var + label_
 
                     inx, iny, x, y = self.add_arrow_labels(x, y)
-                    self.axes[inx][iny].text(x - 0.05, y_overlap_both_up - 0.7, label, rotation = 'vertical', fontsize=13) 
+                    self.axes[inx][iny].text(x - 0.03, y_overlap_both_up - 0.6, label, rotation = 'vertical', fontsize=8) 
                     self.axes[inx][iny].arrow(x, y, 0, - 0.5, width = 0.005, clip_on = False)
 
                     previous_x, previous_y = x, y
@@ -216,7 +218,7 @@ class plotted_():
                     # label = new_dict['UPDN'][k - 1] + label_var
                     label = label_ + label_var
                     inx, iny, x, y = self.add_arrow_labels(x, y)
-                    self.axes[inx][iny].text(x - 0.05, y_overlap_both_up + 1.9, label, rotation = 'vertical', fontsize=13)  # NOTE: INSIDE IF
+                    self.axes[inx][iny].text(x - 0.03, y_overlap_both_up  + 1.3, label, rotation = 'vertical', fontsize=8)  # NOTE: INSIDE IF
                     self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False)
                     previous_x, previous_y = x, y
                     k += 3
