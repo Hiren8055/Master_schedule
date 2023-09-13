@@ -166,7 +166,7 @@ class plotted_():
                         # print('label is overlapping')
                         label_var = '/'
                         len_of_labels = len(label_)
-                        y_buffer_both_up = y_buffer_both_up + (extract_current_axes_ue_ds(x, y) * len_of_labels) + 1
+                        y_buffer_both_up = y_buffer_both_up + (extract_current_axes_ue_ds(x, y) * len_of_labels) 
                         # y_buffer_both_up = y_buffer_both_up + (0.07 * len_of_labels) + 1
                         """y_overlap_both_up is y axis for text which is different in arrows y axis that is original 'y' """
                         y_overlap_both_up = y - y_buffer_both_up 
@@ -200,11 +200,11 @@ class plotted_():
                     x = collision_merged[1][i]
                     y = collision_merged[2][i]
 
-                    # if abs(x - previous_x) <= 0.06 and y == previous_y:
-                    if abs(x - previous_x) <= 0.06 and abs(previous_y - y) <= 2:
+                    if abs(x - previous_x) <= 0.06 and y == previous_y:
+                    # if abs(x - previous_x) <= 0.06 and previous_y - y:
                         label_var = '/'
                         len_of_labels = len(label_)
-                        y_buffer_both_up = y_buffer_both_up + (extract_current_axes_us_de(x, y) * len_of_labels) + 1.4
+                        y_buffer_both_up = y_buffer_both_up + (extract_current_axes_us_de(x, y) * len_of_labels) 
                         # y_buffer_both_up = y_buffer_both_up + (0.08 * len_of_labels) + 1.4
                         """y_overlap_both_up is y axis for text which is different in arrows y axis that is 'y' """
                         y_overlap_both_up = y + y_buffer_both_up 
