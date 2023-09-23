@@ -163,8 +163,7 @@ class plotted_():
             """ Called a func to add keys in dictionary"""
             new_dict = self.add_keys(new_dict)
             
-            new_dict['UPDN'] = new_dict['UP'] + new_dict['DN']
-
+            new_dict['UPDN'] = new_dict['UP'] + new_dict['DN']               #format: "DN": 'label', '[y]', '[x]', key..... "UP": 'label', '[y]', '[x]', key
             """ Called a func that extract up start and up end elements"""
             upStart, upEnd = self.extract_up_elem(new_dict)  
 
@@ -177,12 +176,6 @@ class plotted_():
             """ Called a func that colab dn start and up end elements"""        
             upEnd_dnStart = self.merge_elements(dnStart, upEnd)
 
-            """ Called a func that colab up start and up end elements for arrows """
-            upStart_upEnd = self.merge_elements(upStart, upEnd)
-
-            """ Called a func that colab dn start and dn end elements for arrows """
-            dnStart_dnEnd = self.merge_elements(dnStart, dnEnd)
-
 ########################################## collision text for up and down #################################################\
             
             def upEnd_dnStart_label(upEnd_dnStart):
@@ -193,6 +186,7 @@ class plotted_():
                 label_var = ''
                 final_y = 0
                 y_buffer = 0
+                arrow_label_buffer = 0
 
                 for i in range(len(upEnd_dnStart[0])):
                     self.canvas.flush_events()
@@ -200,10 +194,12 @@ class plotted_():
                     label_ = upEnd_dnStart[0][i]
                     x = upEnd_dnStart[1][i]
                     y = upEnd_dnStart[2][i]
-                    if abs(x - previous_x) <=0.03 and y == previous_y:
+                    key = upEnd_dnStart[3][i]
+                    arrow_plot_buffer, arrow_label_buffer, slash_buffer = extract_current_axes_ue_ds(x, y)
+
+                    if abs(x - previous_x) <= 0.03 and y == previous_y:
                         label_var = '/'
                         len_of_labels = len(label_)
-                        slash_buffer = extract_current_axes_ue_ds(x, y)
                         y_buffer = y_buffer + (slash_buffer * len_of_labels) 
                         final_y = y - y_buffer 
                     else:
@@ -214,8 +210,11 @@ class plotted_():
                     label = label_var + label_
 
                     inx, iny, x, y = self.add_arrow_labels(x, y)
-                    self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y - 0.9, label, rotation = 'vertical', fontsize=8,picker=True))
-                    self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, - 0.5, width = 0.005, clip_on = False))
+                    self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y - arrow_label_buffer, label, rotation = 'vertical', fontsize=8,picker=True))
+                    if key == 'UP':
+                        self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, - 0.5, width = 0.005, clip_on = False))
+                    else: 
+                        self.artist_list.append(self.axes[inx][iny].arrow(x, y - arrow_plot_buffer, 0, 0.5, width = 0.005, clip_on = False))
                     previous_x, previous_y = x, y
                     k += 3
 
@@ -227,17 +226,19 @@ class plotted_():
                 label_var = ''
                 final_y = 0
                 y_buffer = 0
+                arrow_label_buffer = 0
                 self.canvas.flush_events()
 
                 for i in range(len(upStart_dnEnd[0])):
                     label_ = upStart_dnEnd[0][i]
                     x = upStart_dnEnd[1][i]
                     y = upStart_dnEnd[2][i]
-
+                    key = upStart_dnEnd[3][i]
+                    arrow_plot_buffer, arrow_label_buffer, slash_buffer = extract_current_axes_us_de(x, y)
                     if abs(x - previous_x) <= 0.03 and y == previous_y:
                         label_var = '/'
                         len_of_labels = len(label_)
-                        y_buffer = y_buffer + (extract_current_axes_us_de(x, y) * len_of_labels) 
+                        y_buffer = y_buffer + (slash_buffer * len_of_labels) 
                         final_y = y + y_buffer 
                     else:
                         label_var = ''
@@ -248,14 +249,17 @@ class plotted_():
 
                     inx, iny, x, y = self.add_arrow_labels(x, y)
                     self.canvas.flush_events()
-                    self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + 1.4, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
-                    self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+                    self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                    if key == 'UP':
+                        self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                    else:
+                        self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
                     previous_x, previous_y = x, y
                     k += 3
         
             upStart_dnEnd_label(upStart_dnEnd)  
             upEnd_dnStart_label(upEnd_dnStart)
             
-            self.intersection(station_dict, trains_dict)
+            # self.intersection(station_dict, trains_dict)
         plot_labels()
         self.canvas.draw()
