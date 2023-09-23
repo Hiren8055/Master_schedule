@@ -24,21 +24,22 @@ def add_keys( new_dict):
 def extract_up_elem(new_dict):
 
     """for up start"""
-    upStart = [[], [], []] # Extracting first element of x and y
+    upStart = [[], [], [], []] # Extracting first element of x and y
 
     k = 1 
     for i in range(len(new_dict["UP"]) // 4):    
-        upStart[0].append(new_dict['UP'][k - 1])                                        
+        upStart[0].append(new_dict['UP'][k - 1])                   #append label                                
         if new_dict['UP'][k + 1][0] >= 24:                                                        
-            upStart[1].append(new_dict['UP'][k + 1][0] - 24)                           
+            upStart[1].append(new_dict['UP'][k + 1][0] - 24)       #append x                       
         else:                                                                                    
-            upStart[1].append(new_dict['UP'][k + 1][0])            
-        upStart[2].append(new_dict['UP'][k][0])
+            upStart[1].append(new_dict['UP'][k + 1][0])            #append x    
+        upStart[2].append(new_dict['UP'][k][0])                    #append y3
+        upStart[3].append(new_dict['UP'][k + 2])                   #append keys
         k += 4
 
     new_data = []
     for i in range(len(upStart[0])):
-        new_data.append([upStart[0][i], upStart[1][i], upStart[2][i],])
+        new_data.append([upStart[0][i], upStart[1][i], upStart[2][i], upStart[3][i]])
     new_data.sort(key=lambda row: (row[2], row[1]))
 
     data1 = new_data.copy()
@@ -46,26 +47,28 @@ def extract_up_elem(new_dict):
     new_data0 = [data1[i][0] for i in range(len(new_data))]
     new_data1 = [data1[i][1] for i in range(len(new_data))]
     new_data2 = [data1[i][2] for i in range(len(new_data))]
-    new_data = [new_data0, new_data1, new_data2]
+    new_data3 = [data1[i][3] for i in range(len(new_data))]
+    new_data = [new_data0, new_data1, new_data2, new_data3]
 
     upStart = new_data.copy()
 
     """for up end"""    
-    upEnd = [[], [], []] # Extracting first element of x and y
+    upEnd = [[], [], [], []] # Extracting first element of x and y
 
     k = 1 
     for i in range(len(new_dict["UP"]) // 4):                                                      
-            upEnd[0].append(new_dict['UP'][k - 1])                                        
+            upEnd[0].append(new_dict['UP'][k - 1])                   #append label                              
             if new_dict['UP'][k + 1][-1] >= 24:                                                        
-                upEnd[1].append(new_dict['UP'][k + 1][-1] - 24)                           
+                upEnd[1].append(new_dict['UP'][k + 1][-1] - 24)      #append x                     
             else:                                                                                    
-                upEnd[1].append(new_dict['UP'][k + 1][-1])            
-            upEnd[2].append(new_dict['UP'][k][-1])
+                upEnd[1].append(new_dict['UP'][k + 1][-1])           #append x  
+            upEnd[2].append(new_dict['UP'][k][-1])                   #append y
+            upEnd[3].append(new_dict['UP'][k + 2])               #append keys
             k += 4
 
     new_data = []
     for i in range(len(upEnd[0])):
-        new_data.append([upEnd[0][i], upEnd[1][i], upEnd[2][i],])
+        new_data.append([upEnd[0][i], upEnd[1][i], upEnd[2][i],upEnd[3][i]])
     new_data.sort(key=lambda row: (row[2], row[1]))
 
     data1 = new_data.copy()
@@ -73,7 +76,8 @@ def extract_up_elem(new_dict):
     new_data0 = [data1[i][0] for i in range(len(new_data))]
     new_data1 = [data1[i][1] for i in range(len(new_data))]
     new_data2 = [data1[i][2] for i in range(len(new_data))]
-    new_data = [new_data0, new_data1, new_data2]
+    new_data3 = [data1[i][3] for i in range(len(new_data))]
+    new_data = [new_data0, new_data1, new_data2, new_data3]
 
     upEnd = new_data.copy()
 
@@ -82,21 +86,22 @@ def extract_up_elem(new_dict):
 def extract_dn_elem(new_dict):
 
     """for dn end"""
-    dnEnd = [[], [], []] # Extracting first element of x and y
+    dnEnd = [[], [], [], []] # Extracting first element of x and y
     k = 1 
     for i in range(len(new_dict["DN"]) // 4):
 
-            dnEnd[0].append(new_dict['DN'][k - 1])
+            dnEnd[0].append(new_dict['DN'][k - 1])                   #append label    
             if new_dict['DN'][k + 1][-1] >= 24: 
-                dnEnd[1].append(new_dict['DN'][k + 1][-1] - 24)
+                dnEnd[1].append(new_dict['DN'][k + 1][-1] - 24)      #append x
             else: 
-                dnEnd[1].append(new_dict['DN'][k + 1][-1])
-            dnEnd[2].append(new_dict['DN'][k][-1])
+                dnEnd[1].append(new_dict['DN'][k + 1][-1])           #append x
+            dnEnd[2].append(new_dict['DN'][k][-1])                   #append y
+            dnEnd[3].append(new_dict['DN'][k + 2])                   #append keys
             k += 4
 
     new_data = []
     for i in range(len(dnEnd[0])):
-        new_data.append([dnEnd[0][i], dnEnd[1][i], dnEnd[2][i]])
+        new_data.append([dnEnd[0][i], dnEnd[1][i], dnEnd[2][i], dnEnd[3][i]])
     new_data.sort(key=lambda row: (row[2], row[1]))
 
     data1 = new_data.copy()
@@ -104,27 +109,28 @@ def extract_dn_elem(new_dict):
     new_data0 = [data1[i][0] for i in range(len(new_data))]
     new_data1 = [data1[i][1] for i in range(len(new_data))]
     new_data2 = [data1[i][2] for i in range(len(new_data))]
-    new_data = [new_data0, new_data1, new_data2]
+    new_data3 = [data1[i][3] for i in range(len(new_data))]
+    new_data = [new_data0, new_data1, new_data2, new_data3]
 
     dnEnd = new_data.copy()   #down end
 
     """for dn start"""
-    dnStart = [[], [], []] # Extracting first element of x and y
+    dnStart = [[], [], [], []] # Extracting first element of x and y
 
     k = 1 
     for i in range(len(new_dict["DN"]) // 4):
-            dnStart[0].append(new_dict['DN'][k - 1])
+            dnStart[0].append(new_dict['DN'][k - 1])                #append label  
             if new_dict['DN'][k + 1][0] >= 24: 
-                dnStart[1].append(new_dict['DN'][k + 1][0] - 24)
+                dnStart[1].append(new_dict['DN'][k + 1][0] - 24)    #append x
             else: 
-                dnStart[1].append(new_dict['DN'][k + 1][0])
-                
-            dnStart[2].append(new_dict['DN'][k][0])
+                dnStart[1].append(new_dict['DN'][k + 1][0])         #append x
+            dnStart[2].append(new_dict['DN'][k][0])                 #append y
+            dnStart[3].append(new_dict['DN'][k + 2])                #append y
             k += 4
 
     new_data = []
     for i in range(len(dnStart[0])):
-        new_data.append([dnStart[0][i], dnStart[1][i], dnStart[2][i]])
+        new_data.append([dnStart[0][i], dnStart[1][i], dnStart[2][i], dnStart[3][i]])
     new_data.sort(key=lambda row: (row[2], row[1]))
 
     data1 = new_data.copy()
@@ -132,7 +138,8 @@ def extract_dn_elem(new_dict):
     new_data0 = [data1[i][0] for i in range(len(new_data))]
     new_data1 = [data1[i][1] for i in range(len(new_data))]
     new_data2 = [data1[i][2] for i in range(len(new_data))]
-    new_data = [new_data0, new_data1, new_data2]
+    new_data3 = [data1[i][3] for i in range(len(new_data))]
+    new_data = [new_data0, new_data1, new_data2, new_data3]
 
     dnStart = new_data.copy() 
 
@@ -141,13 +148,13 @@ def extract_dn_elem(new_dict):
 
 def merge_elements(collision_up, collision_dn):
 
-    collision_merged = [[], [], []]
+    collision_merged = [[], [], [], []]
     for i in range(len(collision_dn)):
         collision_merged[i] = collision_up[i] + collision_dn[i]
 
     new_data = []
     for i in range(len(collision_merged[0])):
-        new_data.append([collision_merged[0][i], collision_merged[1][i], collision_merged[2][i]])
+        new_data.append([collision_merged[0][i], collision_merged[1][i], collision_merged[2][i], collision_merged[3][i]])
     new_data.sort(key=lambda row: (row[2], row[1]))
 
     data1 = new_data.copy()
@@ -155,18 +162,12 @@ def merge_elements(collision_up, collision_dn):
     new_data0 = [data1[i][0] for i in range(len(new_data))]
     new_data1 = [data1[i][1] for i in range(len(new_data))]
     new_data2 = [data1[i][2] for i in range(len(new_data))]
-    new_data = [new_data0, new_data1, new_data2]
+    new_data3 = [data1[i][3] for i in range(len(new_data))]
+    new_data = [new_data0, new_data1, new_data2, new_data3]
 
     collision_merged = new_data.copy()
 
     return collision_merged
-
-# def plot_arrow(axes, upStart_upEnd, dnStart_dnEnd):
-#     for i in range(len(upStart_upEnd[0])):
-#         x = upStart_upEnd[1][i]
-#         y = upStart_upEnd[2][i]
-#         inx, iny, x, y = add_arrow_labels(x, y)
-#         artist_list.append(axes[inx][iny].arrow(x, y, 0, - 0.5, width = 0.005, clip_on = False))
 
 def extract_current_axes_ue_ds(x, y):
     if (0 <= x < 8 and 0 <= y <= 29 ) :
@@ -215,11 +216,11 @@ def extract_current_axes_ue_ds(x, y):
         inx = 2;iny = 2 
 
     if inx == 0:
-        return 0.43
+        return 0.6, 0.9, 0.33
     elif inx == 1:
-        return 0.18
+        return 0.6, 0.7, 0.16
     elif inx == 2:
-        return 0.22
+        return 0.6, 0.7, 0.09
     
 
 def extract_current_axes_us_de(x, y):
@@ -269,13 +270,12 @@ def extract_current_axes_us_de(x, y):
         inx = 2;iny = 2 
 
     if inx == 0:
-        return 0.48
+        return 0.6, 2.2, 0.4
     elif inx == 1:
-        return 0.18
+        return 0.6, 1.8, 0.18
     elif inx == 2:
-        return 0.21
-
-
+        return 0.6, 1.3, 0.18
+    
 
 def add_arrow_labels(x, y):
     inx, iny = 0, 0   #NOTE: not necessary
@@ -470,10 +470,7 @@ def intersection(station_dict, axes, trains_dict, artist_list):
                 inter_plot_arr.append([x_target, y_target])
                 arr_index.append(i)
                 
-        # print(len(inter_plot_arr),len(arr_index)) 
-        # print(arr_index)      
-        # print(trains_dict)
-        print(len(trains_dict["UP"]))
+
         for i in range(len(inter_plot_arr)):
             inx, iny,_,_ = add_arrow_labels_intercept(inter_plot_arr[i][0],inter_plot_arr[i][1])
             # print("inx",inx, iny)
