@@ -155,8 +155,13 @@ class plotted_():
         self.plot(2,2,arr3,49,64,    0,19,        16,24,  color_dict,  station_dict, rect_dict)
 
         def plot_labels():
-            new_dict = copy.deepcopy(station_dict)
 
+            # up_intersecting_trains = self.intersection(station_dict, trains_dict)
+            # Sort the direction of arrows and labels
+            # To get the whether the train is up and down have to bring the parameter for up and down
+            up_inter, dn_inter = self.intersection(station_dict, trains_dict)
+
+            new_dict = copy.deepcopy(station_dict)
             """ Called a func to add lebels in dictionary"""
             new_dict = self.add_lables(new_dict, trains_dict)
             
@@ -165,10 +170,10 @@ class plotted_():
             
             new_dict['UPDN'] = new_dict['UP'] + new_dict['DN']               #format: "DN": 'label', '[y]', '[x]', key..... "UP": 'label', '[y]', '[x]', key
             """ Called a func that extract up start and up end elements"""
-            upStart, upEnd = self.extract_up_elem(new_dict)  
+            upStart, upEnd = self.extract_up_elem(new_dict,up_inter)  
 
             """ Called a func that extract dn start and dn end elements"""        
-            dnStart, dnEnd = self.extract_dn_elem(new_dict)
+            dnStart, dnEnd = self.extract_dn_elem(new_dict,dn_inter)
 
             """ Called a func that colab up start and dn end elements"""
             upStart_dnEnd = self.merge_elements(upStart, dnEnd)
@@ -260,6 +265,7 @@ class plotted_():
             upStart_dnEnd_label(upStart_dnEnd)  
             upEnd_dnStart_label(upEnd_dnStart)
             
-            # self.intersection(station_dict, trains_dict)
+            # up_inter, dn_inter = self.intersection(station_dict, trains_dict)
+            # print("intersection",up_inter, dn_inter)
         plot_labels()
         self.canvas.draw()

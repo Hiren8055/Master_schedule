@@ -38,6 +38,10 @@ class BoxColumnLengthError(Exception):
         super().__init__(self.message)  
 
 def excel_to_pandas(filename,y_axis):
+    """
+    return
+    down_up: dict containing all stations and hault timings {'DN':[[station_name],[timings]], 'UP':[[station_name],[timings]]}
+    dwn_upp: list with all train number (trains)"""
     df_dict = pd.read_excel(filename, sheet_name=None, header=None, dtype = "object")
     bx_dict = dict()
     rect_dict = dict()
@@ -152,6 +156,7 @@ def excel_to_pandas(filename,y_axis):
         down_up[key] = list_2d
         dwn_upp[key] = trains_list
         color_dict[key] = color_list
+        print("train",down_up)
     return down_up, dwn_upp, color_dict, rect_dict
 
 def select( down_up,dwn_upp):
