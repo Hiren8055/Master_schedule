@@ -20,7 +20,7 @@ from Draggable import dragged
 
 class ExportWorker(QObject):
     update_signal = Signal(int)
-    new_fig = Figure(figsize=(10, 50), tight_layout=True)
+    new_fig = Figure(figsize=(100, 500), tight_layout=True)
     def __init__(self, file_name, canvas):
         super().__init__()
         self.file_name = file_name
@@ -30,6 +30,7 @@ class ExportWorker(QObject):
     def run(self):
         print("I am running")
         try:
+            self.figure.subplots_adjust(hspace=1.4)
             axes = self.figure.axes
             extent = [ax.get_tightbbox().transformed(self.figure.dpi_scale_trans.inverted()) for ax in axes]
             # print(extent)
@@ -44,6 +45,7 @@ class ExportWorker(QObject):
                     print(f"i:{i}, bbox:{bbox}")
                     pdf.savefig(self.figure, bbox_inches=bbox, pad_inches=1)
                     self.update_signal.emit(i)
+            self.figure.subplots_adjust(left = 0.017, hspace=0.8)
         except Exception as e:
                 print(f"Error raised: {e}")
 
@@ -58,7 +60,8 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
         self.add_24_down_up = add_24_down_up
         self.box_add_24 = box_add_24
         self.add_arrow_labels = add_arrow_labels
-        self.merge_elements = merge_elements
+        self.merging_dn_fist_and_up_last_element = merging_dn_fist_and_up_last_element
+        self.merging_up_fist_and_dn_last_element = merging_up_fist_and_dn_last_element
         self.extract_dn_elem= extract_dn_elem
         self.extract_up_elem = extract_up_elem
         self.add_keys= add_keys
@@ -86,8 +89,8 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
         self.layout.addWidget(self.toolbar)
         self.layout.addWidget(self.button)  
         self.layout.addWidget(self.export_button)
-        self.canvas.setMinimumSize(5500, 2500)
-        self.canvas.setMaximumSize(5501, 2501)
+        self.canvas.setMinimumSize(6500, 3500)
+        self.canvas.setMaximumSize(6501, 3501)
         self.bm = None
         self.artist_list = []
         self.pl = plotted_(self.figure,self.y_axis,self.y_labes, self.canvas, self.layout,self.export_button,self.axes, self.scroll_area, self.toolbar)
