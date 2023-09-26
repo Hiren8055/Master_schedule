@@ -58,8 +58,7 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
         self.add_24_down_up = add_24_down_up
         self.box_add_24 = box_add_24
         self.add_arrow_labels = add_arrow_labels
-        self.merging_dn_fist_and_up_last_element = merging_dn_fist_and_up_last_element
-        self.merging_up_fist_and_dn_last_element = merging_up_fist_and_dn_last_element
+        self.merge_elements = merge_elements
         self.extract_dn_elem= extract_dn_elem
         self.extract_up_elem = extract_up_elem
         self.add_keys= add_keys

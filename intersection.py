@@ -34,7 +34,7 @@ def intersection(self, station_dict, trains_dict):
                     x,y =  arr[1][i], target
             return x,y
         
-        
+        max_station = max(station_dict[updn][index+1])
         # find the 10 if not then look for 9 and 11
         tenth_x, tenth_y = find(station_dict[updn][index],station_dict[updn][index+1],y_target)
         # print(tenth_x, tenth_y)
@@ -65,10 +65,11 @@ def intersection(self, station_dict, trains_dict):
     def intercept(y_target, x ,y):
         '''finds the intercept of line'''
         # find the points for intersection
-        print("intercept",y_target,x,y)
+        # print("intercept",y_target,x,y)
         x_target = np.interp(y_target,x,y)
         # print("The x-value for y = 18 virar is:", x_target)
         return x_target, y_target
+
 
     def add_arrow_labels_intercept(x, y):
         # can optimize by loop or funciton
@@ -132,10 +133,14 @@ def intersection(self, station_dict, trains_dict):
         # print(len(station_dict))
         # updn = "UP"
         
+        # logic is for plotting up train on down of 2nd axes that is on BL
+        # and down train on VR
         if updn == "UP":
             y_target = 49
         elif updn == "DN":
-            y_target = 30
+            y_target = 29
+        # elif updn == "DN":
+        #     y_target = 49
         # try:
         '''first loop is for find the point'''
         arr_index = []
@@ -159,10 +164,14 @@ def intersection(self, station_dict, trains_dict):
                 inter_plot_arr.append([x_target, y_target])
                 arr_index.append(i)
         
+        # logic is for plotting up train on 2nd axes on VR
+        # and down train on BL
+        # this was add to make a all the train appear on both VR and BL station irrespective of the up and dn direction
+        
         if updn == "DN":
             y_target = 49
         elif updn == "UP":
-            y_target = 30
+            y_target = 29
 
         for i in range(0,len(station_dict[updn]),2):
             # print(i)
@@ -181,53 +190,56 @@ def intersection(self, station_dict, trains_dict):
                 inter_plot_arr.append([x_target, y_target])
                 arr_index.append(i)
 
-        stations_for_intersection = [29,50]        
-        for j in range(len(stations_for_intersection)):
-            y_target = stations_for_intersection[j]
-            for i in range(0,len(station_dict[updn]),2):
-                # print(i)
-                # trains_dict[updn][]
-                # print("station_dict",station_dict[updn][i])
-                inter_arr = intercept_selection_pts(y_target,i, updn)
+        # stations_for_intersection = [29,50]        
+        # for j in range(len(stations_for_intersection)):
+        #     y_target = stations_for_intersection[j]
+        #     for i in range(0,len(station_dict[updn]),2):
+        #         # print(i)
+        #         # trains_dict[updn][]
+        #         # print("station_dict",station_dict[updn][i])
+        #         inter_arr = intercept_selection_pts(y_target,i, updn)
                 
-                if inter_arr == False:
-                    continue    
-                elif inter_arr[1]!=y_target:
-                    x_target, y_target = intercept(y_target, inter_arr[0] ,inter_arr[1])
-                    inter_plot_arr.append([x_target, y_target])
-                    arr_index.append(i)
-                else:
-                    x_target, y_target = inter_arr[0], inter_arr[1]
-                    inter_plot_arr.append([x_target, y_target])
-                    arr_index.append(i)
+        #         if inter_arr == False:
+        #             continue    
+        #         elif inter_arr[1]!=y_target:
+        #             x_target, y_target = intercept(y_target, inter_arr[0] ,inter_arr[1])
+        #             inter_plot_arr.append([x_target, y_target])
+        #             arr_index.append(i)
+        #         else:
+        #             x_target, y_target = inter_arr[0], inter_arr[1]
+        #             inter_plot_arr.append([x_target, y_target])
+        #             arr_index.append(i)
+
+
+
         # print(len(inter_plot_arr),len(arr_index)) 
         # print(arr_index)      
         # print(trains_dict)
         # print(len(trains_dict["UP"]))
         '''second loop is for drawing the points stored in inter_plot_arr'''                
         # need to dicrimate up and below arrow
+        print(len(trains_dict["UP"]))
+        intersection_trains =[[],[],[],[]]
         bufy = 1.8
         for i in range(len(inter_plot_arr)):
             inx, iny,_,_ = add_arrow_labels_intercept(inter_plot_arr[i][0],inter_plot_arr[i][1])
-            # print("inx",inx, iny)
-            # axes[inx][iny].plot(inter_plot_arr[i][0],inter_plot_arr[i][1], 'o-') # have to automate for all the
-            # print("arr_index[i]//2",arr_index[i],arr_index[i]//2)
-            artist_list.append(axes[inx][iny].text(inter_plot_arr[i][0], inter_plot_arr[i][1] + bufy, trains_dict[updn][arr_index[i]//2], rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
-            print(inter_plot_arr[i][0], inter_plot_arr[i][1] + bufy, trains_dict[updn][arr_index[i]//2],end="\n")
-            # if inx == 1 and iny==0:
-                # print("intersection train",inx,iny,trains_dict[updn][i])
-            artist_list.append(axes[inx][iny].arrow(inter_plot_arr[i][0], inter_plot_arr[i][1], 0, 0.5, head_width = 0, width = 0.005, clip_on = False))
-        # except:
-            # print("there should only two present in excel up and down")
-        return inter_plot_arr
+            intersection_trains[0].append(trains_dict[updn][arr_index[i]//2])
+            intersection_trains[1].append(inter_plot_arr[i][0])
+            intersection_trains[2].append(inter_plot_arr[i][1])
+            intersection_trains[3].append(updn)
+            # intersection_trains.append(inter_plot_arr[i][0], inter_plot_arr[i][1],trains_dict[updn][arr_index[i]//2])
+
+            # artist_list.append(axes[inx][iny].text(inter_plot_arr[i][0], inter_plot_arr[i][1] + bufy, trains_dict[updn][arr_index[i]//2], rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+            
+            # artist_list.append(axes[inx][iny].arrow(inter_plot_arr[i][0], inter_plot_arr[i][1], 0, 0.5, head_width = 0, width = 0.005, clip_on = False))
+            
+        print(intersection_trains)
+        return intersection_trains
     # will have a intersection array for down and up
     # def intercept_plot(inter_plot_arr):
 
-    intercept_pts("UP")
-    intercept_pts("DN")
-    # inter_plot_arr = inter_plot_arr_up+inter_plot_arr_dn
-    # print("inter_plot_arr",inter_plot_arr)
-    # intercept_plot(inter_plot_arr) 
-
-# solve the 24 issue 
-# add labels for both the side
+    up_intersecting_points = intercept_pts("UP")
+    down_intersecting_points = intercept_pts("DN")
+    return up_intersecting_points, down_intersecting_points
+    # Pass output list 
+    # Need to know where train is going up or down

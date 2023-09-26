@@ -38,6 +38,10 @@ class BoxColumnLengthError(Exception):
         super().__init__(self.message)  
 
 def excel_to_pandas(filename,y_axis):
+    """
+    return
+    down_up: dict containing all stations and hault timings {'DN':[[station_name],[timings]], 'UP':[[station_name],[timings]]}
+    dwn_upp: list with all train number (trains)"""
     df_dict = pd.read_excel(filename, sheet_name=None, header=None, dtype = "object")
     bx_dict = dict()
     rect_dict = dict()
@@ -152,9 +156,10 @@ def excel_to_pandas(filename,y_axis):
         down_up[key] = list_2d
         dwn_upp[key] = trains_list
         color_dict[key] = color_list
+        print("train",down_up)
     return down_up, dwn_upp, color_dict, rect_dict
 
-def select(down_up,dwn_upp):
+def select( down_up,dwn_upp):
 
     new_dict = {"DN":[],"UP":[]}
 
@@ -171,7 +176,7 @@ def select(down_up,dwn_upp):
         # print(down_up[sheet][i][0].split(":")[0])
         # print(dwn_upp[sheet][1])
         # if (22 < int(down_up[sheet][i][0][1:3]) < 27):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
-        if (8 <= int(down_up[sheet][i][0].split(":")[0]) <= 24):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
+        if (16 <= int(down_up[sheet][i][0].split(":")[0]) <=24):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
         # print(dwn)
             # print((i-1)//2)
             # print(dwn_upp[sheet][(i-1)//2])

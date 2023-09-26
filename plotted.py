@@ -29,8 +29,7 @@ class plotted_():
         self.add_arrow_labels = add_arrow_labels
         self.extract_current_axes = extract_current_axes_us_de
         self.extract_current_axes = extract_current_axes_ue_ds
-        self.merging_dn_fist_and_up_last_element = merging_dn_fist_and_up_last_element
-        self.merging_up_fist_and_dn_last_element = merging_up_fist_and_dn_last_element
+        self.merge_elements = merge_elements
         self.extract_dn_elem= extract_dn_elem
         self.extract_up_elem = extract_up_elem
         self.add_keys= add_keys
@@ -66,7 +65,7 @@ class plotted_():
             y_index = self.y_axis[i]
             self.canvas.flush_events()
             ya = [y_index] * len(xa_0)
-            self.artist_list.append(self.axes[index_0][index_1].scatter(xa_0, ya, marker=',',color='blue', s=0.3))
+            self.artist_list.append(self.axes[index_0][index_1].scatter(xa_0, ya, marker=',',color='blue', s=0.52))
             self.canvas.flush_events()
 
         for key, box_list in rect_dict.items():
@@ -156,105 +155,195 @@ class plotted_():
         self.plot(2,2,arr3,49,64,    0,19,        16,24,  color_dict,  station_dict, rect_dict)
 
         def plot_labels():
-            # print("station_dict",len(station_dict["UP"]))
-            new_dict = copy.deepcopy(station_dict)
 
-            """ Called a func"""
+            # up_intersecting_trains = self.intersection(station_dict, trains_dict)
+            # Sort the direction of arrows and labels
+            # To get the whether the train is up and down have to bring the parameter for up and down
+            up_inter, dn_inter = self.intersection(station_dict, trains_dict)
+
+            new_dict = copy.deepcopy(station_dict)
+            """ Called a func to add lebels in dictionary"""
             new_dict = self.add_lables(new_dict, trains_dict)
             
-            """ Called a func"""
+            """ Called a func to add keys in dictionary"""
             new_dict = self.add_keys(new_dict)
             
-            new_dict['UPDN'] = new_dict['UP'] + new_dict['DN']
+            new_dict['UPDN'] = new_dict['UP'] + new_dict['DN']               #format: "DN": 'label', '[y]', '[x]', key..... "UP": 'label', '[y]', '[x]', key
+            """ Called a func that extract up start and up end elements"""
+            upStart, upEnd = self.extract_up_elem(new_dict,up_inter)  
 
-            """ Called a func"""
-            # collision_updn = [[], [], []]
-            collision_up, collision_up1 = self.extract_up_elem(new_dict)
+            """ Called a func that extract dn start and dn end elements"""        
+            dnStart, dnEnd = self.extract_dn_elem(new_dict,dn_inter)
 
-            """ Called a func"""        
-            collision_dn, collision_dn1 = self.extract_dn_elem(new_dict)
+            """ Called a func that colab up start and dn end elements"""
+            upStart_dnEnd = self.merge_elements(upStart, dnEnd)
 
-            """ Called a func"""
-            collision_merged = self.merging_up_fist_and_dn_last_element(collision_up, collision_dn1)
-            print("collision_merged",collision_merged)
-            """ Called a func"""        
-            collision_merged1 = self.merging_dn_fist_and_up_last_element(collision_dn, collision_up1)
+            """ Called a func that colab dn start and up end elements"""        
+            upEnd_dnStart = self.merge_elements(dnStart, upEnd)
 
-        ########################################## collision text for up and down #################################################\
-            # intersection(station_dict, axes, trains_dict)
+########################################## collision text for up and down #################################################\
             
-            def collision_text_updn1(collision_merged1):
+            def upEnd_dnStart_label(upEnd_dnStart):
                 """ this function takes care of labels up-end and down-start labels and arrows"""
                 self.canvas.flush_events()
-                """ Variables Declaration"""
                 k = 1
                 previous_x, previous_y= 0, 0
                 label_var = ''
-                y_overlap_both_up = 0
-                y_buffer_both_up = 0
+                final_y = 0
+                y_buffer = 0
+                arrow_label_buffer = 0
 
-                for i in range(len(collision_merged1[0])):
+                for i in range(len(upEnd_dnStart[0])):
                     self.canvas.flush_events()
 
-                    label_ = collision_merged1[0][i]
-                    x = collision_merged1[1][i]
-                    y = collision_merged1[2][i]
-                    if abs(x - previous_x) <=0.03 and y == previous_y:
-                        label_var = '/'
-                        len_of_labels = len(label_)
-                        y_buffer_both_up = y_buffer_both_up + (extract_current_axes_ue_ds(x, y) * len_of_labels) 
-                        y_overlap_both_up = y - y_buffer_both_up 
-                    else:
-                        label_var = ''
-                        y_buffer_both_up = 0
-                        y_overlap_both_up = y - y_buffer_both_up                         
-
-                    label = label_var + label_
-
-                    inx, iny, x, y = self.add_arrow_labels(x, y)
-                    self.artist_list.append(self.axes[inx][iny].text(x - 0.02, y_overlap_both_up - 0.5, label, rotation = 'vertical', fontsize=8,picker=True))
-                    self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, - 0.5, width = 0.005, clip_on = False))
-                    previous_x, previous_y = x, y
-                    k += 3
-
-            def collision_text_updn( collision_merged):   
-                """this function takes care of labels up-start and down-end lab"""
-                self.canvas.flush_events()
-                """ Variables Declaration"""
-                k = 1
-                previous_x, previous_y= 0, 0
-                label_var = ''
-                y_overlap_both_up = 0
-                y_buffer_both_up = 0
-                self.canvas.flush_events()
-
-                for i in range(len(collision_merged[0])):
-                    label_ = collision_merged[0][i]
-                    x = collision_merged[1][i]
-                    y = collision_merged[2][i]
+                    label_ = upEnd_dnStart[0][i]
+                    x = upEnd_dnStart[1][i]
+                    y = upEnd_dnStart[2][i]
+                    key = upEnd_dnStart[3][i]
+                    arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag, second_axes_flag = extract_current_axes_ue_ds(x, y)
 
                     if abs(x - previous_x) <= 0.03 and y == previous_y:
                         label_var = '/'
                         len_of_labels = len(label_)
-                        y_buffer_both_up = y_buffer_both_up + (extract_current_axes_us_de(x, y) * len_of_labels) 
-                        y_overlap_both_up = y + y_buffer_both_up 
+                        y_buffer = y_buffer + (slash_buffer * len_of_labels) 
+                        final_y = y - y_buffer 
                     else:
                         label_var = ''
-                        y_buffer_both_up = 0
-                        y_overlap_both_up = y + y_buffer_both_up                         
+                        y_buffer = 0
+                        final_y = y - y_buffer                         
+
+                    label = label_var + label_
+
+                    inx, iny, x, y= self.add_arrow_labels(x, y)
+                    if first_axes_flag or second_axes_flag:    
+                        print("first", first_axes_flag)
+                        print("second", second_axes_flag)
+                        if first_axes_flag and y == 29:
+                            # check which one is true
+                            # print(inx,iny)
+                            # self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                            # if key == 'UP':
+                            #     self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                            # else:
+                            #     self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+                            # to plot vr labels on 2nd axes 
+                            inx = 1
+                            self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                            if key == 'UP':
+                                self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                            else:
+                                self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+
+                        elif second_axes_flag and y==29 :
+                            print(inx,iny)
+                            self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                            if key == 'UP':
+                                self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                            else:
+                                self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+                            # to plot vr labels on 2nd axes 
+                            inx = 2
+                            self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                            if key == 'UP':
+                                self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                            else:
+                                self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+
+                    
+                    self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                    if key == 'UP':
+                        self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                    else:
+                        self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+                    previous_x, previous_y = x, y
+                    k += 3
+
+            def upStart_dnEnd_label( upStart_dnEnd):   
+                """this function takes care of labels up-start and down-end lab"""
+                self.canvas.flush_events()
+                k = 1
+                previous_x, previous_y= 0, 0
+                label_var = ''
+                final_y = 0
+                y_buffer = 0
+                arrow_label_buffer = 0
+                self.canvas.flush_events()
+
+                for i in range(len(upStart_dnEnd[0])):
+                    label_ = upStart_dnEnd[0][i]
+                    x = upStart_dnEnd[1][i]
+                    y = upStart_dnEnd[2][i]
+                    key = upStart_dnEnd[3][i]
+                    arrow_plot_buffer, arrow_label_buffer, slash_buffer, first_axes_flag, second_axes_flag = extract_current_axes_us_de(x, y)
+                    if abs(x - previous_x) <= 0.03 and y == previous_y:
+                        label_var = '/'
+                        len_of_labels = len(label_)
+                        y_buffer = y_buffer + (slash_buffer * len_of_labels) 
+                        final_y = y + y_buffer 
+                    else:
+                        label_var = ''
+                        y_buffer = 0
+                        final_y = y + y_buffer                         
 
                     label = label_ + label_var
 
                     inx, iny, x, y = self.add_arrow_labels(x, y)
                     self.canvas.flush_events()
-                    self.artist_list.append(self.axes[inx][iny].text(x - 0.02, y_overlap_both_up + 2.7, label, rotation = 'vertical', fontsize=8,picker=True))  # NOTE: INSIDE IF
-                    self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+                    # if flag is true have to repeat it plot with x = 1 which is in x = 0
+                    # if second_ flag is true have to repeat it with plot x = 2 which is in x = 1
+                    if first_axes_flag or second_axes_flag:    
+                        print("first", first_axes_flag)
+                        print("second", second_axes_flag)
+                        if first_axes_flag:
+                            # check which one is true
+                            print(inx,iny)
+                            self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                            if key == 'UP':
+                                self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                            else:
+                                self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+                            # to plot vr labels on 2nd axes 
+                            inx = 1
+                            self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                            if key == 'UP':
+                                self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                            else:
+                                self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+
+                        elif second_axes_flag:
+                            print(inx,iny)
+                            self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                            if key == 'UP':
+                                self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                            else:
+                                self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+                            # to plot vr labels on 2nd axes 
+                            inx = 2
+                            self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                            if key == 'UP':
+                                self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                            else:
+                                self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+
+                    else:
+                        self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                        if key == 'UP':
+                            self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                        else:
+                            self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+
+                    # self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                    # if key == 'UP':
+                    #     self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                    # else:
+                    #     self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
                     previous_x, previous_y = x, y
                     k += 3
         
-            collision_text_updn(collision_merged)  
-            collision_text_updn1(collision_merged1)
+            upStart_dnEnd_label(upStart_dnEnd)  
+            upEnd_dnStart_label(upEnd_dnStart)
             
-            self.intersection(station_dict, trains_dict)
+            # up_inter, dn_inter = self.intersection(station_dict, trains_dict)
+            # print("intersection",up_inter, dn_inter)
         plot_labels()
         self.canvas.draw()
