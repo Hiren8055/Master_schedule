@@ -36,7 +36,7 @@ class ExportWorker(QObject):
             extent = [Bbox([[b.x0,b.y0],[b.x1,b.y1+0.4]]) for b in extent]
             xmin,xmax = extent[0].x0,extent[0].x1
             extent[3] = Bbox([[xmin, extent[3].y0],[xmax,extent[3].y1]])
-            print(extent)
+            # print(extent)
             print("Lets make a pdf")
             with PdfPages(self.file_name) as pdf:
                 print("3 2 1 Gooo!!")

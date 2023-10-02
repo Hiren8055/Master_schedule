@@ -71,7 +71,6 @@ def excel_to_pandas(filename,y_axis):
             raise WrongBoxTimeFormatError(f"The following cells in the BOX sheets have HH:MM time format, please use HH:MM:SS format instead:{', '.join(matched_values)}")
         p1, p2 = r'\d\d:\d\d:\d\d', r'\d:\d\d:\d\d'
         new_df = df.iloc[1:,:].astype(str)
-        print(new_df)
         for label, column in new_df.items():
             bool_index = column.str.contains(p2, regex=True, na=False)
             new_df.loc[~bool_index, label] = np.nan
@@ -83,7 +82,6 @@ def excel_to_pandas(filename,y_axis):
         df.reset_index(drop=True,inplace=True)
         rect_dict[key] = [(label,time1,time2,) for label,c in df.items() for  time1,time2 in zip(c.dropna().to_list()[::2],c.dropna().to_list()[1::2])]
         box_col_len_err = [label for label,col in df.items() if len(col.dropna().to_list())%2!=0] 
-        print(df)
         if box_col_len_err: 
             raise BoxColumnLengthError(f"Following stations in the BOX sheets have either incorrect number of timings for boxes or wrong timing format. Please follow provided format:{', '.join(box_col_len_err)}")    
     for key, df in df_dict.items():
@@ -99,7 +97,6 @@ def excel_to_pandas(filename,y_axis):
             raise DuplicateTrainError(f"Following duplicate trains are present in spread sheet: {', '.join(duplicates)}")
         df.drop(0, axis=0, inplace=True)
         df.reset_index(drop=True, inplace=True)
-        print(df)
         df.iloc[:, 0].fillna(method="ffill", inplace=True)
         df.iloc[:, 0]= df.iloc[:, 0].str.strip()
         first_column_series = df.iloc[:,0].copy(deep=False).rename(None)
@@ -149,14 +146,12 @@ def excel_to_pandas(filename,y_axis):
         trains_list,color_list,station_list,train_timings = tuple(list(i) for i in tuple(zip(*unit_test)))
         for stns,timings in zip(station_list,train_timings):
             list_2d = list_2d + [stns,timings]
-        print(list_2d)
-        print(trains_list)
-        print(color_list)
+
         unit_test_dict[key] = unit_test
         down_up[key] = list_2d
         dwn_upp[key] = trains_list
         color_dict[key] = color_list
-        print("train",down_up)
+
     return down_up, dwn_upp, color_dict, rect_dict
 
 def select( down_up,dwn_upp):
@@ -170,13 +165,13 @@ def select( down_up,dwn_upp):
     #     new_dict["UP"].append(down_up["UP"][i])
     #     i+=2
     i = 1
-    sheet = "UP"
+    sheet = "DN"
     train_dict = {sheet:[]}
     while i<len(down_up[sheet]):
         # print(down_up[sheet][i][0].split(":")[0])
         # print(dwn_upp[sheet][1])
         # if (22 < int(down_up[sheet][i][0][1:3]) < 27):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
-        if (16 <= int(down_up[sheet][i][0].split(":")[0]) <=24):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
+        if (23 <= int(down_up[sheet][i][0].split(":")[0]) <=24):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
         # print(dwn)
             # print((i-1)//2)
             # print(dwn_upp[sheet][(i-1)//2])

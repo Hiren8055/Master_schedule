@@ -45,7 +45,7 @@ def intersection(self, station_dict, trains_dict):
                 return False
                 # no intersection
             else:
-                print(station_dict[updn][index])
+                # print(station_dict[updn][index])
                 nin_x,nin_y = find(station_dict[updn][index],station_dict[updn][index+1],above_intercept_station)
                 # print(nin_x,nin_y) 
                 if nin_x == None or nin_y == None:
@@ -74,8 +74,10 @@ def intersection(self, station_dict, trains_dict):
     def add_arrow_labels_intercept(x, y):
         # can optimize by loop or funciton
         # selection of graph for inx and iny
+        # Problem it is 1 0 and it should be 0 1 
         inx, iny = 0, 0   #NOTE: not necessary
         # for 0, 0
+        print("inside add arrow",x,y)
         if (0 <= x < 8 and 0 <= y <= 29 ) :
             # print("condition triggered for label")
             inx = 0;iny = 0  
@@ -90,6 +92,9 @@ def intersection(self, station_dict, trains_dict):
         elif (16 <= x <= 24 and 0 <= y <= 29) :
             # print("condition triggered for label")
             inx = 0;iny = 2
+        
+
+        
         # for 1, 0
         elif (0 <= x < 8 and 29 < y <= 49) :
             # print("condition triggered for label")
@@ -105,6 +110,9 @@ def intersection(self, station_dict, trains_dict):
         elif (16 <= x <= 24 and 29 < y <= 49) :
             # print("condition triggered for label")
             inx = 1;iny = 2
+        
+
+
         # for 2, 0
         elif (0 <= x < 8 and 49 < y <= 63) :
             # print("condition triggered for label")
@@ -218,11 +226,12 @@ def intersection(self, station_dict, trains_dict):
         # print(len(trains_dict["UP"]))
         '''second loop is for drawing the points stored in inter_plot_arr'''                
         # need to dicrimate up and below arrow
-        print(len(trains_dict["UP"]))
+        # print(len(trains_dict["UP"]))
         intersection_trains =[[],[],[],[]]
         bufy = 1.8
         for i in range(len(inter_plot_arr)):
             inx, iny,_,_ = add_arrow_labels_intercept(inter_plot_arr[i][0],inter_plot_arr[i][1])
+            print("inx iny",inx,iny)
             intersection_trains[0].append(trains_dict[updn][arr_index[i]//2])
             intersection_trains[1].append(inter_plot_arr[i][0])
             intersection_trains[2].append(inter_plot_arr[i][1])
@@ -233,7 +242,7 @@ def intersection(self, station_dict, trains_dict):
             
             # artist_list.append(axes[inx][iny].arrow(inter_plot_arr[i][0], inter_plot_arr[i][1], 0, 0.5, head_width = 0, width = 0.005, clip_on = False))
             
-        print(intersection_trains)
+        print("intersecting trains",intersection_trains)
         return intersection_trains
     # will have a intersection array for down and up
     # def intercept_plot(inter_plot_arr):

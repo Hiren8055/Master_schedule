@@ -323,8 +323,7 @@ def extract_current_axes_us_de(x, y):
 
 def add_arrow_labels(x, y):
     inx, iny = 0, 0   #NOTE: not necessary
-    arrow_first_axes_flag = False
-    arrow_second_axes_flag =  False
+
     # for 0, 0
     if (0 <= x < 8 and 0 <= y <= 29 ):
         # print("condition triggered for label")
