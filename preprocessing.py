@@ -45,6 +45,7 @@ def excel_to_pandas(filename,y_axis):
     df_dict = pd.read_excel(filename, sheet_name=None, header=None, dtype = "object")
     bx_dict = dict()
     rect_dict = dict()
+    express_flag =False
     for key in df_dict:
         print(key)
     bx_dict["DN"] = df_dict.pop("BOX_DN")
@@ -125,6 +126,7 @@ def excel_to_pandas(filename,y_axis):
         unit_test = []
         len_err = []
         empty_err = []
+        
         # df = df.loc[:,~df.columns.duplicated()].copy()
         for index, (label, column) in enumerate(df.items()):
             column.dropna(inplace=True)
@@ -133,6 +135,13 @@ def excel_to_pandas(filename,y_axis):
             if not datapoints:
                 empty_err.append(trains_list[index])
             #     continue
+            # print(row_indices)
+            # print(len(row_indices))
+            # can we revert if all
+            #  if any train is greater then its not for local
+            if len(row_indices) >=30:
+                express_flag = True
+
             if len(row_indices) != len(datapoints):
                 len_err.append(trains_list[index])
             unit_test = unit_test + [(trains_list[index], color_list[index], row_indices, datapoints,)]
@@ -147,12 +156,14 @@ def excel_to_pandas(filename,y_axis):
         for stns,timings in zip(station_list,train_timings):
             list_2d = list_2d + [stns,timings]
 
+        
         unit_test_dict[key] = unit_test
         down_up[key] = list_2d
         dwn_upp[key] = trains_list
         color_dict[key] = color_list
 
-    return down_up, dwn_upp, color_dict, rect_dict
+    print("express_flag",express_flag)
+    return down_up, dwn_upp, color_dict, rect_dict, express_flag
 
 def select( down_up,dwn_upp):
 

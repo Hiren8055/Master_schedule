@@ -45,6 +45,7 @@ class plotted_():
         self.toolbar = toolbar
         self.artist_list = []
 
+
     def plot(self,index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end,xlim_start,xlim_end, color_dict, station_dict, rect_dict):
         self.axes[index_0][index_1].minorticks_on()
         # xa_0 = np.linspace(0, 8, 200)
@@ -114,7 +115,7 @@ class plotted_():
         self.canvas.flush_events()
 
 
-    def plot_trains(self, station_dict, trains_dict, color_dict, rect_dict):
+    def plot_trains(self, station_dict, trains_dict, color_dict, rect_dict, express_flag):
         self.axes = self.figure.subplots(nrows=3, ncols=3)
         # have to make  3 x 3 grid
         # set width of each subplot as 8
@@ -203,6 +204,7 @@ class plotted_():
                     x = upEnd_dnStart[1][i]
                     y = upEnd_dnStart[2][i]
                     key = upEnd_dnStart[3][i]
+                    len_of_labels = len(label_)
                     arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag, second_axes_flag = extract_current_axes_ue_ds(x, y)
 
                     if abs(x - previous_x) <= 0.03 and y == previous_y:
@@ -213,11 +215,16 @@ class plotted_():
                     else:
                         label_var = ''
                         y_buffer = 0
+                        y_buffer = arrow_label_buffer * len_of_labels 
                         final_y = y - y_buffer                         
 
                     label = label_var + label_
 
                     inx, iny, x, y= self.add_arrow_labels(x, y)
+                    if x > 24:
+                        dup_x = x - 24
+                    else:
+                        dup_x = x
                     if first_axes_flag or second_axes_flag:    
                         # print("first", first_axes_flag)
                         # print("second", second_axes_flag)
@@ -228,39 +235,41 @@ class plotted_():
                         if first_axes_flag and final_y == 29:
                             # check which one is true
                             # print(inx,iny)
-                            self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                            self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
                             if key == 'UP':
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, -0.5, width = 0.005, clip_on = False))
                             else:
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
-                            # to plot vr labels on 2nd axes 
-                            inx = 1
-                            self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
-                            if key == 'UP':
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
-                            else:
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y- arrow_plot_buffer, 0, 0.5, width = 0.005, clip_on = False))
+                            # to plot vr labels on 2nd axes
+                            print("internal express",express_flag)
+                            if express_flag:
+                                inx = 1
+                                self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                                if key == 'UP':
+                                    self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, -0.5, width = 0.005, clip_on = False))
+                                else:
+                                    self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y- arrow_plot_buffer, 0, 0.5, width = 0.005, clip_on = False))
 
-                        elif second_axes_flag and y==29 :
-                            self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                        elif second_axes_flag and y==49 :
+                            self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
                             if key == 'UP':
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, -0.5, width = 0.005, clip_on = False))
                             else:
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y- arrow_plot_buffer, 0, 0.5, width = 0.005, clip_on = False))
                             # to plot vr labels on 2nd axes 
                             inx = 2
-                            self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                            self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
                             if key == 'UP':
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y , 0, -0.5, width = 0.005, clip_on = False))
                             else:
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y- arrow_plot_buffer, 0, 0.5, width = 0.005, clip_on = False))
 
                     
-                    self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                    self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
                     if key == 'UP':
-                        self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                        self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y , 0, -0.5, width = 0.005, clip_on = False))
                     else:
-                        self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+                        self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y - arrow_plot_buffer, 0, 0.5, width = 0.005, clip_on = False))
                     previous_x, previous_y = x, y
                     k += 3
 
@@ -297,49 +306,55 @@ class plotted_():
                     self.canvas.flush_events()
                     # if flag is true have to repeat it plot with x = 1 which is in x = 0
                     # if second_ flag is true have to repeat it with plot x = 2 which is in x = 1
-                    print(x,x-0.02)
-                    if x>=24 and x - 0.02 < 24:
-                        x = x+0.02
+                    # print(x,x-0.02)
+                    # if x>=24 and x - 0.02 < 24:
+                    #     x = x+0.02
+                    if x > 24:
+                        dup_x = x - 24
+                    else:
+                        dup_x = x
                     if first_axes_flag or second_axes_flag:    
                         if first_axes_flag and final_y == 29:
                             # check which one is true
-                            self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                            self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
                             if key == 'UP':
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
                             else:
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, 0.5, width = 0.005, clip_on = False))
                             print("1 final plot", inx, iny,x - 0.02, final_y + arrow_label_buffer, label)
                             # to plot vr labels on 2nd axes 
-                            inx = 1
-                            self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                            print("internal express",express_flag)
+                            if express_flag:
+                                inx = 1
+                                self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                                if key == 'UP':
+                                    self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                                else:
+                                    self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, 0.5, width = 0.005, clip_on = False))
+                                print("2 final plot", inx, iny,x - 0.02, final_y + arrow_label_buffer, label)
+                        elif second_axes_flag and final_y == 49:
+                            self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
                             if key == 'UP':
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
                             else:
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
-                            print("2 final plot", inx, iny,x - 0.02, final_y + arrow_label_buffer, label)
-                        elif second_axes_flag and final_y == 29:
-                            self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
-                            if key == 'UP':
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
-                            else:
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, 0.5, width = 0.005, clip_on = False))
                             print("else 1 final plot", inx, iny,x - 0.02, final_y + arrow_label_buffer, label)
 
                             # to plot vr labels on 2nd axes 
                             inx = 2
-                            self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                            self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
                             if key == 'UP':
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
                             else:
-                                self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, 0.5, width = 0.005, clip_on = False))
                             print("else 2 final plot", inx, iny,x - 0.02, final_y + arrow_label_buffer, label)
 
                     
-                    self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                    self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y + arrow_label_buffer, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
                     if key == 'UP':
-                        self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
+                        self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
                     else:
-                        self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
+                        self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, 0.5, width = 0.005, clip_on = False))
                         print("final plot", inx, iny,x - 0.02, final_y + arrow_label_buffer, label)
                     
                     

@@ -100,7 +100,7 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
         if file_name:
             try:
                 select_flag = False
-                down_up, dwn_upp, color_dict, rect_dict =  self.excel_to_pandas(file_name,self.y_axis)
+                down_up, dwn_upp, color_dict, rect_dict, express_flag =  self.excel_to_pandas(file_name,self.y_axis)
                 if select_flag:
                     down_up, dwn_upp = self.select(down_up, dwn_upp)
                 down_up = self.conversion(down_up)
@@ -108,7 +108,7 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
                 down_up = self.add_24_down_up(down_up)
                 rect_dict = self.box_add_24(rect_dict)
                 self.figure.clear()
-                self.plot_trains(down_up, dwn_upp, color_dict, rect_dict)
+                self.plot_trains(down_up, dwn_upp, color_dict, rect_dict,express_flag)
                 self.export_button.setEnabled(True)
                 self.bm = BlitManager(self.canvas, self.pl.artist_list)
                 self.dragged = dragged(self.canvas,self.bm)
