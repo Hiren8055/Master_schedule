@@ -182,7 +182,7 @@ def select( down_up,dwn_upp):
         # print(down_up[sheet][i][0].split(":")[0])
         # print(dwn_upp[sheet][1])
         # if (22 < int(down_up[sheet][i][0][1:3]) < 27):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
-        if (23 <= int(down_up[sheet][i][0].split(":")[0]) <=24):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
+        if (19 <= int(down_up[sheet][i][0].split(":")[0]) <=20):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
         # print(dwn)
             # print((i-1)//2)
             # print(dwn_upp[sheet][(i-1)//2])
