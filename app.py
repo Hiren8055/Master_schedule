@@ -30,6 +30,7 @@ class ExportWorker(QObject):
     def run(self):
         print("I am running")
         try:
+            self.figure.subplots_adjust(hspace=1.4)
             axes = self.figure.axes
             extent = [ax.get_tightbbox().transformed(self.figure.dpi_scale_trans.inverted()) for ax in axes]
             # print(extent)
@@ -44,6 +45,7 @@ class ExportWorker(QObject):
                     print(f"i:{i}, bbox:{bbox}")
                     pdf.savefig(self.figure, bbox_inches=bbox, pad_inches=1)
                     self.update_signal.emit(i)
+            self.figure.subplots_adjust(left = 0.017, hspace=0.8)
         except Exception as e:
                 print(f"Error raised: {e}")
 
