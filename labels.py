@@ -91,6 +91,22 @@ def extract_up_elem(new_dict,upInter):
     # print(len(upStart[0]))
     # print(len(upInter[0]))
     # upStart = upStart + upInter
+    j=0
+    while j < len(upInter[0]):
+        
+        if str(upInter[0][j]) in upEnd[0]:
+            ind = upEnd[0].index(str(upInter[0][j]))
+            print(ind)
+            if upInter[1][j] == upEnd[1][ind] and upInter[2][j] == upEnd[2][ind]:
+                print(str(upInter[0][j]))
+                # drop that index
+                upInter[0].pop(j)
+                upInter[1].pop(j)
+                upInter[2].pop(j)
+                upInter[3].pop(j)
+                j-=1
+        j+=1
+
     for i in range(len(upInter)):
         for j in range(len(upInter[0])):
             if i==0 or i==3:
@@ -143,14 +159,14 @@ def extract_dn_elem(new_dict,dnInter):
 
     k = 1 
     for i in range(len(new_dict["DN"]) // 4):
-            dnStart[0].append(new_dict['DN'][k - 1])                #append label  
-            if new_dict['DN'][k + 1][0] >= 24: 
-                dnStart[1].append(new_dict['DN'][k + 1][0] - 24)    #append x
-            else: 
-                dnStart[1].append(new_dict['DN'][k + 1][0])         #append x
-            dnStart[2].append(new_dict['DN'][k][0])                 #append y
-            dnStart[3].append(new_dict['DN'][k + 2])                #append y
-            k += 4
+        dnStart[0].append(new_dict['DN'][k - 1])                #append label  
+        if new_dict['DN'][k + 1][0] >= 24: 
+            dnStart[1].append(new_dict['DN'][k + 1][0] - 24)    #append x
+        else: 
+            dnStart[1].append(new_dict['DN'][k + 1][0])         #append x
+        dnStart[2].append(new_dict['DN'][k][0])                 #append y
+        dnStart[3].append(new_dict['DN'][k + 2])                #append y
+        k += 4
 
     new_data = []
     for i in range(len(dnStart[0])):
@@ -166,6 +182,37 @@ def extract_dn_elem(new_dict,dnInter):
     new_data = [new_data0, new_data1, new_data2, new_data3]
 
     dnStart = new_data.copy() 
+    # Make a set out of it
+    # both list are merging here and have to check whether the list contains the number or not
+    # can do by separating the list of creating a algorithm to check
+    # using sets for as there is list 2d have to use sets on 2d list
+    # sequence of deleting the number so if the train is already there in list then dont put as it is starting and ending from that station
+    # Algorithm to check whether the train is in list or not 
+    # if i not in list:
+    print("dnInter",dnInter)
+    # for i in range(len(dnInter)):
+    # for j in range(len(dnInter[0])):  
+    j = 0
+    print("downStart",dnStart[0])
+    print("dninter",dnInter[0])
+    # print()
+    while j < len(dnInter[0]):
+        
+        if str(dnInter[0][j]) in dnStart[0]:
+            ind = dnStart[0].index(str(dnInter[0][j]))
+            print(ind)
+            if dnInter[1][j] == dnStart[1][ind] and dnInter[2][j] == dnStart[2][ind]:
+                print(str(dnInter[0][j]))
+                # drop that index
+                dnInter[0].pop(j)
+                dnInter[1].pop(j)
+                dnInter[2].pop(j)
+                dnInter[3].pop(j)
+                j-=1
+        j+=1
+            # if str(dnInter[i][j]) not in dnEnd[0]:
+            # first it should check added element is in list or not
+            # check whether the list contains number or not
 
     for i in range(len(dnInter)):
         for j in range(len(dnInter[0])):
@@ -173,6 +220,16 @@ def extract_dn_elem(new_dict,dnInter):
                 dnEnd[i].append(str(dnInter[i][j]))
             elif i==1 or i==2:
                 dnEnd[i].append(dnInter[i][j])
+
+
+
+
+    print("in the function dnEnd", dnEnd)
+    print(dnEnd)
+    print(len(dnEnd[0]))
+    print(len(dnEnd[1]))
+    print(len(dnEnd[2]))
+    print(len(dnEnd[3]))
 
     return dnStart, dnEnd     
 
