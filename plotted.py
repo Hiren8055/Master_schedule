@@ -58,8 +58,8 @@ class plotted_():
                 arr_minus = arr_minus - 24
                 line_color = color_list[int(i/2)]
                 # print("train",arr_minus,arr_2d[i],arr_2d[i+1])
-                (ln1,) = self.axes[index_0][index_1].plot(arr_minus, arr_2d[i], color=line_color)
-                (ln2,) = self.axes[index_0][index_1].plot(arr_2d[i+1], arr_2d[i], color=line_color)
+                (ln1,) = self.axes[index_0][index_1].plot(arr_minus, arr_2d[i], color=line_color, linewidth = 0.7)
+                (ln2,) = self.axes[index_0][index_1].plot(arr_2d[i+1], arr_2d[i], color=line_color,linewidth = 0.7)
                 self.artist_list.append(ln1)
                 self.artist_list.append(ln2)
                 self.canvas.flush_events()
@@ -67,7 +67,7 @@ class plotted_():
             y_index = self.y_axis[i]
             self.canvas.flush_events()
             ya = [y_index] * len(xa_0)
-            self.artist_list.append(self.axes[index_0][index_1].scatter(xa_0, ya, marker=',',color='blue', s=0.52))
+            self.artist_list.append(self.axes[index_0][index_1].scatter(xa_0, ya, marker=',',color='blue', s=0.52, alpha = 0.7))
             self.canvas.flush_events()
 
         for key, box_list in rect_dict.items():
