@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import re
 from collections import Counter
+from PySide2.QtWidgets import QMessageBox
 
 class DuplicateTrainError(Exception):
     def __init__(self, message):
@@ -37,11 +38,22 @@ class BoxColumnLengthError(Exception):
         self.message = message
         super().__init__(self.message)  
 
-def excel_to_pandas(filename,y_axis):
+class IncorrectLengthOfRowsBoxError(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)  
+
+class WrongStrictBoxTimeFormatError(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
+def excel_to_pandas(self, filename,y_axis):
     """
     return
     down_up: dict containing all stations and hault timings {'DN':[[station_name],[timings]], 'UP':[[station_name],[timings]]}
     dwn_upp: list with all train number (trains)"""
+    strict_mode = True
     df_dict = pd.read_excel(filename, sheet_name=None, header=None, dtype = "object")
     bx_dict = dict()
     rect_dict = dict()
@@ -72,6 +84,19 @@ def excel_to_pandas(filename,y_axis):
             raise WrongBoxTimeFormatError(f"The following cells in the BOX sheets have HH:MM time format, please use HH:MM:SS format instead:{', '.join(matched_values)}")
         p1, p2 = r'\d\d:\d\d:\d\d', r'\d:\d\d:\d\d'
         new_df = df.iloc[1:,:].astype(str)
+        pattern_checker = r'((^\d?\d:\d\d:\d\d$)|^nan$|^$|^\s*$)'
+        num_rows = len(stations)
+        wrong_box_rows = []
+        for i, row in enumerate(new_df.iterrows()):
+            if len(row) > num_rows:
+                wrong_box_rows.append(str(i))
+        if wrong_box_rows:
+            raise IncorrectLengthOfRowsBoxError(f"The following rows in the {str(key)} sheet's number of values in the row exceeds the number of stations provided: row{', row'.join(wrong_box_rows)}\nKindly check the stations in {str(key)} sheet and correct the number of values in the rows.")
+        val_checker = new_df.stack()
+        non_matches = val_checker[~val_checker.str.match(pattern_checker, na=False)].astype(str).tolist()
+        if non_matches:
+            message = f"The following Time values in {str(key)} sheet are either of incorrect format or have extra characters or space along with time: {', '.join(non_matches)}\nKindly correct the given values."
+            QMessageBox.critical(self, "Warning", message)
         for label, column in new_df.items():
             bool_index = column.str.contains(p2, regex=True, na=False)
             new_df.loc[~bool_index, label] = np.nan

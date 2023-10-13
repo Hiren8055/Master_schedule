@@ -371,7 +371,7 @@ def extract_current_axes_us_de(x, y):
         inx = 2;iny = 2 
 
     if inx == 0:
-        return 0.6, 0.50, 0.46, first_axes_flag, second_axes_flag
+        return 0.6, 0.55, 0.50, first_axes_flag, second_axes_flag
     elif inx == 1:
         return 0.6, 0.37, 0.33, first_axes_flag, second_axes_flag
     elif inx == 2:

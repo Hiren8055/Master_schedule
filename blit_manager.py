@@ -52,3 +52,10 @@ class BlitManager:
         self.canvas.flush_events()
     def return_data(self):
         return self._bg, self._artists
+    def stop_work(self):
+        self.is_working = False
+
+        # Additional cleanup or resource release code here
+
+        # Destroy the current instance
+        del self

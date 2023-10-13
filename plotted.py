@@ -526,5 +526,4 @@ class plotted_():
             # up_inter, dn_inter = self.intersection(station_dict, trains_dict)
             # print("intersection",up_inter, dn_inter)
         plot_labels()
-        self.canvas.figure.subplots_adjust(left = 0.017, hspace = 1.5)
-        self.canvas.draw()
+        self.canvas.figure.subplots_adjust(left = 0.017, hspace = 0.8)
