@@ -1,31 +1,15 @@
-from PySide2 import QtWidgets
-from PySide2.QtGui import QFont
-from PySide2.QtWidgets import QScrollArea, QMessageBox, QApplication
-from matplotlib.figure import Figure
 from matplotlib import patches
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
 import numpy as np
-from matplotlib.transforms import Bbox, TransformedBbox
-from qt_material import apply_stylesheet
-import pandas as pd
 from matplotlib.ticker import MultipleLocator
 from matplotlib.ticker import FixedFormatter
-import re
 import copy
-from collections import Counter
-from labels import *
+from labels import add_lables, add_keys, extract_up_elem, extract_dn_elem, merge_elements
+from label_arrow import *
 from intersection import intersection
 
 class plotted_():
     intersection = intersection
-    def __init__(self, figure, y_axis, y_labes,canvas, layout,export_button,axes, scroll_area, toolbar) -> None:
-        # self.excel_to_pandas = excel_to_pandas
-        # self.select = select
-        # self.conversion = conversion
-        # self.add_24_down_up = add_24_down_up
+    def __init__(self, figure, y_axis, y_labes, canvas, layout,export_button,axes, scroll_area, toolbar) -> None:
         self.add_arrow_labels = add_arrow_labels
         self.extract_current_axes = extract_current_axes_us_de
         self.extract_current_axes = extract_current_axes_ue_ds
@@ -48,7 +32,6 @@ class plotted_():
 
     def plot(self,index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end,xlim_start,xlim_end, color_dict, station_dict, rect_dict):
         self.axes[index_0][index_1].minorticks_on()
-        # xa_0 = np.linspace(0, 8, 200)
         xa_0 = np.arange(xlim_start, xlim_end, 0.03333)
         for arr_2d, color_list in zip(station_dict.values(), color_dict.values()):
             self.canvas.flush_events()
@@ -57,7 +40,6 @@ class plotted_():
                 self.canvas.flush_events()
                 arr_minus = arr_minus - 24
                 line_color = color_list[int(i/2)]
-                # print("train",arr_minus,arr_2d[i],arr_2d[i+1])
                 (ln1,) = self.axes[index_0][index_1].plot(arr_minus, arr_2d[i], color=line_color, linewidth = 0.7)
                 (ln2,) = self.axes[index_0][index_1].plot(arr_2d[i+1], arr_2d[i], color=line_color,linewidth = 0.7)
                 self.artist_list.append(ln1)
@@ -89,12 +71,8 @@ class plotted_():
         self.axes[index_0][index_1].set_xticks(arr)
         self.axes[index_0][index_1].set_xticklabels(arr)
         sub_y_axis = self.y_labes[start_sub_y_axis:end_sub_y_axis]
-        # sub_y_axis = Reverse(sub_y_axis)
-        # print(sub_y_axis)
+
         self.axes[index_0][index_1].set_ylim(start_sub_y_axis,end_sub_y_axis)
-        # print(start_sub_y_axis,end_sub_y_axis)
-        # print(range(start_sub_y_axis,end_sub_y_axis))
-        # self.axes[index_0][index_1].set_yticks(range(start_sub_y_axis,end_sub_y_axis))
         self.axes[index_0][index_1].set_yticks(range(start_sub_y_axis,end_sub_y_axis))
         self.axes[index_0][index_1].set_yticklabels(sub_y_axis)
         self.canvas.flush_events()
@@ -129,9 +107,7 @@ class plotted_():
                     arr_2d[i][j] = self.y_axis.index(arr_2d[i][j])
                     self.canvas.flush_events()
 
-        # dup_train_dict = copy.deepcopy(trains_dict)
         self.canvas.flush_events()
-
 
         for key, box_list in rect_dict.items():
             for i, (station, *_) in enumerate(box_list):
@@ -143,7 +119,6 @@ class plotted_():
         arr2 = [8, 9, 10, 11, 12, 13, 14, 15, 16]
         arr3 = [16, 17, 18, 19, 20, 21, 22, 23, 24]
         
-    #   (index_0, index_1, arr, start_sub_y_axis, end_sub_y_axis, ylim_start, ylim_end, xlim_start, xlim_end)
         self.plot(0,0,arr1,0,30,      0,15,        0,8, color_dict, station_dict, rect_dict)
         self.plot(1,0,arr1,29,50,    0,19,        0,8, color_dict, station_dict, rect_dict)   
         self.plot(2,0,arr1,49,64,    0,19,        0,8, color_dict, station_dict, rect_dict) 
@@ -158,372 +133,37 @@ class plotted_():
 
         def plot_labels():
 
-            # up_intersecting_trains = self.intersection(station_dict, trains_dict)
             # Sort the direction of arrows and labels
             # To get the whether the train is up and down have to bring the parameter for up and down
             up_inter, dn_inter = self.intersection(station_dict, trains_dict)
 
-            print("up and dn", up_inter, dn_inter)
             new_dict = copy.deepcopy(station_dict)
+
             """ Called a func to add lebels in dictionary"""
             new_dict = self.add_lables(new_dict, trains_dict)
             
             """ Called a func to add keys in dictionary"""
             new_dict = self.add_keys(new_dict)
             
+            #formatfor below ditionary: {"DN": 'label', '[y]', '[x]', key..... ,"UP": 'label', '[y]', '[x]', key}
             new_dict['UPDN'] = new_dict['UP'] + new_dict['DN']
-            print(new_dict)               
-            #format: "DN": 'label', '[y]', '[x]', key..... "UP": 'label', '[y]', '[x]', key
+
             """ Called a func that extract up start and up end elements"""
             upStart, upEnd = self.extract_up_elem(new_dict,up_inter)  
-            print("upStart_dnEnd",upStart, upEnd)
-            """ Called a func that extract dn start and dn end elements"""        
 
+            """ Called a func that extract dn start and dn end elements"""        
             dnStart, dnEnd = self.extract_dn_elem(new_dict,dn_inter)
-            print("upEnd_dnStart",dnStart, dnEnd)
 
             """ Called a func that colab up start and dn end elements"""
             upStart_dnEnd = self.merge_elements(upStart, dnEnd)
-            # print("upStart_dnEnd",upStart_dnEnd)
+
             """ Called a func that colab dn start and up end elements"""        
             upEnd_dnStart = self.merge_elements(dnStart, upEnd)
-            # print("upEnd_dnStart",upEnd_dnStart )
 
 ########################################## collision text for up and down #################################################\
-            
-            def upEnd_dnStart_label(upEnd_dnStart):
-                """ this function takes care of labels up-end and down-start labels and arrows"""
-                self.canvas.flush_events()
-                k = 1
-                previous_x, previous_y= 0, 0
-                label_var = ''
-                final_y = 0
-                y_buffer = 0
-                arrow_label_buffer = 0
-                # Slashing issue in code not able to get the slashing in other segment
-                # check the values for each axis and check whether it is normal bufffer for normal values
-                # def slashing_buffer_ueds(x,y, y_buffer, label_var,arrow_label_buffer):
-                #         arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag, second_axes_flag = extract_current_axes_ue_ds(x, y)
 
-                #         if abs(x - previous_x) <= 0.03 and y == previous_y:
-                #             label_var = '/'
-                #             y_buffer = y_buffer + (slash_buffer * len_of_labels) 
-                #             final_y = y - y_buffer 
-                #         else:
-                #             label_var = ''
-                #             y_buffer = 0
-                #             y_buffer = arrow_label_buffer * len_of_labels 
-                #             final_y = y - y_buffer                         
+            upEnd_dnStart_label(self.canvas, self.axes, express_flag, self.artist_list, upEnd_dnStart)
+            upStart_dnEnd_label(self.canvas, self.axes, express_flag, self.artist_list, upStart_dnEnd)  
 
-                #         label = label_var + label_
-                #         return label, final_y, arrow_plot_buffer,first_axes_flag, second_axes_flag,arrow_label_buffer
-
-                # this is only triggered for one time.
-
-                
-
-                for i in range(len(upEnd_dnStart[0])):
-                    self.canvas.flush_events()
-
-                    label_ = upEnd_dnStart[0][i]    
-                    x = upEnd_dnStart[1][i]
-                    y = upEnd_dnStart[2][i]
-                    key = upEnd_dnStart[3][i]
-                    len_of_labels = len(label_)
-                    
-                    # 
-                    arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag, second_axes_flag = extract_current_axes_ue_ds(x, y)
-                    if abs(x - previous_x) <= 0.03 and y == previous_y:
-                        label_var = '/'
-                        y_buffer = y_buffer + (slash_buffer * len_of_labels) 
-                        final_y = y - y_buffer 
-                    else:
-                        # if the buffer value doesn't satisfy then directly print the label
-                        label_var = ''
-                        y_buffer = 0
-                        # it is the buffer used for placing the labels
-                        y_buffer = arrow_label_buffer * len_of_labels 
-                        # final_y is used as final y for labels
-                        final_y = y - y_buffer                         
-                    
-                    print("label",label_var,label_)
-                    label = label_var + label_
-                    
-                    # label, final_y, arrow_plot_buffer, first_axes_flag, second_axes_flag,arrow_label_buffer = slashing_buffer_ueds(x,y,y_buffer, label_var,arrow_label_buffer)
-
-                    inx, iny, x, y= self.add_arrow_labels(x, y)
-                    if x > 24:
-                        dup_x = x - 24
-                    else:
-                        dup_x = x
-                    # if first_axes_flag or second_axes_flag:    
-                        # print("first", first_axes_flag)
-                        # print("second", second_axes_flag)
-                        # print(x,x - 0.02) 
-                        # if x>=24 and x - 0.02 < 24:
-                        #     x = x+0.02
-
-                    if first_axes_flag and y == 29:
-                        # check which one is true
-                        # print(inx,iny)
-                        # label, final_y, arrow_plot_buffer, first_axes_flag, second_axes_flag,arrow_label_buffer = slashing_buffer_ueds(x,y,y_buffer, label_var,arrow_label_buffer)
-                        self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
-                        if key == 'UP':
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, -0.5, width = 0.005, clip_on = False))
-                        else:
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y - arrow_plot_buffer, 0, 0.5, width = 0.005, clip_on = False))
-                        # to plot vr labels on 2nd axes
-                        # print("internal express",express_flag)
-                        if express_flag:
-
-
-
-                            arrow_plot_buffer_inx1, arrow_label_buffer_inx1, slash_buffer_inx1,first_axes_flag, second_axes_flag = extract_current_axes_ue_ds(x, y+2)
-                            if abs(x - previous_x) <= 0.03 and y == previous_y:
-                                label_var = '/'
-                                y_buffer_inx1 = y_buffer_inx1 + (slash_buffer_inx1 * len_of_labels) 
-                                final_y_inx1 = y - y_buffer_inx1 
-                            else:
-                                # if the buffer value doesn't satisfy then directly print the label
-                                label_var = ''
-                                y_buffer_inx1 = 0
-                                # it is the buffer used for placing the labels
-                                y_buffer_inx1 = arrow_label_buffer_inx1 * len_of_labels 
-                                # final_y is used as final y for labels
-                                final_y_inx1 = y - y_buffer_inx1                         
-                            # 
-                            # print("label",label_var,label_)
-                            label = label_var + label_
-                            # print('printing inx buffer before', arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag)
-                            # arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag, second_axes_flag = extract_current_axes_ue_ds(dup_x, y + 2)
-
-                            # label, final_y, arrow_plot_buffer, first_axes_flag, second_axes_flag,arrow_label_buffer = slashing_buffer_ueds(x,y+2,y_buffer, label_var,arrow_label_buffer)
-
-                            # print('printing inx buffer after', arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag)
-                            inx = 1
-                            self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y_inx1, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
-                            if key == 'UP':
-                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, -0.5, width = 0.005, clip_on = False))
-                            else:
-                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y - arrow_plot_buffer_inx1, 0, 0.5, width = 0.005, clip_on = False))
-
-                    elif second_axes_flag and y==49 :
-                        # label, final_y, arrow_plot_buffer, first_axes_flag, second_axes_flag,arrow_label_buffer = slashing_buffer_ueds(x,y,y_buffer, label_var,arrow_label_buffer)
-                        self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
-                        if key == 'UP':
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, -0.5, width = 0.005, clip_on = False))
-                        else:
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y - arrow_plot_buffer, 0, 0.5, width = 0.005, clip_on = False))
-                        # to plot vr labels on 2nd axes 
-
-                        # label, final_y, arrow_plot_buffer, first_axes_flag, second_axes_flag,arrow_label_buffer = slashing_buffer_ueds(x,y+2,y_buffer, label_var,arrow_label_buffer)
-                        arrow_plot_buffer_inx2, arrow_label_buffer_inx2, slash_buffer_inx2,first_axes_flag, second_axes_flag = extract_current_axes_ue_ds(x, y+2)
-                        if abs(x - previous_x) <= 0.03 and y == previous_y:
-                            label_var = '/'
-                            y_buffer_inx2 = y_buffer_inx2 + (slash_buffer_inx2 * len_of_labels) 
-                            final_y_inx2 = y - y_buffer_inx2 
-                        else:
-                            # if the buffer value doesn't satisfy then directly print the label
-                            label_var = ''
-                            y_buffer_inx2 = 0
-                            # it is the buffer used for placing the labels
-                            y_buffer_inx2 = arrow_label_buffer_inx2 * len_of_labels 
-                            # final_y is used as final y for labels
-                            final_y_inx2 = y - y_buffer_inx2                         
-                        # 
-                        # print("label",label_var,label_)
-                        label = label_var + label_
-                        inx = 2
-                        # arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag, second_axes_flag = extract_current_axes_ue_ds(dup_x, y+2)
-                        self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y_inx2, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
-                        if key == 'UP':
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y , 0, -0.5, width = 0.005, clip_on = False))
-                        else:
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y - arrow_plot_buffer_inx2, 0, 0.5, width = 0.005, clip_on = False))
-                        # else:
-                    
-                        # if not (first_axes_flag or second_axes_flag or y==49 or y==29) :
-            
-                    # label, final_y, arrow_plot_buffer, first_axes_flag, second_axes_flag,arrow_label_buffer = slashing_buffer_ueds(x,y,y_buffer, label_var,arrow_label_buffer)
-                    elif (first_axes_flag and y != 29) or (second_axes_flag and y!= 49)or not (first_axes_flag and second_axes_flag):
-                        self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
-                        if key == 'UP':
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y , 0, -0.5, width = 0.005, clip_on = False))
-                        else:
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y - arrow_plot_buffer, 0, 0.5, width = 0.005, clip_on = False))
-                    else:
-                        # add except here
-                        print("ue and ds dead end")
-                    previous_x, previous_y = x, y
-                    k += 3
-
-            def upStart_dnEnd_label( upStart_dnEnd):   
-                """this function takes care of labels up-start and down-end lab"""
-                self.canvas.flush_events()
-                k = 1
-                previous_x, previous_y= 0, 0
-                label_var = ''
-                final_y = 0
-                y_buffer = 0
-                self.canvas.flush_events()
-
-                def slashing_buffer_usde(x, y, y_buffer, label_var):
-                    arrow_plot_buffer, arrow_label_buffer, slash_buffer, first_axes_flag, second_axes_flag = extract_current_axes_us_de(x, y)
-                    if abs(x - previous_x) <= 0.03 and y == previous_y:
-                        label_var = '/'
-                        y_buffer = y_buffer + (slash_buffer * len_of_labels) 
-                        final_y = y + y_buffer 
-                    else:
-                        label_var = ''
-                        y_buffer = 0
-                        y_buffer = arrow_label_buffer * len_of_labels
-                        final_y = y + y_buffer                         
-
-                    label = label_ + label_var
-                    return label, final_y, arrow_plot_buffer,first_axes_flag, second_axes_flag,arrow_label_buffer
-
-                for i in range(len(upStart_dnEnd[0])):
-                    label_ = upStart_dnEnd[0][i]
-                    x = upStart_dnEnd[1][i]
-                    y = upStart_dnEnd[2][i]
-                    key = upStart_dnEnd[3][i]
-                    len_of_labels = len(label_)
-
-                    arrow_plot_buffer, arrow_label_buffer, slash_buffer, first_axes_flag, second_axes_flag = extract_current_axes_us_de(x, y)
-                    if abs(x - previous_x) <= 0.03 and y == previous_y:
-                        label_var = '/'
-                        y_buffer = y_buffer + (slash_buffer * len_of_labels) 
-                        final_y = y + y_buffer 
-                    else:
-                        label_var = ''
-                        y_buffer = 0
-                        y_buffer = arrow_label_buffer * len_of_labels
-                        final_y = y + y_buffer                         
-
-                    label = label_ + label_var
-                    print("slash_buffer_y",slash_buffer,final_y)
-                    
-                    # label, final_y, arrow_plot_buffer,first_axes_flag, second_axes_flag,arrow_label_buffer = slashing_buffer_usde(x, y, y_buffer, label_var)
-                    inx, iny, x, y = self.add_arrow_labels(x, y)
-                    self.canvas.flush_events()
-                    # if flag is true have to repeat it plot with x = 1 which is in x = 0
-                    # if second_ flag is true have to repeat it with plot x = 2 which is in x = 1
-                    # print(x,x-0.02)
-                    # if x>=24 and x - 0.02 < 24:
-                    #     x = x+0.02
-                    if x > 24:
-                        dup_x = x - 24
-                    else:
-                        dup_x = x
-                    
-                    if first_axes_flag or y == 29:
-                        print("first reached")
-                        # check which one is true
-                        self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
-                        if key == 'UP': #UP
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
-                        else:
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, 0.5, width = 0.005, clip_on = False))
-                        print("upstart 1 final plot", inx, iny,x - 0.02, final_y + arrow_label_buffer, label) 
-                        # to plot vr labels on 2nd axes 
-                        print("internal express",express_flag)
-                        if express_flag:
-
-
-
-                            arrow_plot_buffer_inx1, arrow_label_buffer_inx1, slash_buffer_inx1, first_axes_flag, second_axes_flag = extract_current_axes_us_de(x, y+2)
-                            if abs(x - previous_x) <= 0.03 and y == previous_y:
-                                label_var = '/'
-                                y_buffer_inx1 = y_buffer_inx1 + (slash_buffer_inx1 * len_of_labels) 
-                                final_y_inx1 = y + y_buffer_inx1 
-                            else:
-                                label_var = ''
-                                y_buffer_inx1 = 0
-                                y_buffer_inx1 = arrow_label_buffer_inx1 * len_of_labels
-                                final_y_inx1 = y + y_buffer_inx1                         
-
-                            label = label_ + label_var
-                            print("slash_buffer_y+2",slash_buffer_inx1,final_y_inx1)
-                            # arrow_plot_buffer, arrow_label_buffer, slash_buffer, first_axes_flag, second_axes_flag = extract_current_axes_us_de(dup_x, y + 2)
-                            # label, final_y, arrow_plot_buffer, first_axes_flag, second_axes_flag,arrow_label_buffer = slashing_buffer_usde(x,y+2,y_buffer, label_var)
-                            inx = 1
-                            self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y_inx1, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
-                            if key == 'UP': #UP
-                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y + arrow_plot_buffer_inx1, 0, -0.5, width = 0.005, clip_on = False))
-                            else:
-                                self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, 0.5, width = 0.005, clip_on = False))
-                            print("upstart 2 final plot", inx, iny,x - 0.02, final_y_inx1 + arrow_label_buffer_inx1, label) 
-
-                    elif second_axes_flag and y == 49:
-                        print("second reached")
-
-                        print("slash_buffer_y",slash_buffer)
-                        self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
-                        if key == 'UP': #UP
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
-                        else:
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, 0.5, width = 0.005, clip_on = False))
-                        print("upstart else 1 final plot", inx, iny,x - 0.02, final_y + arrow_label_buffer, label) #triggered
-
-
-
-                        arrow_plot_buffer_inx2, arrow_label_buffer_inx2, slash_buffer_inx2, first_axes_flag, second_axes_flag = extract_current_axes_us_de(x, y+2)
-                        if abs(x - previous_x) <= 0.03 and y == previous_y:
-                            label_var = '/'
-                            y_buffer_inx2 = y_buffer_inx2 + (slash_buffer_inx2 * len_of_labels) 
-                            final_y_inx2 = y + y_buffer_inx2 
-                        else:
-                            label_var = ''
-                            y_buffer_inx2 = 0
-                            y_buffer_inx2 = arrow_label_buffer_inx2 * len_of_labels
-                            final_y_inx2 = y + y_buffer_inx2                         
-
-                        
-                        label = label_ + label_var
-                        print("slash_buffer_y+2",slash_buffer_inx2,final_y_inx2 )
-                        # label, final_y, arrow_plot_buffer, first_axes_flag, second_axes_flag,arrow_label_buffer = slashing_buffer_usde(x,y+2,y_buffer, label_var)
-                        # to plot vr labels on 2nd axes 
-                        inx = 2
-                        # arrow_plot_buffer, arrow_label_buffer, slash_buffer, first_axes_flag, second_axes_flag = extract_current_axes_us_de(dup_x, y + 2)
-                        self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y_inx2, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
-                        if key == 'UP': #UP
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y + arrow_plot_buffer_inx2, 0, -0.5, width = 0.005, clip_on = False))
-                        else:
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, 0.5, width = 0.005, clip_on = False))
-                        print("upstart else 2 final plot", inx, iny,x - 0.02, final_y_inx2 + arrow_label_buffer_inx2, label) #triggered
-
-                    # else:
-                    # should not be in first and should not b1
-                    # elif first_axes_flag:
-                        
-
-                    # elif second_axes_flag:
-
-
-                    elif (first_axes_flag and y != 29) or (second_axes_flag and y!= 49) or not (first_axes_flag and second_axes_flag):
-                        self.artist_list.append(self.axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
-                        if key == 'UP': #UP
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
-                        else:
-                            self.artist_list.append(self.axes[inx][iny].arrow(dup_x, y, 0, 0.5, width = 0.005, clip_on = False))
-                            print("upstart final plot", inx, iny,x - 0.02, final_y + arrow_label_buffer, label) #triggered
-                    
-                    else:
-                        # put except here
-                        print("dead end")
-
-                    # self.artist_list.append(self.axes[inx][iny].text(x - 0.02, final_y + arrow_label_buffer, label, rotation  = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
-                    # if key == 'UP':
-                    #     self.artist_list.append(self.axes[inx][iny].arrow(x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
-                    # else:
-                    #     self.artist_list.append(self.axes[inx][iny].arrow(x, y, 0, 0.5, width = 0.005, clip_on = False))
-                    previous_x, previous_y = x, y
-                    k += 3
-        
-            upEnd_dnStart_label(upEnd_dnStart)
-            upStart_dnEnd_label(upStart_dnEnd)  
-
-            # up_inter, dn_inter = self.intersection(station_dict, trains_dict)
-            # print("intersection",up_inter, dn_inter)
         plot_labels()
         self.canvas.figure.subplots_adjust(left = 0.017, hspace = 0.8)
