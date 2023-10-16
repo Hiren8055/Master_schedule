@@ -6,7 +6,9 @@ import copy
 from labels import add_lables, add_keys, extract_up_elem, extract_dn_elem, merge_elements
 from label_arrow import *
 from intersection import intersection
-
+def Merge(dict1, dict2):
+    res = {**dict1, **dict2}
+    return res
 class plotted_():
     intersection = intersection
     def __init__(self, figure, y_axis, y_labes, canvas, layout,export_button,axes, scroll_area, toolbar) -> None:
@@ -162,8 +164,25 @@ class plotted_():
 
 ########################################## collision text for up and down #################################################\
 
-            upEnd_dnStart_label(self.canvas, self.axes, express_flag, self.artist_list, upEnd_dnStart)
-            upStart_dnEnd_label(self.canvas, self.axes, express_flag, self.artist_list, upStart_dnEnd)  
+            print("original position",upEnd_dnStart,upStart_dnEnd)
+            arr_drag_dict_ueds = upEnd_dnStart_label(self.canvas, self.axes, express_flag, self.artist_list, upEnd_dnStart)
+            arr_drag_dict_usde = upStart_dnEnd_label(self.canvas, self.axes, express_flag, self.artist_list, upStart_dnEnd)  
+            print(len(arr_drag_dict_ueds))
+            print(len(arr_drag_dict_usde))
+            arr_drag_dict = Merge(arr_drag_dict_ueds,arr_drag_dict_usde)
+            print("arr_drag_dict",arr_drag_dict)
+            print(len(arr_drag_dict))
+            
+            # Merge both array with location of train with slashing
+            # find without slashing values
+            # find with slashing values
+            # dict label_slashingLocation : train location
+            # drag_dict = {}
+            # for i in range(len(upEnd_dnStart[0])):
+            #     slashing_label = 
+            #     drag_dict[slashing_label] = [upEnd_dnStart[0][i],upEnd_dnStart[1][i]]
+            
+
 
         plot_labels()
         self.canvas.figure.subplots_adjust(left = 0.017, hspace = 0.8)
