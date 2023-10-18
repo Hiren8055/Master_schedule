@@ -181,8 +181,7 @@ class plotted_():
             # for i in range(len(upEnd_dnStart[0])):
             #     slashing_label = 
             #     drag_dict[slashing_label] = [upEnd_dnStart[0][i],upEnd_dnStart[1][i]]
-            
-
-
-        plot_labels()
+            return arr_drag_dict
+        arr_drag_dict = plot_labels()
         self.canvas.figure.subplots_adjust(left = 0.017, hspace = 0.8)
+        return arr_drag_dict

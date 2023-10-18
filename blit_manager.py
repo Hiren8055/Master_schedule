@@ -6,6 +6,7 @@ class BlitManager:
         self._bg = None
         for a in animated_artists:
             self.add_artist(a)
+
         self.cid = canvas.mpl_connect("draw_event", self.on_draw)
     def _later(self, evt=None):
         self.timer = self.canvas.new_timer(interval=1000)
@@ -17,15 +18,22 @@ class BlitManager:
         if event is not None:
             if event.canvas != self.canvas:
                 raise RuntimeError
-        self._later()        
+        self._later()
         self._draw_animated()
     def update_background(self):
         self._bg = self.canvas.copy_from_bbox(self.canvas.figure.bbox)
-    def _draw_animated(self):
+    def _draw_animated(self, leave_out = None):
         """Draw all of the animated artists."""
         fig = self.canvas.figure
-        for a in self._artists:
-            fig.draw_artist(a)
+        index = None
+        for i,a in enumerate(self._artists):
+            if a == leave_out:
+                index = i
+                print(f"the artist I AM NOT DRAWING IS {a}")
+            else:
+                fig.draw_artist(a)
+        if index:
+            del self._artists[index]
     def add_artist(self, art):
         """Add a new Artist object to the Blit Manager"""
         if art.figure != self.canvas.figure:
@@ -37,7 +45,7 @@ class BlitManager:
             raise RuntimeError
         patch.set_animated(True)
         self._artists.appendleft(patch)
-    def update(self):
+    def update(self, annot=None):
         """Update the screen with animated artists."""
         if self._bg is None:
             self.on_draw(None)
@@ -45,7 +53,7 @@ class BlitManager:
             # restore the background
             self.canvas.restore_region(self._bg)
             # draw all of the animated artists
-            self._draw_animated()
+            self._draw_animated(leave_out = annot)
             # update the GUI state
             self.canvas.blit(self.canvas.figure.bbox)
         # let the GUI event loop process anything it has to do

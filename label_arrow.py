@@ -1,13 +1,14 @@
+import uuid
 from labels import extract_current_axes_ue_ds, extract_current_axes_us_de, add_arrow_labels
 # Have to make the an array with slashing and original position
-def built_dict(dict_name, label,slash_x,slash_y,train_x,train_y):
-    if str(label)[0] == "/":
-        label = str(label)[1:]
-    elif str(label)[-1] == "/":
-        label = str(label)[:-1]
-    key_name = str(label)+"_"+str(slash_x)+"_"+str(slash_y)
+def round_tenths(input_float: float) -> int:
+    return int(round(input_float/10))
+def built_dict(dict_name, text_label,train_x,train_y):
+    key_name = str(uuid.uuid4())
     # print(key_name)
+    text_label.set_gid(key_name)
     dict_name[key_name] = [train_x, train_y]
+    return text_label
 
 def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
     """ this function plot arrow and labels for up-end and down-start"""
@@ -68,8 +69,9 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
             if label_counter > 5:
                 pass
             else:
-                built_dict(drag_dict_ueds,label,dup_x - 0.02,final_y,x,y)
-                artist_list.append(axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                text_label = axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True)
+                text_label = built_dict(drag_dict_ueds, text_label,x,y)
+                artist_list.append(text_label)  # NOTE: INSIDE IF
                 if key == 'UP':
                     artist_list.append(axes[inx][iny].arrow(dup_x, y, 0, -0.5, width = 0.005, clip_on = False))
                 else:
@@ -99,8 +101,9 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
                 if label_counter1 > 5:
                     pass
                 else:
-                    built_dict(drag_dict_ueds,label,dup_x - 0.02,final_y_inx1,x,y)
-                    artist_list.append(axes[inx][iny].text(dup_x - 0.02, final_y_inx1, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                    text_label = axes[inx][iny].text(dup_x - 0.02, final_y_inx1, label, rotation = 'vertical', fontsize=8, picker=True)
+                    text_label = built_dict(drag_dict_ueds, text_label,x,y)
+                    artist_list.append(text_label)  # NOTE: INSIDE IF
                     if key == 'UP': #UP
                         artist_list.append(axes[inx][iny].arrow(dup_x, y + arrow_plot_buffer_inx1, 0, -0.5, width = 0.005, clip_on = False))
                     else:
@@ -110,8 +113,9 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
             if label_counter > 5:
                 pass
             else:
-                built_dict(drag_dict_ueds,label,dup_x - 0.02,final_y,x,y)
-                artist_list.append(axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                text_label = axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True)
+                text_label = built_dict(drag_dict_ueds, text_label,x,y)
+                artist_list.append(text_label)  # NOTE: INSIDE IF
                 if key == 'UP':
                     artist_list.append(axes[inx][iny].arrow(dup_x, y, 0, -0.5, width = 0.005, clip_on = False))
                 else:
@@ -139,8 +143,9 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
             if label_counter2 > 5:
                 pass
             else:
-                built_dict(drag_dict_ueds,label,dup_x - 0.02,final_y_inx2,x,y)
-                artist_list.append(axes[inx][iny].text(dup_x - 0.02, final_y_inx2, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                text_label = axes[inx][iny].text(dup_x - 0.02, final_y_inx2, label, rotation = 'vertical', fontsize=8, picker=True)
+                text_label = built_dict(drag_dict_ueds, text_label,x,y)
+                artist_list.append(text_label)  # NOTE: INSIDE IF
                 # if key == 'UP':
                 #     artist_list.append(axes[inx][iny].arrow(dup_x, y , 0, -0.5, width = 0.005, clip_on = False))
                 # else:
@@ -155,8 +160,9 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
             if label_counter > 5:
                 pass
             else:
-                built_dict(drag_dict_ueds,label,dup_x - 0.02,final_y,x,y)
-                artist_list.append(axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                text_label = axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True)
+                text_label = built_dict(drag_dict_ueds, text_label,x,y)
+                artist_list.append(text_label)  # NOTE: INSIDE IF
                 if key == 'UP':
                     artist_list.append(axes[inx][iny].arrow(dup_x, y , 0, -0.5, width = 0.005, clip_on = False))
                 else:
@@ -215,8 +221,9 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
             if label_counter > 5:
                 pass
             else:
-                built_dict(drag_dict_usde,label,dup_x - 0.02,final_y,x,y)           
-                artist_list.append(axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                text_label = axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True)
+                text_label = built_dict(drag_dict_usde, text_label,x,y)           
+                artist_list.append(text_label)  # NOTE: INSIDE IF
                 if key == 'UP': #UP
                     artist_list.append(axes[inx][iny].arrow(dup_x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
                 else:
@@ -265,11 +272,12 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
                 if label_counter1 > 5:
                     pass
                 else:
+                    text_label = axes[inx][iny].text(dup_x - 0.02, final_y_inx1, label, rotation = 'vertical', fontsize=8, picker=True)
                     # print("arrow_label_buffer_inx1 before",arrow_label_buffer_inx1)
                     # arrow_label_buffer_inx1 = arrow_label_buffer_inx1 - 0.27
                     # print("arrow_label_buffer_inx1",arrow_label_buffer_inx1)                
-                    built_dict(drag_dict_usde,label,dup_x - 0.02,final_y_inx1,x,y)
-                    artist_list.append(axes[inx][iny].text(dup_x - 0.02, final_y_inx1, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                    text_label = built_dict(drag_dict_usde, text_label,x,y)
+                    artist_list.append(text_label)  # NOTE: INSIDE IF
                     if key == 'UP':
                         artist_list.append(axes[inx][iny].arrow(dup_x, y , 0, -0.5, width = 0.005, clip_on = False))
                     else:
@@ -280,8 +288,9 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
             if label_counter > 5:
                 pass
             else:
-                built_dict(drag_dict_usde,label,dup_x - 0.02,final_y,x,y)
-                artist_list.append(axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                text_label = axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True)
+                text_label = built_dict(drag_dict_usde, text_label,x,y)
+                artist_list.append(text_label)  # NOTE: INSIDE IF
                 if key == 'UP': #UP
                     artist_list.append(axes[inx][iny].arrow(dup_x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
                 else:
@@ -312,8 +321,9 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
             if label_counter2 > 5:
                 pass
             else:            
-                built_dict(drag_dict_usde,label,dup_x - 0.02,final_y_inx2,x,y)
-                artist_list.append(axes[inx][iny].text(dup_x - 0.02, final_y_inx2, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                text_label = axes[inx][iny].text(dup_x - 0.02, final_y_inx2, label, rotation = 'vertical', fontsize=8, picker=True)
+                text_label = built_dict(drag_dict_usde, text_label,x,y)
+                artist_list.append(text_label)  # NOTE: INSIDE IF
                 if key == 'UP':
                     artist_list.append(axes[inx][iny].arrow(dup_x, y , 0, -0.5, width = 0.005, clip_on = False))
                 else:
@@ -324,8 +334,9 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
             if label_counter > 5:
                 pass
             else:
-                built_dict(drag_dict_usde,label,dup_x - 0.02,final_y,x,y)
-                artist_list.append(axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True))  # NOTE: INSIDE IF
+                text_label = axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True)
+                text_label = built_dict(drag_dict_usde, text_label,x,y)
+                artist_list.append(text_label)  # NOTE: INSIDE IF
                 if key == 'UP': #UP
                     artist_list.append(axes[inx][iny].arrow(dup_x, y + arrow_plot_buffer, 0, -0.5, width = 0.005, clip_on = False))
                 else:

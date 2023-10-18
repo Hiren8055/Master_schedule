@@ -97,6 +97,8 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
         self.dragged_axes = None
         self.loaded = False
         self.blit = True
+        self.arr_drag_dict = None
+
     def load_file(self):
         file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Excel File", "", "Excel Files (*.xlsx)")
         if file_name:
@@ -135,16 +137,15 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
                 if select_flag:
                     down_up, dwn_upp = self.select(down_up, dwn_upp)
                 down_up = self.conversion(down_up)
-                
                 rect_dict = self.conversion_box(rect_dict)
                 down_up = self.add_24_down_up(down_up)
                 rect_dict = self.box_add_24(rect_dict)
                 self.figure.clear()
-                self.plot_trains(down_up, dwn_upp, color_dict, rect_dict,express_flag)
+                self.arr_drag_dict = self.plot_trains(down_up, dwn_upp, color_dict, rect_dict,express_flag)
                 self.export_button.setEnabled(True)
                 self.bm = None
                 self.bm = BlitManager(self.canvas, self.pl.artist_list)
-                self.dragged = dragged(self.canvas,self.bm)
+                self.dragged = dragged(self.canvas,self.arr_drag_dict, self.bm)
                 self.canvas.mpl_connect("pick_event", self.dragged.on_pick_event)
                 # self.canvas.mpl_connect("motion_notify_event", self.on_motion_event)
                 self.canvas.mpl_connect("button_release_event", self.dragged.on_release_event)
