@@ -1,8 +1,7 @@
 import uuid
 from labels import extract_current_axes_ue_ds, extract_current_axes_us_de, add_arrow_labels
 # Have to make the an array with slashing and original position
-def round_tenths(input_float: float) -> int:
-    return int(round(input_float/10))
+
 def built_dict(dict_name, text_label,train_x,train_y):
     key_name = str(uuid.uuid4())
     # print(key_name)
@@ -129,8 +128,8 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
                 final_y_inx2 = y + y_buffer_inx2 
                 label_counter2 += 1
             else:
-                print("Arrow label triggered inx2")
-                print(arrow_label_buffer_inx2)
+                # print("Arrow label triggered inx2")
+                # print(arrow_label_buffer_inx2)
                 label_counter2 = 0
                 label_var = ''
                 y_buffer_inx2 = 0
@@ -172,7 +171,7 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
             print("ue and ds dead end")
         previous_x, previous_y = x, y
         k += 3
-    print("drag_dict_ueds",drag_dict_ueds)
+    # print("drag_dict_ueds",drag_dict_ueds)
     return drag_dict_ueds
 
 def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):   
@@ -253,9 +252,9 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
                     final_y_inx1 = y - y_buffer_inx1 
                     label_counter1 += 1
                 else:
-                    print("arrow_label_buffer_inx1 before",arrow_label_buffer_inx1)
+                    # print("arrow_label_buffer_inx1 before",arrow_label_buffer_inx1)
                     arrow_label_buffer_inx1 = arrow_label_buffer_inx1 - 0.20
-                    print("arrow_label_buffer_inx1",arrow_label_buffer_inx1)
+                    # print("arrow_label_buffer_inx1",arrow_label_buffer_inx1)
                     # print("arrow_label_buffer_inx1 before",arrow_label_buffer_inx1)
                     # arrow_label_buffer_inx1 = arrow_label_buffer_inx1 - 0.27
                     # print("arrow_label_buffer_inx1",arrow_label_buffer_inx1)
@@ -346,5 +345,5 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
             print("Dead End")
         previous_x, previous_y = x, y
         k += 3
-    print("drag_dict_usde",drag_dict_usde)
+    # print("drag_dict_usde",drag_dict_usde)
     return drag_dict_usde

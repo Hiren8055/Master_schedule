@@ -96,14 +96,14 @@ def extract_up_elem(new_dict,upInter):
     # have to change the arrows direction and labels
     # remove it from upEnd and put it in upStart
     # convert the array into string
-    print("downStart",upEnd[0])
-    print("Dninter",upInter[0])
+    # print("downStart",upEnd[0])
+    # print("Dninter",upInter[0])
     j=0
     # to make all the values in string
     upEnd[0] = list(map(str, upEnd[0]))
 
     while j < len(upInter[0]):
-        print(str(upInter[0][j]))
+        # print(str(upInter[0][j]))
         if str(upInter[0][j]) in upEnd[0]:
             ind = upEnd[0].index(str(upInter[0][j]))
             # print(str(upInter[0][j]))
@@ -114,10 +114,10 @@ def extract_up_elem(new_dict,upInter):
             # print(len(upEnd[1]))
             if upInter[1][j] > 24:
                 upInter[1][j] = upInter[1][j] - 24
-            print("dsaf",upInter[1][j],upInter[2][j])
-            print(upEnd[1][ind],upEnd[2][ind])
+            # print("dsaf",upInter[1][j],upInter[2][j])
+            # print(upEnd[1][ind],upEnd[2][ind])
             if upInter[1][j] == upEnd[1][ind] and upInter[2][j] == upEnd[2][ind]:
-                print(str(upInter[0][j]))
+                # print(str(upInter[0][j]))
                 # drop that index
                 # print("drop 1",upInter[0].pop(j))
                 # print(upInter[1].pop(j))
@@ -140,8 +140,8 @@ def extract_up_elem(new_dict,upInter):
             elif i==1 or i==2:
                 upStart[i].append(upInter[i][j])
 
-    print("After downStart",upEnd[0])
-    print("After dninter",upInter[0])
+    # print("After downStart",upEnd[0])
+    # print("After dninter",upInter[0])
     # print(upStart)
     # print(len(upStart[0]))
     # do only testing merge to plot
@@ -221,26 +221,26 @@ def extract_dn_elem(new_dict,dnInter):
 
 
     
-    print("dnInter",dnInter)
+    # print("dnInter",dnInter)
     j = 0
-    print("downStart",dnStart[0])
-    print("dninter",dnInter[0])
+    # print("downStart",dnStart[0])
+    # print("dninter",dnInter[0])
 
     # to make all the values in string
     dnStart[0] = list(map(str, dnStart[0]))
 
     # removes the number
     while j < len(dnInter[0]):
-        print(str(dnInter[0][j]))
+        # print(str(dnInter[0][j]))
         if str(dnInter[0][j]) in dnStart[0]:
             ind = dnStart[0].index(str(dnInter[0][j]))
             # print(ind)
             if dnInter[1][j] > 24:
                 dnInter[1][j] = dnInter[1][j] - 24
-            print("dsaf",dnInter[1][j],dnInter[2][j])
-            print(dnStart[1][ind],dnStart[2][ind])
+            # print("dsaf",dnInter[1][j],dnInter[2][j])
+            # print(dnStart[1][ind],dnStart[2][ind])
             if dnInter[1][j] == dnStart[1][ind] and dnInter[2][j] == dnStart[2][ind]:
-                print(str(dnInter[0][j]))
+                # print(str(dnInter[0][j]))
                 # drop that index
                 dnStart[0].pop(ind)
                 dnStart[1].pop(ind)
@@ -256,14 +256,14 @@ def extract_dn_elem(new_dict,dnInter):
                 dnEnd[i].append(str(dnInter[i][j]))
             elif i==1 or i==2:
                 dnEnd[i].append(dnInter[i][j])
-    print("After downStart",dnStart[0])
-    print("After dninter",dnInter[0])
-    print("in the function dnEnd", dnEnd)
-    print(dnEnd)
-    print(len(dnEnd[0]))
-    print(len(dnEnd[1]))
-    print(len(dnEnd[2]))
-    print(len(dnEnd[3]))
+    # print("After downStart",dnStart[0])
+    # print("After dninter",dnInter[0])
+    # print("in the function dnEnd", dnEnd)
+    # print(dnEnd)
+    # print(len(dnEnd[0]))
+    # print(len(dnEnd[1]))
+    # print(len(dnEnd[2]))
+    # print(len(dnEnd[3]))
 
     return dnStart, dnEnd     
 

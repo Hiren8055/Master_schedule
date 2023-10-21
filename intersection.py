@@ -77,7 +77,7 @@ def intersection(self, station_dict, trains_dict):
         # Problem it is 1 0 and it should be 0 1 
         inx, iny = 0, 0   #NOTE: not necessary
         # for 0, 0
-        print("inside add arrow",x,y)
+        # print("inside add arrow",x,y)
         if (0 <= x < 8 and 0 <= y <= 29 ) :
             # print("condition triggered for label")
             inx = 0;iny = 0  
@@ -231,7 +231,7 @@ def intersection(self, station_dict, trains_dict):
         bufy = 1.8
         for i in range(len(inter_plot_arr)):
             inx, iny,_,_ = add_arrow_labels_intercept(inter_plot_arr[i][0],inter_plot_arr[i][1])
-            print("inx iny",inx,iny)
+            # print("inx iny",inx,iny)
             intersection_trains[0].append(trains_dict[updn][arr_index[i]//2])
             intersection_trains[1].append(inter_plot_arr[i][0])
             intersection_trains[2].append(inter_plot_arr[i][1])
@@ -242,7 +242,7 @@ def intersection(self, station_dict, trains_dict):
             
             # artist_list.append(axes[inx][iny].arrow(inter_plot_arr[i][0], inter_plot_arr[i][1], 0, 0.5, head_width = 0, width = 0.005, clip_on = False))
             
-        print("intersecting trains",intersection_trains)
+        # print("intersecting trains",intersection_trains)
         return intersection_trains
     # will have a intersection array for down and up
     # def intercept_plot(inter_plot_arr):

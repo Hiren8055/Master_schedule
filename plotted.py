@@ -164,14 +164,14 @@ class plotted_():
 
 ########################################## collision text for up and down #################################################\
 
-            print("original position",upEnd_dnStart,upStart_dnEnd)
+            # print("original position",upEnd_dnStart,upStart_dnEnd)
             arr_drag_dict_ueds = upEnd_dnStart_label(self.canvas, self.axes, express_flag, self.artist_list, upEnd_dnStart)
             arr_drag_dict_usde = upStart_dnEnd_label(self.canvas, self.axes, express_flag, self.artist_list, upStart_dnEnd)  
-            print(len(arr_drag_dict_ueds))
-            print(len(arr_drag_dict_usde))
+            # print(len(arr_drag_dict_ueds))
+            # print(len(arr_drag_dict_usde))
             arr_drag_dict = Merge(arr_drag_dict_ueds,arr_drag_dict_usde)
-            print("arr_drag_dict",arr_drag_dict)
-            print(len(arr_drag_dict))
+            # print("arr_drag_dict",arr_drag_dict)
+            # print(len(arr_drag_dict))
             
             # Merge both array with location of train with slashing
             # find without slashing values

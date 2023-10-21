@@ -58,8 +58,8 @@ def excel_to_pandas(self, filename,y_axis):
     bx_dict = dict()
     rect_dict = dict()
     express_flag =False
-    for key in df_dict:
-        print(key)
+    # for key in df_dict:
+        # print(key)
     bx_dict["DN"] = df_dict.pop("BOX_DN")
     bx_dict["UP"] = df_dict.pop("BOX_UP")
     down_up = dict()
@@ -114,8 +114,20 @@ def excel_to_pandas(self, filename,y_axis):
         df.drop(1, axis=1, inplace=True)
         df.columns = range(df.columns.size)
         color_list = df.iloc[0,1:].copy(deep=False).tolist()
+        for column in df.columns:
+            if pd.api.types.is_string_dtype(df[column].dtype):
+                # Check if the above two cells are strings and not NaN
+                remark = bool(pd.notna(df.at[1, column])) 
+                days = bool(pd.notna(df.at[2, column]))            
+                if remark or days:
+                    # Concatenate values and update the cell
+                    df.at[3, column] = f"{str(df.at[1, column]) + ' ' if remark else ''}{str(df.at[2, column]) + ' ' if days else ''}{df.at[3, column]}"
+        df.drop(2, axis=0, inplace=True)
+        df.drop(1, axis=0, inplace=True)
         df.drop(0, axis=0, inplace=True)
         df.reset_index(drop=True, inplace=True)
+        df.iloc[0,0] = np.nan
+        print(df)
         trains_list = df.iloc[0,1:].copy(deep=False).tolist()
         counter = Counter(trains_list)
         duplicates = [str(item) for item, count in counter.items() if count > 1]
@@ -187,7 +199,7 @@ def excel_to_pandas(self, filename,y_axis):
         dwn_upp[key] = trains_list
         color_dict[key] = color_list
 
-    print("express_flag",express_flag)
+    # print("express_flag",express_flag)
     return down_up, dwn_upp, color_dict, rect_dict, express_flag
 
 def select( down_up,dwn_upp):
