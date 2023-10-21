@@ -61,7 +61,7 @@ class plotted_():
                 grid = "-----"
             elif key =="BOX_UP":
                 grid = "|||"
-            pp.pprint(f"lol\n{rect_dict}")
+            pp.pprint(f"{rect_dict}")
             for station, start_time, end_time, remark in box_list:
                 xmin = start_time
                 xmax = end_time
