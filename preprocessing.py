@@ -276,8 +276,6 @@ def time_to_float(time_string):
     hours, minutes, seconds = map(int, time_string.split(':'))
     # Convert hours, minutes, and seconds to a decimal representation of hours
     time_in_hours = hours + (minutes / 60) + (seconds / 3600)
-    after_decimal = time_in_hours % 1
-    time_in_hours = int(time_in_hours) + after_decimal
     rounded_time = round(time_in_hours, 2)
     return rounded_time
 
@@ -312,13 +310,11 @@ def add_24_down_up(down_up):
 
 def box_add_24(rect_dict):
     for key, box_list in rect_dict.items():
+        box_24 = []
         for i, (label,start_time,end_time,remark) in enumerate(box_list):
-            box_24 = []
             if end_time < start_time:
                 end_time+=24
                 box_list[i] = label, start_time, end_time, remark,
                 box_24.append(tuple([label, start_time - 24, end_time - 24, remark]))
-            else:
-                box_24.append(tuple([label, start_time - 24, end_time - 24, remark,]))
         box_list.extend(box_24)
     return rect_dict
