@@ -15,7 +15,8 @@ from labels import *
 from plotted import plotted_
 from matplotlib.text import Text
 from Draggable import dragged
-
+import pprint
+pp = pprint.PrettyPrinter(indent=0.1)
 
 
 class ExportWorker(QObject):
@@ -151,9 +152,12 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
                 if select_flag:
                     down_up, dwn_upp = self.select(down_up, dwn_upp)
                 down_up = self.conversion(down_up)
+                pp.pprint(f"1st:{rect_dict}")
                 rect_dict = self.conversion_box(rect_dict)
+                pp.pprint(f"conversion:{rect_dict}")
                 down_up = self.add_24_down_up(down_up)
                 rect_dict = self.box_add_24(rect_dict)
+                pp.pprint(f"24 add:{rect_dict}") 
                 self.figure.clear()
                 self.arr_drag_dict = self.plot_trains(down_up, dwn_upp, color_dict, rect_dict,express_flag)
                 self.export_button.setEnabled(True)

@@ -132,7 +132,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         df.reset_index(drop=True,inplace=True)
         time_df = df[df.index % 3 != 2].copy(deep = False)
         remark_df = df[df.index % 3 == 2].copy(deep = False)
-        rect_dict[key] = [(label,time1,time2,remark,) if remark!=np.nan else (label,time1,time2,) for (label,c),(_,c_) in zip(time_df.items(),remark_df.items()) for  time1,time2,remark in zip(c.dropna().to_list()[::3],c.dropna().to_list()[1::3],c_.to_list()[::3])]
+        rect_dict[key] = [(label,time1,time2,remark,) if remark!=np.nan else (label,time1,time2,) for (label,c),(_,c_) in zip(time_df.items(),remark_df.items()) for  time1,time2,remark in zip(c.dropna().to_list()[::2],c.dropna().to_list()[1::2],c_.to_list())]
         box_col_len_err = [label for label,col in df.items() if len(col.dropna()[::3].to_list())%3!=0]
         pp.pprint(rect_dict)
         # if box_col_len_err:
@@ -141,6 +141,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         df.drop(1, axis=1, inplace=True)
         df.columns = range(df.columns.size)
         color_list = df.iloc[0,1:].copy(deep=False).tolist()
+        df_ = pd.DataFrame()
         for column in df.columns:
             if pd.api.types.is_string_dtype(df[column].dtype):
                 # Check if the above two cells are strings and not NaN
@@ -156,13 +157,11 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
                 #     days_val = str(df.at[2, column])
                 #     df.at[3, column] = f"{remark_val + ' ' if remark else ''}{days_val + ' ' if days else ''}{df.at[3, column]}"
                 #     # check whether the remark var is p
-                #     if regex(remark_val, remark_var):
-                #         df[column]= pd.NA
-                #         df.rename(columns = {column:pd.NA}, inplace =True)
-                    
-                #     if regex(days_val, days_var):
-                #         df[column]= pd.NA
-                #         df.rename(columns = {column:pd.NA}, inplace =True)
+                #     if remark_var and regex(remark_val, remark_var):
+                #         pd.concat([df_,df[column]], axis=1)
+                #     if remark_var and regex(remark_val, remark_var):
+                #         pd.concat([df_,df[column]], axis=1)
+        # df = df_
         df.drop(2, axis=0, inplace=True)
         df.drop(1, axis=0, inplace=True)
         df.drop(0, axis=0, inplace=True)

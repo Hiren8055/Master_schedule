@@ -61,7 +61,6 @@ class plotted_():
                 grid = "-----"
             elif key =="BOX_UP":
                 grid = "|||"
-            pp.pprint(f"{rect_dict}")
             for station, start_time, end_time, remark in box_list:
                 xmin = start_time
                 xmax = end_time
@@ -69,8 +68,8 @@ class plotted_():
                 ymin = station + 0.15
                 rect = patches.Rectangle((xmin, ymin), width=xmax-xmin, height= ymax-ymin, alpha=0.6, edgecolor='m', hatch=grid, facecolor='none')
                 self.artist_list.append(self.axes[index_0][index_1].add_patch(rect))
-                if remark:
-                    self.axes[index_0][index_1].text(start_time, station, str(remark), clip_on=True) 
+                if remark and remark is not np.nan:
+                    self.axes[index_0][index_1].text(start_time, station+1, str(remark), clip_on=True) 
         self.axes[index_0][index_1].xaxis.grid(True, which='major', linestyle='-', color='black')
         self.axes[index_0][index_1].xaxis.grid(True, which='minor', linestyle='-')
         self.axes[index_0][index_1].xaxis.set_minor_locator(MultipleLocator(10 / 60))
@@ -103,6 +102,7 @@ class plotted_():
         self.axes = self.figure.subplots(nrows=3, ncols=3)
         # have to make  3 x 3 grid
         # set width of each subplot as 8
+        pp.pprint(f"{rect_dict}")
         for key, arr_2d in station_dict.items():
             self.canvas.flush_events()
             
