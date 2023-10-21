@@ -120,7 +120,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
             elif match_p2 := regex(cell,p2):
                 return match_p2[0]
             else:
-                print(f"Regex error {cell}")
+                # print(f"Regex error {cell}")
                 return np.nan
         new_str_df = new_df.astype(str)
         for i, (index, row) in enumerate(new_str_df.iterrows()):
@@ -291,8 +291,8 @@ def conversion(station_dict):
 
 def conversion_box(rect_dict):
     for key, box_list in rect_dict.items():
-        for i, (label,start_time,end_time,*_) in enumerate(box_list):
-            box_list[i] = label, time_to_float(start_time), time_to_float(end_time), _,
+        for i, (label,start_time,end_time,remark) in enumerate(box_list):
+            box_list[i] = label, time_to_float(start_time), time_to_float(end_time), remark,
     return rect_dict
 
 def add_24_down_up(down_up):
@@ -312,13 +312,13 @@ def add_24_down_up(down_up):
 
 def box_add_24(rect_dict):
     for key, box_list in rect_dict.items():
-        for i, (label,start_time,end_time,*_) in enumerate(box_list):
+        for i, (label,start_time,end_time,remark) in enumerate(box_list):
             box_24 = []
             if end_time < start_time:
                 end_time+=24
-                box_list[i] = label, start_time, end_time, _,
-                box_24.append(tuple([label, start_time - 24, end_time - 24, _]))
+                box_list[i] = label, start_time, end_time, remark,
+                box_24.append(tuple([label, start_time - 24, end_time - 24, remark]))
             else:
-                box_24.append(tuple([label, start_time - 24, end_time - 24, _,]))
+                box_24.append(tuple([label, start_time - 24, end_time - 24, remark,]))
         box_list.extend(box_24)
     return rect_dict

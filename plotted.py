@@ -61,15 +61,20 @@ class plotted_():
                 grid = "-----"
             elif key =="BOX_UP":
                 grid = "|||"
-            for station, start_time, end_time, *remark in box_list:
+            pp.pprint(f"lol\n{rect_dict}")
+            for station, start_time, end_time, remark in box_list:
                 xmin = start_time
                 xmax = end_time
                 ymax = station - 0.15
                 ymin = station - 0.85
+                # pp.pprint(f"start_time:{xmin}")
+                # pp.pprint(f"end_time{xmax}")
+                # pp.pprint(f"station up:{station}")
+                # pp.pprint(f"Remark:{remark}")
                 rect = patches.Rectangle((xmin, ymin), width=xmax-xmin, height= ymax-ymin, alpha=0.6, edgecolor='m', hatch=grid, facecolor='none')
                 self.artist_list.append(self.axes[index_0][index_1].add_patch(rect))
                 if remark:
-                    self.axes[index_0][index_1].text(start_time+0.1, station-0.2, str(remark[0][0]), clip_on=True)
+                    self.axes[index_0][index_1].text(start_time+0.1, station-0.2, str(remark), clip_on=True)
         self.axes[index_0][index_1].xaxis.grid(True, which='major', linestyle='-', color='black')
         self.axes[index_0][index_1].xaxis.grid(True, which='minor', linestyle='-')
         self.axes[index_0][index_1].xaxis.set_minor_locator(MultipleLocator(10 / 60))
