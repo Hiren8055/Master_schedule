@@ -1,6 +1,6 @@
 from PySide2 import QtWidgets
 from PySide2.QtGui import QFont
-from PySide2.QtWidgets import QScrollArea, QMessageBox, QApplication, QProgressBar
+from PySide2.QtWidgets import QScrollArea, QMessageBox, QApplication, QProgressBar,QLineEdit,QLabel
 from PySide2.QtCore import QObject, QThread, Signal, QTimer
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -84,13 +84,23 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
         self.export_button.clicked.connect(self.export_plot)
         self.export_button.setEnabled(False)
         self.layout = QtWidgets.QVBoxLayout(self)
+        self.remarks_label= QLabel()
+        self.days_label = QLabel()
+        self.remarks_label.setText("Remarks")
+        self.days_label.setText("Days")
+        self.remark_textbox = QLineEdit(self)
+        self.days_textbox = QLineEdit(self)
         self.layout.addWidget(self.toolbar)
         self.layout.addWidget(self.progress_bar)
         self.layout.addWidget(self.scroll_area)
+        self.layout.addWidget(self.remarks_label)
+        self.layout.addWidget(self.remark_textbox)
+        self.layout.addWidget(self.days_label)
+        self.layout.addWidget(self.days_textbox)
         self.layout.addWidget(self.button)  
         self.layout.addWidget(self.export_button)
-        self.canvas.setMinimumSize(5500, 2500)
-        self.canvas.setMaximumSize(5501, 2501)
+        self.canvas.setMinimumSize(5500, 4000)
+        self.canvas.setMaximumSize(5501, 4001)
         self.bm = None
         self.artist_list = []
         self.dragged = None
@@ -129,11 +139,15 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
                     self.layout.addWidget(self.scroll_area)
                     self.toolbar.show()
                     self.scroll_area.show()
+                print(str(self.remark_textbox.text()))
+                print(str(self.days_textbox.text()))
+                remark_var = str(self.remark_textbox.text())
+                days_var = str(self.days_textbox.text())
                 self.pl = plotted_(self.figure, self.y_axis, self.y_labes, self.canvas, self.layout,self.export_button,self.axes, self.scroll_area, self.toolbar)
                 self.plot_trains = self.pl.plot_trains
                 self.loaded = True
                 select_flag = False
-                down_up, dwn_upp, color_dict, rect_dict, express_flag =  self.excel_to_pandas(file_name,self.y_axis)
+                down_up, dwn_upp, color_dict, rect_dict, express_flag =  self.excel_to_pandas(file_name, self.y_axis, remark_var,days_var)
                 if select_flag:
                     down_up, dwn_upp = self.select(down_up, dwn_upp)
                 down_up = self.conversion(down_up)

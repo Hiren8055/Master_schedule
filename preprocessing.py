@@ -4,6 +4,9 @@ import pandas as pd
 import re
 from collections import Counter
 from PySide2.QtWidgets import QMessageBox
+from PySide2.QtWidgets import QMessageBox
+from pprint import PrettyPrinter
+pp = PrettyPrinter(indent=0.1)
 
 class DuplicateTrainError(Exception):
     def __init__(self, message):
@@ -48,42 +51,44 @@ class WrongStrictBoxTimeFormatError(Exception):
         self.message = message
         super().__init__(self.message)
 
-def excel_to_pandas(self, filename,y_axis):
+def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
     """
     return
     down_up: dict containing all stations and hault timings {'DN':[[station_name],[timings]], 'UP':[[station_name],[timings]]}
     dwn_upp: list with all train number (trains)"""
-    strict_mode = True
     df_dict = pd.read_excel(filename, sheet_name=None, header=None, dtype = "object")
     bx_dict = dict()
     rect_dict = dict()
     express_flag =False
-    # for key in df_dict:
-        # print(key)
-    bx_dict["DN"] = df_dict.pop("BOX_DN")
-    bx_dict["UP"] = df_dict.pop("BOX_UP")
+    for key in df_dict:
+        print(key)
+    bx_dict["BOX_DN"] = df_dict.pop("BOX_DN")
+    bx_dict["BOX_UP"] = df_dict.pop("BOX_UP")
     down_up = dict()
     dwn_upp = dict()
     color_dict = dict()
     unit_test_dict = dict()
     for key, df in bx_dict.items():
         df.drop(0,axis=1,inplace=True)
-        df.astype(str)
+        type_str = lambda x: str(x)
+        df = df.map(type_str, na_action='ignore')
         df.columns = range(df.columns.size)
         df.iloc[0,:] = df.iloc[0,:].str.strip()
+        df
         stations = df.iloc[0,:].squeeze().copy(deep=False)
         wrong_stations = stations.isin(y_axis)
         # time_start = df[1,:].squeeze().copy(deep=False)
         # time_end = df[2,:].squeeze().copy(deep=False)
         pattern = r'(^\d\d:\d\d(?!:))'
-        stacked_series = df.stack()
+        time_df = df[df.index % 3 != 2].copy(deep = False)
+        stacked_series = time_df.stack()
         matches = stacked_series.str.extractall(pattern)
         matched_values = matches[0].tolist()
         if matched_values:
             matched_values = [str(item) for item in matched_values]
             raise WrongBoxTimeFormatError(f"The following cells in the BOX sheets have HH:MM time format, please use HH:MM:SS format instead:{', '.join(matched_values)}")
         p1, p2 = r'\d\d:\d\d:\d\d', r'\d:\d\d:\d\d'
-        new_df = df.iloc[1:,:].astype(str)
+        new_df = df.iloc[1:,:].map(type_str, na_action='ignore')
         pattern_checker = r'((^\d?\d:\d\d:\d\d$)|^nan$|^$|^\s*$)'
         num_rows = len(stations)
         wrong_box_rows = []
@@ -92,24 +97,46 @@ def excel_to_pandas(self, filename,y_axis):
                 wrong_box_rows.append(str(i))
         if wrong_box_rows:
             raise IncorrectLengthOfRowsBoxError(f"The following rows in the {str(key)} sheet's number of values in the row exceeds the number of stations provided: row{', row'.join(wrong_box_rows)}\nKindly check the stations in {str(key)} sheet and correct the number of values in the rows.")
-        val_checker = new_df.stack()
-        non_matches = val_checker[~val_checker.str.match(pattern_checker, na=False)].astype(str).tolist()
+        val_checker = pd.DataFrame()
+        for i, (index, row) in enumerate(new_df.iterrows()):
+            if i % 3 == 0:
+                val_checker = pd.concat([val_checker,row], axis = 0)
+        values = val_checker.copy(deep=False).stack()
+        non_matches = values[~values.str.match(pattern_checker, na=False)].astype(str).tolist()
         if non_matches:
             message = f"The following Time values in {str(key)} sheet are either of incorrect format or have extra characters or space along with time: {', '.join(non_matches)}\nKindly correct the given values."
             QMessageBox.critical(self, "Warning", message)
-        for label, column in new_df.items():
+        new_str_df = new_df.astype(str)
+        for label, column in new_str_df.items():
             bool_index = column.str.contains(p2, regex=True, na=False)
+            bool_index[2::3] = True
             new_df.loc[~bool_index, label] = np.nan
         regex = lambda x,p: re.findall(p,x)
-        new_df = new_df.applymap(lambda cell: regex(cell,p1)[0] if regex(cell,p1) else (regex(cell,p2)[0] if regex(cell,p2) else print(f"Regex error {cell}")), na_action = 'ignore')
+        def mapper(cell, p1, p2):
+            if cell is pd.NA or cell is np.nan:
+                return pd.NA
+            elif match_p1 := regex(cell,p1):
+                return match_p1[0]
+            elif match_p2 := regex(cell,p2):
+                return match_p2[0]
+            else:
+                print(f"Regex error {cell}")
+                return np.nan
+        new_str_df = new_df.astype(str)
+        for i, (index, row) in enumerate(new_str_df.iterrows()):
+            if i % 3 != 2:
+                new_df.loc[index, :] = row.apply(mapper, args = (p1, p2,))
         df.iloc[1:,:] = new_df
         df.columns = df.iloc[0,:]
         df.drop(0,axis=0,inplace=True)
         df.reset_index(drop=True,inplace=True)
-        rect_dict[key] = [(label,time1,time2,) for label,c in df.items() for  time1,time2 in zip(c.dropna().to_list()[::2],c.dropna().to_list()[1::2])]
-        box_col_len_err = [label for label,col in df.items() if len(col.dropna().to_list())%2!=0] 
-        if box_col_len_err: 
-            raise BoxColumnLengthError(f"Following stations in the BOX sheets have either incorrect number of timings for boxes or wrong timing format. Please follow provided format:{', '.join(box_col_len_err)}")    
+        time_df = df[df.index % 3 != 2].copy(deep = False)
+        remark_df = df[df.index % 3 == 2].copy(deep = False)
+        rect_dict[key] = [(label,time1,time2,remark,) if remark!=np.nan else (label,time1,time2,) for (label,c),(_,c_) in zip(time_df.items(),remark_df.items()) for  time1,time2,remark in zip(c.dropna().to_list()[::3],c.dropna().to_list()[1::3],c_.to_list()[::3])]
+        box_col_len_err = [label for label,col in df.items() if len(col.dropna()[::3].to_list())%3!=0]
+        pp.pprint(rect_dict)
+        # if box_col_len_err:
+        #     raise BoxColumnLengthError(f"Following stations in the BOX sheets have either incorrect number of timings for boxes or wrong timing format. Please follow provided format:{', '.join(box_col_len_err)}")    
     for key, df in df_dict.items():
         df.drop(1, axis=1, inplace=True)
         df.columns = range(df.columns.size)
@@ -122,6 +149,20 @@ def excel_to_pandas(self, filename,y_axis):
                 if remark or days:
                     # Concatenate values and update the cell
                     df.at[3, column] = f"{str(df.at[1, column]) + ' ' if remark else ''}{str(df.at[2, column]) + ' ' if days else ''}{df.at[3, column]}"
+                # if remark or days:
+                #     # Concatenate values and update the cell
+                #     # if remark_var is not none remark_var == remark
+                #     remark_val = str(df.at[1, column])
+                #     days_val = str(df.at[2, column])
+                #     df.at[3, column] = f"{remark_val + ' ' if remark else ''}{days_val + ' ' if days else ''}{df.at[3, column]}"
+                #     # check whether the remark var is p
+                #     if regex(remark_val, remark_var):
+                #         df[column]= pd.NA
+                #         df.rename(columns = {column:pd.NA}, inplace =True)
+                    
+                #     if regex(days_val, days_var):
+                #         df[column]= pd.NA
+                #         df.rename(columns = {column:pd.NA}, inplace =True)
         df.drop(2, axis=0, inplace=True)
         df.drop(1, axis=0, inplace=True)
         df.drop(0, axis=0, inplace=True)
@@ -230,6 +271,7 @@ def select( down_up,dwn_upp):
     # print("train_dict",train_dict)
     return new_dict, train_dict
 
+
 def time_to_float(time_string):
     hours, minutes, seconds = map(int, time_string.split(':'))
     # Convert hours, minutes, and seconds to a decimal representation of hours
@@ -249,11 +291,11 @@ def conversion(station_dict):
 
 def conversion_box(rect_dict):
     for key, box_list in rect_dict.items():
-        for i, (_,start_time,end_time) in enumerate(box_list):
-            box_list[i] = _, time_to_float(start_time), time_to_float(end_time),
+        for i, (label,start_time,end_time,*_) in enumerate(box_list):
+            box_list[i] = label, time_to_float(start_time), time_to_float(end_time), _,
     return rect_dict
 
-def add_24_down_up( down_up):
+def add_24_down_up(down_up):
     y = False
     for key, arr_2 in down_up.items():
         for hi in range(1, len(arr_2),2):
@@ -270,13 +312,13 @@ def add_24_down_up( down_up):
 
 def box_add_24(rect_dict):
     for key, box_list in rect_dict.items():
-        for i, (_,start_time,end_time) in enumerate(box_list):
+        for i, (label,start_time,end_time,*_) in enumerate(box_list):
             box_24 = []
             if end_time < start_time:
                 end_time+=24
-                box_list[i] = _, start_time, end_time,
-                box_24.append(tuple([_, start_time - 24, end_time - 24,]))
+                box_list[i] = label, start_time, end_time, _,
+                box_24.append(tuple([label, start_time - 24, end_time - 24, _]))
             else:
-                box_24.append(tuple([_, start_time - 24, end_time - 24,]))
+                box_24.append(tuple([label, start_time - 24, end_time - 24, _,]))
         box_list.extend(box_24)
     return rect_dict

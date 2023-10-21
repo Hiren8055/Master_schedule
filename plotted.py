@@ -6,6 +6,8 @@ import copy
 from labels import add_lables, add_keys, extract_up_elem, extract_dn_elem, merge_elements
 from label_arrow import *
 from intersection import intersection
+import pprint
+pp = pprint.PrettyPrinter(indent=0.1)
 def Merge(dict1, dict2):
     res = {**dict1, **dict2}
     return res
@@ -55,18 +57,19 @@ class plotted_():
             self.canvas.flush_events()
 
         for key, box_list in rect_dict.items():
-            if key =="DN":
+            if key =="BOX_DN":
                 grid = "-----"
-            elif key =="UP":
+            elif key =="BOX_UP":
                 grid = "|||"
-            for station, start_time, end_time in box_list:
+            for station, start_time, end_time, *remark in box_list:
                 xmin = start_time
                 xmax = end_time
                 ymax = station - 0.15
                 ymin = station - 0.85
                 rect = patches.Rectangle((xmin, ymin), width=xmax-xmin, height= ymax-ymin, alpha=0.6, edgecolor='m', hatch=grid, facecolor='none')
                 self.artist_list.append(self.axes[index_0][index_1].add_patch(rect))
-
+                if remark:
+                    self.axes[index_0][index_1].text(start_time+0.1, station-0.2, str(remark[0][0]), clip_on=True)
         self.axes[index_0][index_1].xaxis.grid(True, which='major', linestyle='-', color='black')
         self.axes[index_0][index_1].xaxis.grid(True, which='minor', linestyle='-')
         self.axes[index_0][index_1].xaxis.set_minor_locator(MultipleLocator(10 / 60))
