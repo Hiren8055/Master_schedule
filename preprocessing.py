@@ -140,28 +140,37 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
     for key, df in df_dict.items():
         df.drop(1, axis=1, inplace=True)
         df.columns = range(df.columns.size)
-        color_list = df.iloc[0,1:].copy(deep=False).tolist()
         df_ = pd.DataFrame()
-        for column in df.columns:
-            if pd.api.types.is_string_dtype(df[column].dtype):
-                # Check if the above two cells are strings and not NaN
-                remark = bool(pd.notna(df.at[1, column])) 
-                days = bool(pd.notna(df.at[2, column]))            
-                if remark or days:
-                    # Concatenate values and update the cell
-                    df.at[3, column] = f"{str(df.at[1, column]) + ' ' if remark else ''}{str(df.at[2, column]) + ' ' if days else ''}{df.at[3, column]}"
-                # if remark or days:
-                #     # Concatenate values and update the cell
-                #     # if remark_var is not none remark_var == remark
-                #     remark_val = str(df.at[1, column])
-                #     days_val = str(df.at[2, column])
-                #     df.at[3, column] = f"{remark_val + ' ' if remark else ''}{days_val + ' ' if days else ''}{df.at[3, column]}"
-                #     # check whether the remark var is p
-                #     if remark_var and regex(remark_val, remark_var):
-                #         pd.concat([df_,df[column]], axis=1)
-                #     if remark_var and regex(remark_val, remark_var):
-                #         pd.concat([df_,df[column]], axis=1)
-        # df = df_
+        df_ = pd.concat([df_, df.iloc[:,0]])
+        for col, srs in df.items():
+            # Check if the above two cells are strings and not NaN
+            remark = srs.at[1] != np.nan
+            days = srs.at[2] != np.nan
+            if remark or days:
+                # Concatenate values and update the cell
+                # if remark_var is not none remark_var == remark
+                remark_val = str(srs.at[1])
+                days_val = str(srs.at[2])
+                srs.at[3] = f"{remark_val + ' ' if remark else ''}{days_val + ' ' if days else ''}{srs.at[3]}"
+                regex_remark = None
+                regex_days = None
+                if remark_var or days_var:
+                    # check whether the remark var is p
+                    if remark_var:
+                        regex_remark = regex(remark_val, remark_var)
+                    if days_var: 
+                        regex_days = regex(days_val, days_var)
+                    
+                    if remark_var and days_var and regex_remark and regex_days:
+                        # print("Should not work both")
+                        df_ = pd.concat([df_,srs], axis=1)
+                    elif (bool(remark_var) ^ bool(days_var)) and ((remark_var and regex_remark) or (days_var and regex_days)):
+                        df_ = pd.concat([df_,srs], axis=1)
+                else:
+                    df[col] = srs
+        if remark_var or days_var:
+            df = df_.copy(deep=False)
+        color_list = df.iloc[0,1:].copy(deep=False).tolist()
         df.drop(2, axis=0, inplace=True)
         df.drop(1, axis=0, inplace=True)
         df.drop(0, axis=0, inplace=True)
@@ -175,7 +184,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
             raise DuplicateTrainError(f"Following duplicate trains are present in spread sheet: {', '.join(duplicates)}")
         df.drop(0, axis=0, inplace=True)
         df.reset_index(drop=True, inplace=True)
-        df.iloc[:, 0].fillna(method="ffill", inplace=True)
+        df.iloc[:, 0].ffill(inplace=True)
         df.iloc[:, 0]= df.iloc[:, 0].str.strip()
         first_column_series = df.iloc[:,0].copy(deep=False).rename(None)
         wrong_stations = first_column_series.isin(y_axis)
