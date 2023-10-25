@@ -144,8 +144,8 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         df_ = pd.concat([df_, df.iloc[:,0]])
         for col, srs in df.items():
             # Check if the above two cells are strings and not NaN
-            remark = np.isnan(srs.at[1])
-            days = np.isnan(srs.at[2]) 
+            remark = pd.isnull(srs.at[1])
+            days = pd.isnull(srs.at[2]) 
             if remark or days:
                 # Concatenate values and update the cell
                 # if remark_var is not none remark_var == remark
