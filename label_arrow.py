@@ -9,6 +9,102 @@ def built_dict(dict_name, text_label,train_x,train_y):
     dict_name[key_name] = [train_x, train_y]
     return text_label
 
+def condition_for_text_buffer(label, len_of_labels, arrow_label_buffer):
+    """should take input len of labels and return variable constant based on len of label"""
+    if len_of_labels <= 5:
+        print("entered in below 5")
+        if arrow_label_buffer == 0.55:
+            arrow_label_buffer = 0.55
+        elif  arrow_label_buffer == 0.37:
+            arrow_label_buffer = 0.37
+        elif  arrow_label_buffer == 0.30:
+            arrow_label_buffer = 0.30
+        # ueds
+        elif arrow_label_buffer == 0.18:
+            arrow_label_buffer = 0.18
+        elif  arrow_label_buffer == 0.16:
+            arrow_label_buffer = 0.16
+        elif  arrow_label_buffer == 0.14:
+            arrow_label_buffer = 0.14
+        else:
+            print("no arrow_label_buffer exists") 
+    elif 5 <len_of_labels <=7:
+        print("entered in 5 and 7")
+        # usde add
+        if arrow_label_buffer == 0.55:
+            arrow_label_buffer = arrow_label_buffer + 0.1
+        elif  arrow_label_buffer == 0.37:
+            arrow_label_buffer = arrow_label_buffer + 0.1
+        elif  arrow_label_buffer == 0.30:
+            arrow_label_buffer = arrow_label_buffer + 0.1
+        # ueds
+        elif arrow_label_buffer == 0.18:
+            arrow_label_buffer = arrow_label_buffer - 0.1
+        elif  arrow_label_buffer == 0.16:
+            arrow_label_buffer = arrow_label_buffer - 0.1
+        elif  arrow_label_buffer == 0.14:
+            arrow_label_buffer = arrow_label_buffer - 0.1
+        else:
+            print("no arrow_label_buffer exists")
+
+    elif 7 < len_of_labels <= 10:
+        print(" entered in 7 and 10")
+        if arrow_label_buffer == 0.55:
+            arrow_label_buffer = arrow_label_buffer + 0.14
+        elif  arrow_label_buffer == 0.37:
+            arrow_label_buffer = arrow_label_buffer + 0.14
+        elif  arrow_label_buffer == 0.30:
+            arrow_label_buffer = arrow_label_buffer + 0.14
+        # ueds
+        elif arrow_label_buffer == 0.18:
+            arrow_label_buffer = arrow_label_buffer -0.14
+        elif  arrow_label_buffer == 0.16:
+            arrow_label_buffer = arrow_label_buffer -0.14
+        elif  arrow_label_buffer == 0.14:
+            arrow_label_buffer = arrow_label_buffer -0.14
+        else:
+            print("no arrow_label_buffer exists")
+
+    elif 10 < len_of_labels <= 12:
+        print(" entered in 10 and 12")
+        if arrow_label_buffer == 0.55:
+            arrow_label_buffer = arrow_label_buffer + 0.19
+        elif  arrow_label_buffer == 0.37:
+            arrow_label_buffer = arrow_label_buffer + 0.19
+        elif  arrow_label_buffer == 0.30:
+            arrow_label_buffer = arrow_label_buffer + 0.19
+        # ueds
+        elif arrow_label_buffer == 0.18:
+            arrow_label_buffer = arrow_label_buffer -0.19
+        elif  arrow_label_buffer == 0.16:
+            arrow_label_buffer = arrow_label_buffer -0.19
+        elif  arrow_label_buffer == 0.14:
+            arrow_label_buffer = arrow_label_buffer -0.19
+        else:
+            print("no arrow_label_buffer exists")
+    elif 12< len_of_labels:
+        print("entered in 12 above")
+        if arrow_label_buffer == 0.55:
+            arrow_label_buffer = arrow_label_buffer - 0.24
+        elif  arrow_label_buffer == 0.37:
+            arrow_label_buffer = arrow_label_buffer - 0.14
+        elif  arrow_label_buffer == 0.30:
+            arrow_label_buffer = arrow_label_buffer - 0.1
+        # ueds
+        elif arrow_label_buffer == 0.18:
+            arrow_label_buffer = arrow_label_buffer - 0.13
+        elif  arrow_label_buffer == 0.16:
+            arrow_label_buffer = arrow_label_buffer + 0.25
+        elif  arrow_label_buffer == 0.14:
+            arrow_label_buffer = arrow_label_buffer + 0.25
+        else:
+            print("no arrow_label_buffer exists")
+    else:
+        print("Problem in len of labels.")
+
+    return arrow_label_buffer
+
+
 def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
     """ this function plot arrow and labels for up-end and down-start"""
     canvas.flush_events()
@@ -32,10 +128,11 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
         len_of_labels = len(label_)
 
         arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag, second_axes_flag = extract_current_axes_ue_ds(x, y)
+        arrow_label_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer)        
         if abs(x - previous_x) <= 0.03 and y == previous_y:
             label_var = '/'
             y_buffer = y_buffer + (slash_buffer * len_of_labels) 
-            final_y = y - y_buffer 
+            final_y = y - y_buffer
             label_counter += 1
         else:
             label_counter = 0
@@ -195,10 +292,12 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
         len_of_labels = len(label_)
 
         arrow_plot_buffer, arrow_label_buffer, slash_buffer, first_axes_flag, second_axes_flag = extract_current_axes_us_de(x, y)
+        arrow_label_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer)        
         if abs(x - previous_x) <= 0.03 and y == previous_y:
+            
             label_var = '/'
             y_buffer = y_buffer + (slash_buffer * len_of_labels) 
-            final_y = y + y_buffer 
+            final_y = y + y_buffer  
             label_counter += 1
         else:
             label_counter = 0
