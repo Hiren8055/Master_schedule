@@ -35,8 +35,10 @@ class plotted_():
 
 
     def plot(self,index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end,xlim_start,xlim_end, color_dict, station_dict, rect_dict):
+        sub_y_axis = self.y_labes[start_sub_y_axis:end_sub_y_axis]
+        sub_y_vals = range(start_sub_y_axis, end_sub_y_axis)
         self.axes[index_0][index_1].minorticks_on()
-        xa_0 = np.arange(xlim_start, xlim_end, 0.03333)
+        x_vals = np.arange(xlim_start, xlim_end, 0.03333)
         for arr_2d, color_list in zip(station_dict.values(), color_dict.values()):
             self.canvas.flush_events()
             for i in range(0, len(arr_2d), 2):
@@ -49,13 +51,13 @@ class plotted_():
                 self.artist_list.append(ln1)
                 self.artist_list.append(ln2)
                 self.canvas.flush_events()
-        for i in range(len(self.y_axis)):
-            y_index = self.y_axis[i]
+        y_coords = np.empty(0)
+        x_coords = np.tile(x_vals, len(sub_y_vals))
+        for y_coord in sub_y_vals:
+            curr_y = np.full(len(x_vals), y_coord)
+            y_coords = np.concatenate([y_coords, curr_y])
             self.canvas.flush_events()
-            ya = [y_index] * len(xa_0)
-            self.artist_list.append(self.axes[index_0][index_1].scatter(xa_0, ya, marker=',',color='blue', s=0.52, alpha = 0.7))
-            self.canvas.flush_events()
-
+        self.artist_list.append(self.axes[index_0][index_1].scatter(x_coords, y_coords, marker=',',color='blue', s=0.52, alpha = 0.7, clip_on=True, rasterized=True))
         for key, box_list in rect_dict.items():
             if key =="BOX_DN":
                 grid = "-----"
@@ -75,8 +77,6 @@ class plotted_():
         self.axes[index_0][index_1].xaxis.set_minor_locator(MultipleLocator(10 / 60))
         self.axes[index_0][index_1].set_xticks(arr)
         self.axes[index_0][index_1].set_xticklabels(arr)
-        sub_y_axis = self.y_labes[start_sub_y_axis:end_sub_y_axis]
-
         self.axes[index_0][index_1].set_ylim(start_sub_y_axis,end_sub_y_axis)
         self.axes[index_0][index_1].set_yticks(range(start_sub_y_axis,end_sub_y_axis))
         self.axes[index_0][index_1].set_yticklabels(sub_y_axis)
@@ -187,5 +187,6 @@ class plotted_():
             #     drag_dict[slashing_label] = [upEnd_dnStart[0][i],upEnd_dnStart[1][i]]
             return arr_drag_dict
         arr_drag_dict = plot_labels()
-        self.canvas.figure.subplots_adjust(left = 0.017, hspace = 0.8)
+        # self.canvas.figure.subplots_adjust(left = 0.017, hspace = 0.13)
+        self.canvas.figure.subplots_adjust(left = 0.017, hspace = 1.3)
         return arr_drag_dict
