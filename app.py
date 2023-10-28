@@ -18,10 +18,40 @@ from Draggable import dragged
 import pprint
 pp = pprint.PrettyPrinter(indent=0.1)
 
+global dragger
 
+class CustomNavToolbar(NavigationToolbar):
+    def __init__(self, canvas):
+        super().__init__(canvas)
+        self.zoomed_in = False
+        self.dragger = None
+    def set_dragger(self):
+        self.dragger = dragger
+    def zoom(self, *args, **kwargs):
+        self.set_dragger()
+        self.dragger.bm.on_zoom()
+        super().zoom(self, *args, **kwargs)
+        self.zoomed_in = True
+        self.dragger.bm.adjust_subplots()
+        global dragger
+        dragger = self.dragger
+    def home(self, *args, **kwargs):
+        self.set_dragger()
+        if self.zoomed_in is True:
+            self.dragger.bm.on_home(self.zoomed_in)
+            self.zoomed_in = False
+            super().home(self, *args, **kwargs)
+            self.dragger.bm.adjust_subplots()
+            global dragger
+            dragger = self.dragger
+        else:
+            super().home(self, *args, **kwargs)
+            
+        super().home(self, *args, **kwargs)
+        self.dragger.bm.adjust_subplots()
 class ExportWorker(QObject):
     update_signal = Signal(int)
-    new_fig = Figure(figsize=(10, 50), tight_layout=True)
+    # new_fig = Figure(figsize=(10, 50))
     def __init__(self, file_name, canvas):
         super().__init__()
         self.file_name = file_name
@@ -31,7 +61,6 @@ class ExportWorker(QObject):
     def run(self):
         print("I am running")
         try:
-            self.figure.subplots_adjust(hspace=1)
             axes = self.figure.axes
             extent = [ax.get_tightbbox().transformed(self.figure.dpi_scale_trans.inverted()) for ax in axes]
             # print(extent)
@@ -46,15 +75,14 @@ class ExportWorker(QObject):
                     print(f"i:{i}, bbox:{bbox}")
                     pdf.savefig(self.figure, bbox_inches=bbox, pad_inches=1)
                     self.update_signal.emit(i)
-            self.figure.subplots_adjust( left = 0.017, hspace=0.8)
         except Exception as e:
                 print(f"Error raised: {e}")
 
 
-class PlotWindow(QtWidgets.QWidget, plotted_):
+class PlotWindow(QtWidgets.QWidget):
     excel_to_pandas = excel_to_pandas
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self):
+        super().__init__()
         self.select = select
         self.timer = QTimer(self)
         self.conversion = conversion
@@ -67,9 +95,9 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
         self.extract_up_elem = extract_up_elem
         self.add_keys= add_keys
         self.add_lables = add_lables
-        self.figure = Figure(figsize=(10, 50), tight_layout=True)
+        self.figure = Figure(figsize=(10, 50))
         self.canvas = FigureCanvas(self.figure)
-        self.toolbar = NavigationToolbar(self.canvas, self)
+        self.toolbar = CustomNavToolbar(self.canvas)
         self.y_axis = ["CCG","MEL","CYR","GTR","BCT","MX","PL","PBHD","DDR","MRU","MM","BA","BDTS","KHAR","STC","VLP","ADH","JOS","RMAR","GMN","MDD","KILE","BVI","DIC",'MIRA',"BYR","NIG","BSR","NSP","VR","VTN","SAH","KLV","PLG","UOI","BOR","VGN","DRD","GVD","BRRD","UBR","SJN","BLD","KEB","VAPI","BAGD","UVD","PAD","ATUL","BL","DGI","JRS","BIM","AML","ACL","VDH","HXR","GNST","NVS","MRL","SCH","BHET","UDN","ST"]
         self.y_labes = ["CCG 0.0","MEL","CYR","GTR","BCT 14.66","MX","PL","PBHD","DDR 10.17","MRU","MM","BA 14.66","BDTS 15.29","KHAR","STC","VLP","ADH 29.32","JOS","RMAR","GMN","MDD","KILE","BVI 33.98","DIC",'MIRA',"BYR 43.11","NIG","BSR 51.78","NSP 55.85","VR 59.98","VTN 68.42","SAH 76.74","KLV 82.55","PLG 90.92","UOI 97.15","BOR 102.8","VGN 111.5","DRD 123.7","GVD 134.8","BRRD 139.0","UBR 144.0","SJN 149.4","BLD 160.9","KEB 165.8","VAPI 172.0","BAGD 179.0","UVD 182.0","PAD 187.7","ATUL 191.0","BL 198.22","DGI 207.21","JRS 212.28","BIM 216.41","AML 221.72","ACL 225.33","VDH 228.87","HXR 232.0","GNST 234.0","NVS 237.33","MRL 245.63","SCH 252.26","BHET 257.3","UDN 262.77","ST 266.78"]    # print(down_up)        self.setWindowTitle("Matplotlib Plot")
         self.new_canvas = None
@@ -100,11 +128,10 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
         self.layout.addWidget(self.days_textbox)
         self.layout.addWidget(self.button)  
         self.layout.addWidget(self.export_button)
-        self.canvas.setMinimumSize(5500, 4000)
-        self.canvas.setMaximumSize(5501, 4001)
+        self.canvas.setMinimumSize(5800, 5000)
+        self.canvas.setMaximumSize(5801, 5001)
         self.bm = None
         self.artist_list = []
-        self.dragged = None
         self.dragged_axes = None
         self.loaded = False
         self.blit = True
@@ -130,11 +157,11 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
                     self.timer.stop()
                     self.scroll_area = QScrollArea()
                     self.scroll_area.setWidgetResizable(True)
-                    self.figure = Figure(figsize=(10, 50), tight_layout=True)
+                    self.figure = Figure(figsize=(10, 50))
                     self.canvas = FigureCanvas(self.figure)
-                    self.canvas.setMinimumSize(5500, 2500)
-                    self.canvas.setMaximumSize(5501, 2501)
-                    self.toolbar = NavigationToolbar(self.canvas, self)
+                    self.canvas.setMinimumSize(5800, 5000)
+                    self.canvas.setMaximumSize(5801, 5001)
+                    self.toolbar = CustomNavToolbar(self.canvas)
                     self.layout.addWidget(self.toolbar)    
                     self.scroll_area.setWidget(self.canvas)
                     self.layout.addWidget(self.scroll_area)
@@ -163,10 +190,13 @@ class PlotWindow(QtWidgets.QWidget, plotted_):
                 self.export_button.setEnabled(True)
                 self.bm = None
                 self.bm = BlitManager(self.canvas, self.pl.artist_list)
-                self.dragged = dragged(self.canvas,self.arr_drag_dict, self.bm)
-                self.canvas.mpl_connect("pick_event", self.dragged.on_pick_event)
+                global dragger
+                dragger = dragged(self.canvas,self.arr_drag_dict, self.bm)
+                self.canvas.mpl_connect("pick_event", dragger.on_pick_event)
                 # self.canvas.mpl_connect("motion_notify_event", self.on_motion_event)
-                self.canvas.mpl_connect("button_release_event", self.dragged.on_release_event)
+                self.canvas.mpl_connect("button_release_event", dragger.on_release_event)
+                self.canvas.figure.subplots_adjust(left = 0.017, hspace = 1.3)
+                dragger.bm.adjust_subplots()
                 self.canvas.draw()
             except DuplicateTrainError as e:
                 QMessageBox.critical(self, "Error", str(e))
