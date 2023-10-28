@@ -1,4 +1,6 @@
 from collections import deque
+from matplotlib.text import Text
+from matplotlib.patches import FancyArrow
 class BlitManager:
     def __init__(self, canvas, animated_artists=()):
         self.canvas = canvas
@@ -20,6 +22,7 @@ class BlitManager:
                 raise RuntimeError
         self._later()
         self._draw_animated()
+
     def update_background(self):
         self._bg = self.canvas.copy_from_bbox(self.canvas.figure.bbox)
     def _draw_animated(self, leave_out = None):
@@ -60,11 +63,21 @@ class BlitManager:
         self.canvas.flush_events()
     def return_data(self):
         return self._bg, self._artists
-    
+    def on_zoom(self):
+        for art in self._artists:
+            if isinstance(art,Text) or isinstance(art,FancyArrow):
+                art.set_clip_on(True)
+
+    def on_home(self, zoomed_in):
+        if zoomed_in is True:
+            for art in self._artists:
+                if isinstance(art,Text) or isinstance(art,FancyArrow):
+                    art.set_clip_on(False)
+
+    def adjust_subplots(self):
+        self.canvas.figure.subplots_adjust(left = 0.017, hspace = 1.3)
     def stop_work(self):
         self.is_working = False
-
         # Additional cleanup or resource release code here
-
         # Destroy the current instance
         del self
