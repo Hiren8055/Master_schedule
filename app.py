@@ -64,7 +64,7 @@ class ExportWorker(QObject):
             axes = self.figure.axes
             extent = [ax.get_tightbbox().transformed(self.figure.dpi_scale_trans.inverted()) for ax in axes]
             # print(extent)
-            extent = [Bbox([[b.x0,b.y0-0.6],[b.x1,b.y1+0.7]]) for b in extent]
+            extent = [Bbox([[b.x0-0.3,b.y0-0.6],[b.x1+0.3,b.y1+0.7]]) for b in extent]
             xmin,xmax = extent[0].x0,extent[0].x1
             extent[3] = Bbox([[xmin, extent[3].y0],[xmax,extent[3].y1]])
             # print(extent)
