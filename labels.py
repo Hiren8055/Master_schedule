@@ -342,11 +342,11 @@ def extract_current_axes_ue_ds(x, y):
         inx = 2;iny = 2 
 
     if inx == 0:
-        return 0.65, 0.18, 0.47,first_axes_flag,second_axes_flag
+        return 0.65, 0.18, 0.26,first_axes_flag,second_axes_flag, inx
     elif inx == 1:
-        return 0.6, 0.16, 0.26,first_axes_flag, second_axes_flag
+        return 0.6, 0.16, 0.26,first_axes_flag, second_axes_flag, inx
     elif inx == 2:
-        return 0.6, 0.14, 0.18,first_axes_flag,second_axes_flag
+        return 0.6, 0.14, 0.15,first_axes_flag,second_axes_flag, inx
     
 # Have to add condition to label for both the axes 1st and 2nd same 
 # Can give a flag as it has to print twice in 2 different plots
@@ -405,11 +405,11 @@ def extract_current_axes_us_de(x, y):
         inx = 2;iny = 2 
 
     if inx == 0:
-        return 0.6, 0.55, 0.50, first_axes_flag, second_axes_flag
+        return 0.6, 0.42, 0.30, first_axes_flag, second_axes_flag, inx
     elif inx == 1:
-        return 0.6, 0.37, 0.33, first_axes_flag, second_axes_flag
+        return 0.6, 0.33, 0.22, first_axes_flag, second_axes_flag, inx
     elif inx == 2:
-        return 0.6, 0.30, 0.24, first_axes_flag, second_axes_flag
+        return 0.6, 0.26, 0.15, first_axes_flag, second_axes_flag, inx
     
 
 def add_arrow_labels(x, y):
