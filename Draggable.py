@@ -58,7 +58,7 @@ class dragged():
             new_pos = (old_pos[0] + axes_coords[0] - self.pick_pos[0],old_pos[1] + axes_coords[1] - self.pick_pos[1])
             if self.arr_drag_dict[self.key] is not False:
                 annot_origin = self.arr_drag_dict[self.key]
-                annot = self.dragged.axes.annotate(text = self.text, xy = annot_origin, xytext = new_pos, arrowprops={"width":0.1}, rotation= "vertical", picker = True)
+                annot = self.dragged.axes.annotate(text = self.text, xy = annot_origin, xytext = new_pos, fontsize=8, arrowprops={"width":0.01, "headlength":5, "headwidth":5, "color":"black", "edgecolor":None, "linewidth":0.2}, rotation= "vertical", picker = True)
                 # annot = self.dragged.axes.text(x=new_pos[0],y=new_pos[1], s = self.text , rotation= "vertical")
                 annot.set_gid(self.key)
                 self.bm.add_artist(annot)
