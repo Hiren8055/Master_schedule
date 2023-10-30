@@ -9,125 +9,135 @@ def built_dict(dict_name, text_label,train_x,train_y):
     dict_name[key_name] = [train_x, train_y]
     return text_label
 
-def condition_for_text_buffer(label, len_of_labels, arrow_label_buffer):
+def condition_for_text_buffer(label, len_of_labels, arrow_label_buffer, slash_buffer, inx, flag_ueds):
     """should take input len of labels and return variable constant based on len of label"""
-    if len_of_labels <= 5:
-        print("entered in below 5")
-        if arrow_label_buffer == 0.55:
-            arrow_label_buffer = 0.55
-        elif  arrow_label_buffer == 0.37:
-            arrow_label_buffer = 0.37
-        elif  arrow_label_buffer == 0.30:
-            arrow_label_buffer = 0.27
-        # ueds
-        elif arrow_label_buffer == 0.18:
-            arrow_label_buffer = 0.18
-        elif  arrow_label_buffer == 0.16:
-            arrow_label_buffer = 0.16
-        elif  arrow_label_buffer == 0.14:
-            arrow_label_buffer = 0.14
-        else:
-            print("no arrow_label_buffer exists") 
-    elif 5 <len_of_labels <=7:
-        print("entered in 5 and 7")
+    # if len_of_labels <= 5:
+    #     print("entered in below 5")
+    #     if inx == 0:
+    #         arrow_label_buffer = 0.55
+    #     elif  inx == 1:
+    #         arrow_label_buffer = 0.42
+    #     elif inx == 2:
+    #         arrow_label_buffer = 0.27
+    #     # ueds
+    #     elif inx == 0:
+    #         arrow_label_buffer = 0.18
+    #     elif  inx == 1:
+    #         arrow_label_buffer = 0.16
+    #     elif  inx == 2:
+    #         arrow_label_buffer = 0.14
+    #     # else:
+    #     #     print("no arrow_label_buffer exists") 
+    if 5 <len_of_labels <=7:
+        # print("entered in 5 and 7")
         # usde add
-        if arrow_label_buffer == 0.55:
-            arrow_label_buffer = arrow_label_buffer + 0.1
-            # slash_buffer = slash_buffer + 0.3
-        elif  arrow_label_buffer == 0.37:
-            arrow_label_buffer = arrow_label_buffer + 0.1
-            # slash_buffer = slash_buffer + 0.3
-        elif  arrow_label_buffer == 0.30:
-            arrow_label_buffer = arrow_label_buffer + 0.1
-            # slash_buffer = slash_buffer + 0.3
-        # ueds
-        elif arrow_label_buffer == 0.18:
-            arrow_label_buffer = arrow_label_buffer - 0.1
-            # slash_buffer = slash_buffer - 0.3
-        elif  arrow_label_buffer == 0.16:
-            arrow_label_buffer = arrow_label_buffer - 0.1
-            # slash_buffer = slash_buffer - 0.3
-        elif  arrow_label_buffer == 0.14:
-            arrow_label_buffer = arrow_label_buffer - 0.1
-            # slash_buffer = slash_buffer - 0.3
-        else:
-            print("no arrow_label_buffer exists")
+        if flag_ueds == False:
+            if inx == 0:
+                arrow_label_buffer = arrow_label_buffer + 0.1
+                slash_buffer = slash_buffer + 0.1
+            elif  inx == 1:
+                arrow_label_buffer = arrow_label_buffer + 0.3
+                slash_buffer = slash_buffer + 0.3
+            elif  inx == 2:
+                arrow_label_buffer = arrow_label_buffer + 0.1
+                slash_buffer = slash_buffer + 0.1
+        else:               
+            # ueds 
+            if inx == 0:
+                arrow_label_buffer = arrow_label_buffer - 0.1
+                slash_buffer = slash_buffer - 0.1
+            elif inx == 1:
+                arrow_label_buffer = arrow_label_buffer - 0.1
+                slash_buffer = slash_buffer - 0.1
+            elif inx == 2:
+                arrow_label_buffer = arrow_label_buffer - 0.1
+                slash_buffer = slash_buffer - 0.1
+            # else:
+            #     print("no arrow_label_buffer exists")
 
     elif 7 < len_of_labels <= 10:
-        print(" entered in 7 and 10")
-        if arrow_label_buffer == 0.55:
-            arrow_label_buffer = arrow_label_buffer + 0.14
-            # slash_buffer = slash_buffer + 0.3
-        elif  arrow_label_buffer == 0.37:
-            arrow_label_buffer = arrow_label_buffer + 0.14
-            # slash_buffer = slash_buffer + 0.3
-        elif  arrow_label_buffer == 0.30:
-            arrow_label_buffer = arrow_label_buffer + 0.14
-            # slash_buffer = slash_buffer + 0.3
-        # ueds
-        elif arrow_label_buffer == 0.18:
-            arrow_label_buffer = arrow_label_buffer -0.14
-            # slash_buffer = slash_buffer - 0.3
-        elif  arrow_label_buffer == 0.16:
-            arrow_label_buffer = arrow_label_buffer -0.14
-            # slash_buffer = slash_buffer - 0.3
-        elif  arrow_label_buffer == 0.14:
-            arrow_label_buffer = arrow_label_buffer -0.14
-            # slash_buffer = slash_buffer - 0.3
+        # print(" entered in 7 and 10")
+        if flag_ueds == False:
+            if inx == 0: #DONE
+                arrow_label_buffer = arrow_label_buffer - 0.08
+                slash_buffer = slash_buffer -0.02
+            elif  inx == 1:
+                arrow_label_buffer = arrow_label_buffer - 0.02
+                slash_buffer = slash_buffer - 0.02
+            elif  inx == 2: #DONE
+                arrow_label_buffer = arrow_label_buffer - 0.025
+                slash_buffer = slash_buffer - 0.005
         else:
-            print("no arrow_label_buffer exists")
+            # ueds
+            if inx == 0:
+                arrow_label_buffer = arrow_label_buffer - 0.05
+                slash_buffer = slash_buffer - 0.05
+            elif inx == 1:
+                arrow_label_buffer = arrow_label_buffer + 0.18
+                slash_buffer = slash_buffer + 0.18
+            elif inx == 2:
+                arrow_label_buffer = arrow_label_buffer - 0.14
+                slash_buffer = slash_buffer - 0.14
+            # else:
+            #     print("no arrow_label_buffer exists")
 
     elif 10 < len_of_labels <= 12:
-        print(" entered in 10 and 12")
-        if arrow_label_buffer == 0.55:
-            arrow_label_buffer = arrow_label_buffer + 0.19
-            # slash_buffer = slash_buffer + 0.3
-        elif  arrow_label_buffer == 0.37:
-            arrow_label_buffer = arrow_label_buffer + 0.19
-            # slash_buffer = slash_buffer + 0.3
-        elif  arrow_label_buffer == 0.30:
-            arrow_label_buffer = arrow_label_buffer + 0.19
-            # slash_buffer = slash_buffer + 0.3
-        # ueds
-        elif arrow_label_buffer == 0.18:
-            arrow_label_buffer = arrow_label_buffer -0.19
-            # slash_buffer = slash_buffer - 0.3
-        elif  arrow_label_buffer == 0.16:
-            arrow_label_buffer = arrow_label_buffer -0.19
-            # slash_buffer = slash_buffer - 0.3
-        elif  arrow_label_buffer == 0.14:
-            arrow_label_buffer = arrow_label_buffer -0.19
-            # slash_buffer = slash_buffer - 0.3
+        # print(" entered in 10 and 12")
+        if flag_ueds == False:
+            if inx == 0:
+                arrow_label_buffer = arrow_label_buffer + 0.00
+                slash_buffer = slash_buffer + 0.00
+            elif  inx == 1:
+                arrow_label_buffer = arrow_label_buffer + 0.00
+                slash_buffer = slash_buffer + 0.00
+            elif  inx == 2:
+                arrow_label_buffer = arrow_label_buffer + 0.00
+                slash_buffer = slash_buffer + 0.00
         else:
-            print("no arrow_label_buffer exists")
-    elif 12< len_of_labels:
-        print("entered in 12 above")
-        if arrow_label_buffer == 0.55:
-            arrow_label_buffer = arrow_label_buffer - 0.24
-            # slash_buffer = slash_buffer + 0.3
-        elif  arrow_label_buffer == 0.37:
-            arrow_label_buffer = arrow_label_buffer - 0.14
-            # slash_buffer = slash_buffer + 0.3
-        elif  arrow_label_buffer == 0.30:
-            arrow_label_buffer = arrow_label_buffer - 0.125
-            # slash_buffer = slash_buffer + 0.3
-        # ueds
-        elif arrow_label_buffer == 0.18:
-            arrow_label_buffer = arrow_label_buffer - 0.13
-            # slash_buffer = slash_buffer - 0.3
-        elif  arrow_label_buffer == 0.16:
-            arrow_label_buffer = arrow_label_buffer - 0.11
-            # slash_buffer = slash_buffer - 0.3
-        elif  arrow_label_buffer == 0.14:
-            arrow_label_buffer = arrow_label_buffer - 0.10
-            # slash_buffer = slash_buffer - 0.3
+            # ueds
+            if inx == 0:
+                arrow_label_buffer = arrow_label_buffer -0.00
+                slash_buffer = slash_buffer - 0.00
+            elif  inx == 1:
+                arrow_label_buffer = arrow_label_buffer -0.00
+                slash_buffer = slash_buffer - 0.00
+            elif  inx == 2:
+                arrow_label_buffer = arrow_label_buffer -0.00
+                slash_buffer = slash_buffer - 0.00
+            # else:
+            #     print("no arrow_label_buffer exists")
+    elif 12 < len_of_labels:
+        # print("entered in 12 above")
+        if flag_ueds == False:
+            if inx == 0: #DONE
+                arrow_label_buffer = arrow_label_buffer - 0.11
+                slash_buffer = slash_buffer - 0.03
+            elif inx == 1: #DONE
+                arrow_label_buffer = arrow_label_buffer - 0.10
+                slash_buffer = slash_buffer - 0.03
+            elif inx == 2: #DONE
+                arrow_label_buffer = arrow_label_buffer - 0.09
+                slash_buffer = slash_buffer - 0.01
         else:
-            print("no arrow_label_buffer exists")
-    else:
-        print("Problem in len of labels.")
+            # ueds
+            if inx == 0: #DONE
+                arrow_label_buffer = arrow_label_buffer - 0.14
+                slash_buffer = slash_buffer + 0.00
+            elif inx == 1: #DONE
+                arrow_label_buffer = arrow_label_buffer - 0.12
+                slash_buffer = slash_buffer + 0.2
+            elif inx == 2: #DONE
+                arrow_label_buffer = arrow_label_buffer - 0.10
+                slash_buffer = slash_buffer - 0.015
+            # else:
+            #     print("no arrow_label_buffer exists")
+    # else:
+    #     # print("Problem in len of labels for the label: ", label)
+    #     if label[:3] == 'nan':
+    #         print("nan label is found with inx: ", inx, "and label name: ", label)
 
-    # return arrow_label_buffer, slash_buffer
-    return arrow_label_buffer
+    return arrow_label_buffer, slash_buffer
+    # return arrow_label_buffer
 
 
 def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
@@ -152,12 +162,12 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
         key = upEnd_dnStart[3][i]
         len_of_labels = len(label_)
 
-        arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag, second_axes_flag = extract_current_axes_ue_ds(x, y)
-        # arrow_label_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, slash_buffer)        
-        arrow_label_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer)        
+        arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag, second_axes_flag, inx = extract_current_axes_ue_ds(x, y)
+        arrow_label_buffer, slash_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, slash_buffer, inx, True)        
+        # arrow_label_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, inx, True)        
         if abs(x - previous_x) <= 0.03 and y == previous_y:
             label_var = '/'
-            y_buffer = y_buffer + (slash_buffer * len_of_labels) 
+            y_buffer = y_buffer + (slash_buffer * (len_of_labels + 1)) 
             final_y = y - y_buffer
             label_counter += 1
         else:
@@ -201,7 +211,7 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
             # to plot vr labels on 2nd axes
 
             if express_flag:
-                arrow_plot_buffer_inx1, arrow_label_buffer_inx1, slash_buffer_inx1,first_axes_flag, second_axes_flag = extract_current_axes_ue_ds(x, y+2)
+                arrow_plot_buffer_inx1, arrow_label_buffer_inx1, slash_buffer_inx1,first_axes_flag, second_axes_flag, _ = extract_current_axes_ue_ds(x, y+2)
                 if abs(x - previous_x) <= 0.03 and y == previous_y:
                     label_var = '/'
                     y_buffer_inx1  = y_buffer_inx1  + (slash_buffer_inx1 * (len_of_labels + 1)) 
@@ -244,10 +254,10 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
                     artist_list.append(axes[inx][iny].arrow(dup_x, y - arrow_plot_buffer, 0, 0.5, width = 0.005, clip_on = False))
 
             # to plot vr labels on 2nd axes 
-            arrow_plot_buffer_inx2, arrow_label_buffer_inx2, slash_buffer_inx2,first_axes_flag, second_axes_flag = extract_current_axes_ue_ds(x, y+2)
+            arrow_plot_buffer_inx2, arrow_label_buffer_inx2, slash_buffer_inx2,first_axes_flag, second_axes_flag, _ = extract_current_axes_ue_ds(x, y+2)
             if abs(x - previous_x) <= 0.03 and y == previous_y:
                 label_var = '/'
-                y_buffer_inx2 = y_buffer_inx2 + (slash_buffer_inx2 * len_of_labels) 
+                y_buffer_inx2 = y_buffer_inx2 + (slash_buffer_inx2 * (len_of_labels + 1)) 
                 final_y_inx2 = y + y_buffer_inx2 
                 label_counter2 += 1
             else:
@@ -317,9 +327,9 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
         key = upStart_dnEnd[3][i]
         len_of_labels = len(label_)
 
-        arrow_plot_buffer, arrow_label_buffer, slash_buffer, first_axes_flag, second_axes_flag = extract_current_axes_us_de(x, y)
-        # arrow_label_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, slash_buffer)        
-        arrow_label_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer)        
+        arrow_plot_buffer, arrow_label_buffer, slash_buffer, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de(x, y)
+        arrow_label_buffer, slash_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, slash_buffer, inx, False)        
+        # arrow_label_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, inx, False)        
         if abs(x - previous_x) <= 0.03 and y == previous_y:
             
             label_var = '/'
@@ -356,8 +366,10 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
             
             # to plot vr labels on 2nd axes 
             if express_flag:
-                arrow_plot_buffer_inx1, arrow_label_buffer_inx1, slash_buffer_inx1, first_axes_flag, second_axes_flag = extract_current_axes_us_de(x, y+2)
-                
+                arrow_plot_buffer_inx1, arrow_label_buffer_inx1, slash_buffer_inx1, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de(x, y+2)
+                arrow_label_buffer_inx1, slash_buffer_inx1 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx1, slash_buffer_inx1, inx, False)        
+                # arrow_label_buffer_inx1 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx1, inx, False)        
+
                 # arrow_label_buffer_inx1 = arrow_label_buffer_inx1 - 
                 # if abs(x - previous_x) <= 0.03 and y == previous_y:
                 #     label_var = '/'
@@ -374,12 +386,12 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
                 # label = label_ + label_var
                 if abs(x - previous_x) <= 0.03 and y == previous_y:
                     label_var = '/'
-                    y_buffer_inx1 = y_buffer_inx1 + (slash_buffer_inx1 * len_of_labels) 
+                    y_buffer_inx1 = y_buffer_inx1 + (slash_buffer_inx1 * (len_of_labels + 1)) 
                     final_y_inx1 = y - y_buffer_inx1 
                     label_counter1 += 1
                 else:
                     # print("arrow_label_buffer_inx1 before",arrow_label_buffer_inx1)
-                    arrow_label_buffer_inx1 = arrow_label_buffer_inx1 - 0.50
+                    arrow_label_buffer_inx1 = arrow_label_buffer_inx1 - 0.19
                     # print("arrow_label_buffer_inx1",arrow_label_buffer_inx1)
                     # print("arrow_label_buffer_inx1 before",arrow_label_buffer_inx1)
                     # arrow_label_buffer_inx1 = arrow_label_buffer_inx1 - 0.27
@@ -422,15 +434,17 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
                     artist_list.append(axes[inx][iny].arrow(dup_x, y, 0, 0.5, width = 0.005, clip_on = False))
 
 
-            arrow_plot_buffer_inx2, arrow_label_buffer_inx2, slash_buffer_inx2, first_axes_flag, second_axes_flag = extract_current_axes_us_de(x, y+2)
+            arrow_plot_buffer_inx2, arrow_label_buffer_inx2, slash_buffer_inx2, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de(x, y+2)
+            arrow_label_buffer_inx2, slash_buffer_inx2 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx2, slash_buffer_inx2, inx, False)        
+            # arrow_label_buffer_inx2 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx2, inx, False)        
             
             if abs(x - previous_x) <= 0.03 and y == previous_y:
                 label_var = '/'
-                y_buffer_inx2 = y_buffer_inx2 + (slash_buffer_inx2 * len_of_labels) 
+                y_buffer_inx2 = y_buffer_inx2 + (slash_buffer_inx2 * (len_of_labels + 1)) 
                 final_y_inx2 = y - y_buffer_inx2 
                 label_counter2 += 1
             else:
-                arrow_label_buffer_inx2 = arrow_label_buffer_inx2 - 0.40
+                arrow_label_buffer_inx2 = arrow_label_buffer_inx2 - 0.13
                 label_counter2 = 0
                 # if the buffer value doesn't satisfy then directly print the label
                 label_var = ''
