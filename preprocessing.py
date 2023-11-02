@@ -60,8 +60,8 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
     bx_dict = dict()
     rect_dict = dict()
     express_flag =False
-    for key in df_dict:
-        print(key)
+    # for key in df_dict:
+    #     print(key)
     bx_dict["BOX_DN"] = df_dict.pop("BOX_DN")
     bx_dict["BOX_UP"] = df_dict.pop("BOX_UP")
     down_up = dict()
@@ -176,7 +176,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         df.drop(0, axis=0, inplace=True)
         df.reset_index(drop=True, inplace=True)
         df.iloc[0,0] = np.nan
-        print(df)
+        # print(df)
         trains_list = df.iloc[0,1:].copy(deep=False).tolist()
         counter = Counter(trains_list)
         duplicates = [str(item) for item, count in counter.items() if count > 1]

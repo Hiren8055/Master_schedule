@@ -344,7 +344,7 @@ def extract_current_axes_ue_ds(x, y):
     if inx == 0:
         return 0.65, 0.18, 0.26,first_axes_flag,second_axes_flag, inx
     elif inx == 1:
-        return 0.6, 0.16, 0.26,first_axes_flag, second_axes_flag, inx
+        return 0.6, 0.14, 0.26,first_axes_flag, second_axes_flag, inx
     elif inx == 2:
         return 0.6, 0.14, 0.15,first_axes_flag,second_axes_flag, inx
     

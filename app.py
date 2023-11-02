@@ -22,7 +22,7 @@ global dragger
 
 class CustomNavToolbar(NavigationToolbar):
     def __init__(self, canvas):
-        super().__init__(canvas)
+        super().__init__(canvas, parent= None)
         self.zoomed_in = False
         self.dragger = None
     def set_dragger(self):
@@ -57,26 +57,26 @@ class ExportWorker(QObject):
         self.file_name = file_name
         self.canvas = canvas
         self.figure = canvas.figure
-        print("Worker initialize")
+        # print("Worker initialize")
     def run(self):
-        print("I am running")
+        # print("I am running")
         try:
             axes = self.figure.axes
-            extent = [ax.get_tightbbox().transformed(self.figure.dpi_scale_trans.inverted()) for ax in axes]
+            extent = [ax.get_tightbbox(renderer=None).transformed(self.figure.dpi_scale_trans.inverted()) for ax in axes]
             # print(extent)
             extent = [Bbox([[b.x0-0.3,b.y0-0.6],[b.x1+0.3,b.y1+0.7]]) for b in extent]
             xmin,xmax = extent[0].x0,extent[0].x1
             extent[3] = Bbox([[xmin, extent[3].y0],[xmax,extent[3].y1]])
             # print(extent)
-            print("Lets make a pdf")
+            # print("Lets make a pdf")
             with PdfPages(self.file_name) as pdf:
-                print("3 2 1 Gooo!!")
+                # print("3 2 1 Gooo!!")
                 for i, bbox in zip(range(12,101,11),extent):
                     print(f"i:{i}, bbox:{bbox}")
                     pdf.savefig(self.figure, bbox_inches=bbox, pad_inches=1)
                     self.update_signal.emit(i)
         except Exception as e:
-                print(f"Error raised: {e}")
+                print(f"Error/ raised: {e}")
 
 
 class PlotWindow(QtWidgets.QWidget):
@@ -105,7 +105,7 @@ class PlotWindow(QtWidgets.QWidget):
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setWidget(self.canvas)
         self.progress_bar = QProgressBar()
-        self.progress_bar.hide()
+        # self.progress_bar.hide()
         self.button = QtWidgets.QPushButton("Load Excel File")
         self.button.clicked.connect(self.load_file)
         self.axes = None
@@ -162,14 +162,14 @@ class PlotWindow(QtWidgets.QWidget):
                     self.canvas.setMinimumSize(5800, 5000)
                     self.canvas.setMaximumSize(5801, 5001)
                     self.toolbar = CustomNavToolbar(self.canvas)
-                    self.progress_bar.move(0,0)
+                    self.toolbar.move(0,0)
                     self.layout.addWidget(self.toolbar,0,0,1,2)    
                     self.scroll_area.setWidget(self.canvas)
                     self.layout.addWidget(self.scroll_area,2,0,1,2)
                     self.toolbar.show()
                     self.scroll_area.show()
-                print(str(self.remark_textbox.text()))
-                print(str(self.days_textbox.text()))
+                # print(str(self.remark_textbox.text()))
+                # print(str(self.days_textbox.text()))
                 remark_var = str(self.remark_textbox.text())
                 days_var = str(self.days_textbox.text())
                 self.pl = plotted_(self.figure, self.y_axis, self.y_labes, self.canvas, self.layout,self.export_button,self.axes, self.scroll_area, self.toolbar)
@@ -180,12 +180,12 @@ class PlotWindow(QtWidgets.QWidget):
                 if select_flag:
                     down_up, dwn_upp = self.select(down_up, dwn_upp)
                 down_up = self.conversion(down_up)
-                pp.pprint(f"1st:{rect_dict}")
+                # pp.pprint(f"1st:{rect_dict}")
                 rect_dict = self.conversion_box(rect_dict)
-                pp.pprint(f"conversion:{rect_dict}")
+                # pp.pprint(f"conversion:{rect_dict}")
                 down_up = self.add_24_down_up(down_up)
                 rect_dict = self.box_add_24(rect_dict)
-                pp.pprint(f"24 add:{rect_dict}") 
+                # pp.pprint(f"24 add:{rect_dict}") 
                 self.figure.clear()
                 self.arr_drag_dict = self.plot_trains(down_up, dwn_upp, color_dict, rect_dict,express_flag)
                 self.export_button.setEnabled(True)
@@ -216,7 +216,8 @@ class PlotWindow(QtWidgets.QWidget):
             self.bm.canvas.mpl_disconnect(self.bm.cid)
             self.bm.cid = None
             self.scroll_area.takeWidget()
-            self.layout.removeWidget(self.toolbar)
+            self.toolbar.hide() 
+            # self.layout.removeWidget(self.toolbar)
             self.export_button.setEnabled(False)
             self.progress_bar.show()
             self.export_worker = ExportWorker(file_name,self.canvas)
@@ -226,16 +227,18 @@ class PlotWindow(QtWidgets.QWidget):
             self.export_worker.update_signal.connect(self.update_progress_bar)
             self.export_thread.finished.connect(self.export_thread.deleteLater)
             self.export_thread.start()
+
     def update_progress_bar(self, progress):
         self.progress_bar.setValue(progress)
         if progress == 100:
             self.bm.cid = self.bm.canvas.mpl_connect("draw_event", self.bm.on_draw)
             self.export_thread.quit()
             self.export_thread.wait()
-            self.progress_bar.hide()
+            # self.progress_bar.hide()
             self.progress_bar.setValue(0)
             self.layout.addWidget(self.toolbar)
             self.scroll_area.setWidget(self.canvas)
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     apply_stylesheet(app, theme='dark_blue.xml')

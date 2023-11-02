@@ -30,73 +30,80 @@ def condition_for_text_buffer(label, len_of_labels, arrow_label_buffer, slash_bu
     #     #     print("no arrow_label_buffer exists") 
     if 5 <len_of_labels <=7:
         # print("entered in 5 and 7")
+        # print(label,inx,len_of_labels)
         # usde add
         if flag_ueds == False:
             if inx == 0:
-                arrow_label_buffer = arrow_label_buffer + 0.1
-                slash_buffer = slash_buffer + 0.1
+                arrow_label_buffer = arrow_label_buffer - 0.04
+                slash_buffer = slash_buffer - 0.010
             elif  inx == 1:
-                arrow_label_buffer = arrow_label_buffer + 0.3
-                slash_buffer = slash_buffer + 0.3
+                arrow_label_buffer = arrow_label_buffer - 0.05
+                slash_buffer = slash_buffer - 0.03
             elif  inx == 2:
-                arrow_label_buffer = arrow_label_buffer + 0.1
-                slash_buffer = slash_buffer + 0.1
+                arrow_label_buffer = arrow_label_buffer - 0.04
+                slash_buffer = slash_buffer - 0.01
         else:               
             # ueds 
             if inx == 0:
-                arrow_label_buffer = arrow_label_buffer - 0.1
-                slash_buffer = slash_buffer - 0.1
-            elif inx == 1:
-                arrow_label_buffer = arrow_label_buffer - 0.1
-                slash_buffer = slash_buffer - 0.1
-            elif inx == 2:
-                arrow_label_buffer = arrow_label_buffer - 0.1
-                slash_buffer = slash_buffer - 0.1
+                arrow_label_buffer = arrow_label_buffer - 0.08
+                slash_buffer = slash_buffer + 0.01
+            elif inx == 1: 
+                arrow_label_buffer = arrow_label_buffer - 0.02
+                slash_buffer = slash_buffer - 0.05
+            elif inx == 2: #DONE
+                arrow_label_buffer = arrow_label_buffer - 0.03
+                slash_buffer = slash_buffer - 0.01
             # else:
             #     print("no arrow_label_buffer exists")
 
     elif 7 < len_of_labels <= 10:
-        # print(" entered in 7 and 10")
+        print(" entered in 7 and 10")
+        print(label,inx,len_of_labels, flag_ueds)
+        # TODO: there is problem regarding up start in intersection from virar
         if flag_ueds == False:
-            if inx == 0: #DONE
+            # set for all inx so have to change the remark len to more then 7 
+            # Check what ueds flag is
+            if inx == 0: 
                 arrow_label_buffer = arrow_label_buffer - 0.08
-                slash_buffer = slash_buffer -0.02
+                slash_buffer = slash_buffer - 0.02
             elif  inx == 1:
                 arrow_label_buffer = arrow_label_buffer - 0.02
                 slash_buffer = slash_buffer - 0.02
-            elif  inx == 2: #DONE
+            elif  inx == 2: 
                 arrow_label_buffer = arrow_label_buffer - 0.025
                 slash_buffer = slash_buffer - 0.005
         else:
             # ueds
             if inx == 0:
-                arrow_label_buffer = arrow_label_buffer - 0.05
-                slash_buffer = slash_buffer - 0.05
+                arrow_label_buffer = arrow_label_buffer + 0.01
+                slash_buffer = slash_buffer + 0.03
             elif inx == 1:
-                arrow_label_buffer = arrow_label_buffer + 0.18
-                slash_buffer = slash_buffer + 0.18
-            elif inx == 2:
-                arrow_label_buffer = arrow_label_buffer - 0.14
-                slash_buffer = slash_buffer - 0.14
+                arrow_label_buffer = arrow_label_buffer - 0.02
+                slash_buffer = slash_buffer - 0.03
+            elif inx == 2: 
+                arrow_label_buffer = arrow_label_buffer - 0.05
+                slash_buffer = slash_buffer - 0.00
             # else:
             #     print("no arrow_label_buffer exists")
 
-    elif 10 < len_of_labels <= 12:
+    elif 10 < len_of_labels <= 15:
         # print(" entered in 10 and 12")
         if flag_ueds == False:
+            if label == 'grup 2 mo 16124':
+                print("yes done it again for")
             if inx == 0:
-                arrow_label_buffer = arrow_label_buffer + 0.00
-                slash_buffer = slash_buffer + 0.00
+                arrow_label_buffer = arrow_label_buffer + 0.10
+                slash_buffer = slash_buffer + 0.03
             elif  inx == 1:
-                arrow_label_buffer = arrow_label_buffer + 0.00
-                slash_buffer = slash_buffer + 0.00
-            elif  inx == 2:
-                arrow_label_buffer = arrow_label_buffer + 0.00
-                slash_buffer = slash_buffer + 0.00
+                arrow_label_buffer = arrow_label_buffer + 0.06
+                slash_buffer = slash_buffer + 0.03
+            elif  inx == 2:   #DONE
+                arrow_label_buffer = arrow_label_buffer - 0.07
+                slash_buffer = slash_buffer - 0.02
         else:
             # ueds
             if inx == 0:
-                arrow_label_buffer = arrow_label_buffer -0.00
+                arrow_label_buffer = arrow_label_buffer -0.11
                 slash_buffer = slash_buffer - 0.00
             elif  inx == 1:
                 arrow_label_buffer = arrow_label_buffer -0.00
@@ -106,30 +113,29 @@ def condition_for_text_buffer(label, len_of_labels, arrow_label_buffer, slash_bu
                 slash_buffer = slash_buffer - 0.00
             # else:
             #     print("no arrow_label_buffer exists")
-    elif 12 < len_of_labels:
-        # print("entered in 12 above")
+
+    elif 15 < len_of_labels:
         if flag_ueds == False:
-            if inx == 0: #DONE
+            if inx == 0: 
                 arrow_label_buffer = arrow_label_buffer - 0.11
                 slash_buffer = slash_buffer - 0.03
-            elif inx == 1: #DONE
+            elif inx == 1: 
                 arrow_label_buffer = arrow_label_buffer - 0.10
                 slash_buffer = slash_buffer - 0.03
-            elif inx == 2: #DONE
+            elif inx == 2: 
                 arrow_label_buffer = arrow_label_buffer - 0.09
                 slash_buffer = slash_buffer - 0.01
         else:
             # ueds
-            if inx == 0: #DONE
+            if inx == 0: 
                 arrow_label_buffer = arrow_label_buffer - 0.14
                 slash_buffer = slash_buffer + 0.00
-            elif inx == 1: #DONE
-                arrow_label_buffer = arrow_label_buffer - 0.12
-                slash_buffer = slash_buffer + 0.2
-            elif inx == 2: #DONE
+            elif inx == 1: 
                 arrow_label_buffer = arrow_label_buffer - 0.10
-                slash_buffer = slash_buffer - 0.015
-            # else:
+                slash_buffer = slash_buffer - 0.03
+            elif inx == 2: 
+                arrow_label_buffer = arrow_label_buffer - 0.10
+                slash_buffer = slash_buffer - 0.015            # else:
             #     print("no arrow_label_buffer exists")
     # else:
     #     # print("Problem in len of labels for the label: ", label)
@@ -167,6 +173,7 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
         # arrow_label_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, inx, True)        
         if abs(x - previous_x) <= 0.03 and y == previous_y:
             label_var = '/'
+            # previous len
             y_buffer = y_buffer + (slash_buffer * (len_of_labels + 1)) 
             final_y = y - y_buffer
             label_counter += 1
@@ -198,7 +205,7 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
 
         if first_axes_flag and y == 29:
             #checking if label counter > 5 then further label plotting will be ignored
-            if label_counter > 5:
+            if label_counter > 3:
                 pass
             else:
                 text_label = axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True)
@@ -230,7 +237,7 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
 
                 label = label_ + label_var
                 inx = 1
-                if label_counter1 > 5:
+                if label_counter > 3:
                     pass
                 else:
                     text_label = axes[inx][iny].text(dup_x - 0.02, final_y_inx1, label, rotation = 'vertical', fontsize=8, picker=True)
@@ -242,7 +249,7 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
                         artist_list.append(axes[inx][iny].arrow(dup_x, y, 0, 0.5, width = 0.005, clip_on = False))
 
         elif second_axes_flag and y==49 :
-            if label_counter > 5:
+            if label_counter > 3:
                 pass
             else:
                 text_label = axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True)
@@ -259,11 +266,11 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
                 label_var = '/'
                 y_buffer_inx2 = y_buffer_inx2 + (slash_buffer_inx2 * (len_of_labels + 1)) 
                 final_y_inx2 = y + y_buffer_inx2 
-                label_counter2 += 1
+                label_counter += 1
             else:
                 # print("Arrow label triggered inx2")
                 # print(arrow_label_buffer_inx2)
-                label_counter2 = 0
+                label_counter = 0
                 label_var = ''
                 y_buffer_inx2 = 0
                 y_buffer_inx2 = arrow_label_buffer_inx2 * len_of_labels
@@ -272,7 +279,7 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
             
             label = label_ + label_var
             inx = 2
-            if label_counter2 > 5:
+            if label_counter > 3:
                 pass
             else:
                 text_label = axes[inx][iny].text(dup_x - 0.02, final_y_inx2, label, rotation = 'vertical', fontsize=8, picker=True)
@@ -289,7 +296,7 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
                         artist_list.append(axes[inx][iny].arrow(dup_x, y, 0, 0.5, width = 0.005, clip_on = False))
 
         elif (first_axes_flag and y != 29) or (second_axes_flag and y!= 49)or not (first_axes_flag and second_axes_flag):
-            if label_counter > 5:
+            if label_counter > 3:
                 pass
             else:
                 text_label = axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True)
@@ -302,7 +309,7 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
         else:
             # add except here
             print("ue and ds dead end")
-        previous_x, previous_y = x, y
+        previous_x, previous_y, previous_len_of_labels = x, y, len_of_labels
         k += 3
     # print("drag_dict_ueds",drag_dict_ueds)
     return drag_dict_ueds
@@ -336,6 +343,7 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
             y_buffer = y_buffer + (slash_buffer * (len_of_labels + 1)) 
             final_y = y + y_buffer  
             label_counter += 1
+            print("label_counter",label_counter)
         else:
             label_counter = 0
             label_var = ''
@@ -353,7 +361,7 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
         
         if first_axes_flag or y == 29:
             #checking if label counter > 5 then further label plotting will be ignored
-            if label_counter > 5:
+            if label_counter > 4:
                 pass
             else:
                 text_label = axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True)
@@ -367,7 +375,7 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
             # to plot vr labels on 2nd axes 
             if express_flag:
                 arrow_plot_buffer_inx1, arrow_label_buffer_inx1, slash_buffer_inx1, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de(x, y+2)
-                arrow_label_buffer_inx1, slash_buffer_inx1 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx1, slash_buffer_inx1, inx, False)        
+                arrow_label_buffer_inx1, slash_buffer_inx1 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx1, slash_buffer_inx1, inx, True)        
                 # arrow_label_buffer_inx1 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx1, inx, False)        
 
                 # arrow_label_buffer_inx1 = arrow_label_buffer_inx1 - 
@@ -386,9 +394,10 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
                 # label = label_ + label_var
                 if abs(x - previous_x) <= 0.03 and y == previous_y:
                     label_var = '/'
-                    y_buffer_inx1 = y_buffer_inx1 + (slash_buffer_inx1 * (len_of_labels + 1)) 
+                    y_buffer_inx1 = y_buffer_inx1 + (slash_buffer_inx1 * (previous_len_of_labels + 1)) 
                     final_y_inx1 = y - y_buffer_inx1 
-                    label_counter1 += 1
+                    label_counter += 1
+                    print("label_counter1",label_counter)
                 else:
                     # print("arrow_label_buffer_inx1 before",arrow_label_buffer_inx1)
                     arrow_label_buffer_inx1 = arrow_label_buffer_inx1 - 0.19
@@ -396,7 +405,7 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
                     # print("arrow_label_buffer_inx1 before",arrow_label_buffer_inx1)
                     # arrow_label_buffer_inx1 = arrow_label_buffer_inx1 - 0.27
                     # print("arrow_label_buffer_inx1",arrow_label_buffer_inx1)
-                    label_counter1 = 0
+                    label_counter = 0
                     # if the buffer value doesn't satisfy then directly print the label
                     label_var = ''
                     y_buffer_inx1 = 0
@@ -406,7 +415,7 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
                     final_y_inx1 = y - y_buffer_inx1   
                 label = label_var + label_
                 inx = 1
-                if label_counter1 > 5:
+                if label_counter > 4:
                     pass
                 else:
                     text_label = axes[inx][iny].text(dup_x - 0.02, final_y_inx1, label, rotation = 'vertical', fontsize=8, picker=True)
@@ -422,7 +431,7 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
                     
 
         elif second_axes_flag and y == 49:
-            if label_counter > 5:
+            if label_counter > 4:
                 pass
             else:
                 text_label = axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True)
@@ -435,17 +444,19 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
 
 
             arrow_plot_buffer_inx2, arrow_label_buffer_inx2, slash_buffer_inx2, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de(x, y+2)
-            arrow_label_buffer_inx2, slash_buffer_inx2 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx2, slash_buffer_inx2, inx, False)        
+            arrow_label_buffer_inx2, slash_buffer_inx2 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx2, slash_buffer_inx2, inx, True)        
             # arrow_label_buffer_inx2 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx2, inx, False)        
             
             if abs(x - previous_x) <= 0.03 and y == previous_y:
                 label_var = '/'
-                y_buffer_inx2 = y_buffer_inx2 + (slash_buffer_inx2 * (len_of_labels + 1)) 
+                y_buffer_inx2 = y_buffer_inx2 + (slash_buffer_inx2 * (previous_len_of_labels + 1)) 
                 final_y_inx2 = y - y_buffer_inx2 
-                label_counter2 += 1
+                label_counter += 1
+                print("label_counter2",label_counter)
+
             else:
-                arrow_label_buffer_inx2 = arrow_label_buffer_inx2 - 0.13
-                label_counter2 = 0
+                arrow_label_buffer_inx2 = arrow_label_buffer_inx2 - 0.1
+                label_counter = 0
                 # if the buffer value doesn't satisfy then directly print the label
                 label_var = ''
                 y_buffer_inx2 = 0
@@ -457,7 +468,7 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
             label = label_var + label_
             # to plot vr labels on 2nd axes 
             inx = 2
-            if label_counter2 > 5:
+            if label_counter > 4:
                 pass
             else:            
                 text_label = axes[inx][iny].text(dup_x - 0.02, final_y_inx2, label, rotation = 'vertical', fontsize=8, picker=True)
@@ -470,7 +481,7 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
 
         # should not be in first and should not b1
         elif (first_axes_flag and y != 29) or (second_axes_flag and y!= 49) or not (first_axes_flag and second_axes_flag):
-            if label_counter > 5:
+            if label_counter > 4:
                 pass
             else:
                 text_label = axes[inx][iny].text(dup_x - 0.02, final_y, label, rotation = 'vertical', fontsize=8, picker=True)
@@ -483,7 +494,7 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
         else:
             #put except here
             print("Dead End")
-        previous_x, previous_y = x, y
+        previous_x, previous_y, previous_len_of_labels = x, y,len_of_labels
         k += 3
     # print("drag_dict_usde",drag_dict_usde)
     return drag_dict_usde
