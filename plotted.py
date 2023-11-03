@@ -153,18 +153,23 @@ class plotted_():
             
             #formatfor below ditionary: {"DN": 'label', '[y]', '[x]', key..... ,"UP": 'label', '[y]', '[x]', key}
             new_dict['UPDN'] = new_dict['UP'] + new_dict['DN']
+            print("new_dict",new_dict)
 
             """ Called a func that extract up start and up end elements"""
             upStart, upEnd = self.extract_up_elem(new_dict,up_inter)  
 
+            print("upStart , upEnd",upStart, upEnd)
             """ Called a func that extract dn start and dn end elements"""        
             dnStart, dnEnd = self.extract_dn_elem(new_dict,dn_inter)
+            print("dnstart , dnend",dnStart, dnEnd)
+
 
             """ Called a func that colab up start and dn end elements"""
             upStart_dnEnd = self.merge_elements(upStart, dnEnd)
-
+            print("upStart_dnEnd",upStart_dnEnd)
             """ Called a func that colab dn start and up end elements"""        
             upEnd_dnStart = self.merge_elements(dnStart, upEnd)
+            print("dnStart_upEnd", upEnd_dnStart)
 
 ########################################## collision text for up and down #################################################\
 
