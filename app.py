@@ -15,14 +15,19 @@ from labels import *
 from plotted import plotted_
 from matplotlib.text import Text
 from Draggable import dragged
+import traceback
+import pickle
 import pprint
+import multiprocessing as mp
+from multiprocessing import shared_memory
+import logging
 pp = pprint.PrettyPrinter(indent=0.1)
 
 global dragger
 
 class CustomNavToolbar(NavigationToolbar):
     def __init__(self, canvas):
-        super().__init__(canvas, parent= None)
+        super().__init__(canvas)
         self.zoomed_in = False
         self.dragger = None
     def set_dragger(self):
@@ -49,34 +54,100 @@ class CustomNavToolbar(NavigationToolbar):
             
         super().home(self, *args, **kwargs)
         self.dragger.bm.adjust_subplots()
+
+def save_pdfs(axes_indices, filenames, conn, shm):
+    shm = shared_memory.SharedMemory(name=shm.name)
+    fig = pickle.loads(shm.buf[:])
+    axes = fig.get_axes()
+    print(f"filenames are : {filenames}")
+    for i, index in enumerate(axes_indices):
+        b = axes[index].get_tightbbox().transformed(fig.dpi_scale_trans.inverted())            
+        bbox = Bbox([[b.x0-0.3,b.y0-0.6],[b.x1+0.3,b.y1+0.7]])
+        fig.savefig(filenames[i], bbox_inches=bbox, pad_inches=1)
+        conn.send(11)
+    shm.close()
+
 class ExportWorker(QObject):
     update_signal = Signal(int)
+    error_signal = Signal(str)
     # new_fig = Figure(figsize=(10, 50))
-    def __init__(self, file_name, canvas):
+    def __init__(self, file_name, fig_bytes):
         super().__init__()
         self.file_name = file_name
-        self.canvas = canvas
-        self.figure = canvas.figure
-        # print("Worker initialize")
+        self.file_axes = ["0-8_CCG-VR","8-16_CCG-VR","16-24_CCG-VR", "0-8_VR-BL", "8-16_VR-BL", "16-24_VR-BL", "0-8_BL-ST", "8-16_BL-ST", "16-24_BL-ST"]
+        self.counter = 1
+        self.cores, self.axes_to_cores = self.process_distribution()   
+        self.fig_bytes = fig_bytes
+        self.fig = pickle.loads(fig_bytes)
+        self.shm = self.save_fig_to_shared_memory()
+        print("Worker initialize")
+    def process_distribution(self):
+        cores = mp.cpu_count()
+        if cores >= 9:
+            axes_to_cores = [1,1,1,1,1,1,1,1,1]
+            cores = 9
+        else:
+            axes_to_cores = []
+            q, r = divmod(9, cores)
+            for i in range(cores):
+                extra = max(0,r-i)
+                if extra:
+                    r-=1
+                    axes_to_cores.append(q+1)
+                else:
+                    axes_to_cores.append(q)
+        return cores, axes_to_cores
+    def save_fig_to_shared_memory(self):
+        # Create a shared memory space and copy the figure bytes into it
+        shm = shared_memory.SharedMemory(create=True, size=len(self.fig_bytes), name="fig_shared_memory")
+        shm.buf[:len(self.fig_bytes)] = self.fig_bytes
+        return shm
+    def spawn_process(self):
+        parent_conn, child_conn = mp.Pipe()
+        processes = []
+        curr_axes = self.axes_to_cores[0]
+        for i in range(1, self.cores):
+            axes_indices = list(range(curr_axes, curr_axes+self.axes_to_cores[i]))
+            print(f"i:{i} axes index:{axes_indices}")
+            pre, post = tuple(self.file_name.split("."))
+            filenames = [pre+self.file_axes[ax]+"."+post for ax in axes_indices]
+            p = mp.Process(target=save_pdfs, args=(axes_indices, filenames, child_conn, self.shm))
+            processes.append(p)
+            p.start()
+            curr_axes = axes_indices[-1]+1
+        for p in processes:
+            p.join()
+        for _ in processes:
+            count = parent_conn.recv()
+            self.counter += count
+            self.update_signal.emit(self.counter)
     def run(self):
-        # print("I am running")
+        print("I am running")
         try:
-            axes = self.figure.axes
-            extent = [ax.get_tightbbox(renderer=None).transformed(self.figure.dpi_scale_trans.inverted()) for ax in axes]
-            # print(extent)
-            extent = [Bbox([[b.x0-0.3,b.y0-0.6],[b.x1+0.3,b.y1+0.7]]) for b in extent]
-            xmin,xmax = extent[0].x0,extent[0].x1
-            extent[3] = Bbox([[xmin, extent[3].y0],[xmax,extent[3].y1]])
-            # print(extent)
-            # print("Lets make a pdf")
-            with PdfPages(self.file_name) as pdf:
-                # print("3 2 1 Gooo!!")
-                for i, bbox in zip(range(12,101,11),extent):
-                    print(f"i:{i}, bbox:{bbox}")
-                    pdf.savefig(self.figure, bbox_inches=bbox, pad_inches=1)
-                    self.update_signal.emit(i)
+            axes = self.fig.axes
+            print(axes)
+            print(f"meri lambai hai {len(axes)}")
+            axes_indices = list(range(0, self.axes_to_cores[0]+1))
+            print(axes_indices)
+            print(self.axes_to_cores)
+            for index in axes_indices:
+                b = axes[index].get_tightbbox().transformed(self.fig.dpi_scale_trans.inverted())
+                bbox = Bbox([[b.x0-0.3,b.y0-0.6],[b.x1+0.3,b.y1+0.7]])
+                pre, post = tuple(self.file_name.split("."))
+                filename = pre+self.file_axes[index]+"."+post
+                if index == 0:
+                    self.spawn_process()
+                self.fig.savefig(filename, bbox_inches=bbox, pad_inches=1)
+                self.counter+= 11
+                self.update_signal.emit(self.counter)
+            self.shm.close()
+            self.shm.unlink()
         except Exception as e:
-                print(f"Error/ raised: {e}")
+            error_message = f"Error in thread: {e}"
+            tb = traceback.format_exc()
+            self.error_signal.emit(f"{error_message}\n the Traceback is: {tb}")
+            logging.error(error_message)
+            logging.error(traceback.format_exc())
 
 
 class PlotWindow(QtWidgets.QWidget):
@@ -109,7 +180,7 @@ class PlotWindow(QtWidgets.QWidget):
         self.button = QtWidgets.QPushButton("Load Excel File")
         self.button.clicked.connect(self.load_file)
         self.axes = None
-        self.export_button = QtWidgets.QPushButton("Export Plot as PDF")
+        self.export_button = QtWidgets.QPushButton("Export Plot")
         self.export_button.clicked.connect(self.export_plot)
         self.export_button.setEnabled(False)
         self.layout = QtWidgets.QGridLayout(self)
@@ -209,18 +280,18 @@ class PlotWindow(QtWidgets.QWidget):
                 QMessageBox.critical(self, "Error", str(e))              
             except WrongTimeFormatError as e:
                 QMessageBox.critical(self, "Error", str(e)) 
+    def make_pickle(self):
+        fig_bytes = pickle.dumps(self.figure)
+        return fig_bytes
 
     def export_plot(self):
-        file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save Plot as PDF", "", "PDF Files (*.pdf)")
+        file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save Plot", "", "PDF Files (*.pdf);;PNG Files (*.png);;SVG Files (*.svg)")
         if file_name:
-            self.bm.canvas.mpl_disconnect(self.bm.cid)
-            self.bm.cid = None
-            self.scroll_area.takeWidget()
             self.toolbar.hide() 
             # self.layout.removeWidget(self.toolbar)
             self.export_button.setEnabled(False)
-            self.progress_bar.show()
-            self.export_worker = ExportWorker(file_name,self.canvas)
+            fig_pickle = self.make_pickle()
+            self.export_worker = ExportWorker(file_name, fig_pickle)
             self.export_thread = QThread()
             self.export_worker.moveToThread(self.export_thread)
             self.export_thread.started.connect(self.export_worker.run)
@@ -231,13 +302,14 @@ class PlotWindow(QtWidgets.QWidget):
     def update_progress_bar(self, progress):
         self.progress_bar.setValue(progress)
         if progress == 100:
-            self.bm.cid = self.bm.canvas.mpl_connect("draw_event", self.bm.on_draw)
             self.export_thread.quit()
+            self.bm.cid = self.bm.canvas.mpl_connect("draw_event", self.bm.on_draw)
             self.export_thread.wait()
+            self.bm.exporting = False
             # self.progress_bar.hide()
             self.progress_bar.setValue(0)
             self.layout.addWidget(self.toolbar)
-            self.scroll_area.setWidget(self.canvas)
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
