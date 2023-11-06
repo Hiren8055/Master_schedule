@@ -89,13 +89,13 @@ class ExportWorker(QObject):
         else:
             axes_to_cores = []
             q, r = divmod(9, cores)
-            for i in range(cores):
+            for i in range(0,cores):
                 extra = max(0,r-i)
                 if extra:
-                    r-=1
                     axes_to_cores.append(q+1)
                 else:
                     axes_to_cores.append(q)
+                print(f"axes {axes_to_cores}\nrem: {r}\ni:{i}\nextra:{extra}")
         return cores, axes_to_cores
     def save_fig_to_shared_memory(self):
         # Create a shared memory space and copy the figure bytes into it
@@ -117,9 +117,10 @@ class ExportWorker(QObject):
             curr_axes = axes_indices[-1]+1
         for p in processes:
             p.join()
-        for _ in processes:
+        for _ in range(9-self.axes_to_cores[0]):
             count = parent_conn.recv()
             self.counter += count
+            print(f"process: {self.counter}")
             self.update_signal.emit(self.counter)
     def run(self):
         print("I am running")
@@ -127,7 +128,7 @@ class ExportWorker(QObject):
             axes = self.fig.axes
             print(axes)
             print(f"meri lambai hai {len(axes)}")
-            axes_indices = list(range(0, self.axes_to_cores[0]+1))
+            axes_indices = list(range(0, self.axes_to_cores[0]))
             print(axes_indices)
             print(self.axes_to_cores)
             for index in axes_indices:
@@ -139,9 +140,11 @@ class ExportWorker(QObject):
                     self.spawn_process()
                 self.fig.savefig(filename, bbox_inches=bbox, pad_inches=1)
                 self.counter+= 11
+                print(f"main: {self.counter}")
                 self.update_signal.emit(self.counter)
             self.shm.close()
             self.shm.unlink()
+            self.update_signal.emit(self.counter)
         except Exception as e:
             error_message = f"Error in thread: {e}"
             tb = traceback.format_exc()
@@ -213,6 +216,7 @@ class PlotWindow(QtWidgets.QWidget):
         if file_name:
             try:
                 if self.loaded is True:
+                    self.export_button.setEnabled(False)
                     self.bm.stop_work()
                     self.bm = None
                     self.scroll_area.hide()
@@ -287,8 +291,6 @@ class PlotWindow(QtWidgets.QWidget):
     def export_plot(self):
         file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save Plot", "", "PDF Files (*.pdf);;PNG Files (*.png);;SVG Files (*.svg)")
         if file_name:
-            self.toolbar.hide() 
-            # self.layout.removeWidget(self.toolbar)
             self.export_button.setEnabled(False)
             fig_pickle = self.make_pickle()
             self.export_worker = ExportWorker(file_name, fig_pickle)
@@ -305,11 +307,8 @@ class PlotWindow(QtWidgets.QWidget):
             self.export_thread.quit()
             self.bm.cid = self.bm.canvas.mpl_connect("draw_event", self.bm.on_draw)
             self.export_thread.wait()
-            self.bm.exporting = False
-            # self.progress_bar.hide()
             self.progress_bar.setValue(0)
-            self.layout.addWidget(self.toolbar)
-
+            self.export_button.setEnabled(True)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
