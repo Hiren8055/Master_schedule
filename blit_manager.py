@@ -1,6 +1,8 @@
 from collections import deque
 from matplotlib.text import Text
 from matplotlib.patches import FancyArrow
+from PySide2.QtWidgets import QMessageBox
+import time
 class BlitManager:
     def __init__(self, canvas, animated_artists=()):
         self.canvas = canvas
@@ -17,12 +19,14 @@ class BlitManager:
         self.timer.start()
     def on_draw(self, event):
         """Callback to register with 'draw_event'."""
-        if event is not None:
-            if event.canvas != self.canvas:
-                raise RuntimeError
-        self._later()
-        self._draw_animated()
-
+        try:
+            if event is not None:
+                if event.canvas != self.canvas:
+                    raise RuntimeError
+            self._later()
+            self._draw_animated()
+        except Exception as e:
+            QMessageBox.critical(self, "Error", "Something went wrong while dragging train labels, please restart the application.")
     def update_background(self):
         self._bg = self.canvas.copy_from_bbox(self.canvas.figure.bbox)
     def _draw_animated(self, leave_out = None):
@@ -39,10 +43,13 @@ class BlitManager:
             del self._artists[index]
     def add_artist(self, art):
         """Add a new Artist object to the Blit Manager"""
-        if art.figure != self.canvas.figure:
-            raise RuntimeError
-        art.set_animated(True)
-        self._artists.append(art)
+        try:
+            if art.figure != self.canvas.figure:
+                raise RuntimeError
+            art.set_animated(True)
+            self._artists.append(art)
+        except Exception as e:
+            QMessageBox.critical(self, "Error", "Something went wrong while dragging train labels, please restart the application.")
     def add_patch_artist(self, patch):
         if patch.figure != self.canvas.figure:
             raise RuntimeError
@@ -73,6 +80,7 @@ class BlitManager:
             for art in self._artists:
                 if isinstance(art,Text) or isinstance(art,FancyArrow):
                     art.set_clip_on(False)
+                    art.set_visible(False)
 
     def adjust_subplots(self):
         self.canvas.figure.subplots_adjust(left = 0.017, hspace = 1.3)
@@ -81,3 +89,12 @@ class BlitManager:
         # Additional cleanup or resource release code here
         # Destroy the current instance
         del self
+    def after_home(self, zoomed_in):
+        if zoomed_in is True:
+            for i in range(10):
+                self.update()
+            
+            for art in self._artists:
+                if isinstance(art,Text) or isinstance(art,FancyArrow):
+                    art.set_visible(True)
+                    self.update()
