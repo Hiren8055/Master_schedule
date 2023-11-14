@@ -4,7 +4,6 @@ import pandas as pd
 import re
 from collections import Counter
 from PySide2.QtWidgets import QMessageBox
-from PySide2.QtWidgets import QMessageBox
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=0.1)
 
@@ -46,7 +45,7 @@ class IncorrectLengthOfRowsBoxError(Exception):
         self.message = message
         super().__init__(self.message)  
 
-class WrongStrictBoxTimeFormatError(Exception):
+class ExportThreadError(Exception):
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
@@ -132,11 +131,11 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         df.reset_index(drop=True,inplace=True)
         time_df = df[df.index % 3 != 2].copy(deep = False)
         remark_df = df[df.index % 3 == 2].copy(deep = False)
-        rect_dict[key] = [(label,time1,time2,remark,) if remark!=np.nan else (label,time1,time2,) for (label,c),(_,c_) in zip(time_df.items(),remark_df.items()) for  time1,time2,remark in zip(c.dropna().to_list()[::2],c.dropna().to_list()[1::2],c_.to_list())]
-        box_col_len_err = [label for label,col in df.items() if len(col.dropna()[::3].to_list())%3!=0]
+        rect_dict[key] = [(label,time1,time2,remark,) for (label,c),(_,c_) in zip(time_df.items(),remark_df.items()) for  time1,time2,remark in zip(c.dropna().to_list()[::2],c.dropna().to_list()[1::2],c_.to_list())]
+        box_col_len_err = [label for label,col in time_df.items() if len(col.dropna().to_list())%2!=0]
         pp.pprint(rect_dict)
-        # if box_col_len_err:
-        #     raise BoxColumnLengthError(f"Following stations in the BOX sheets have either incorrect number of timings for boxes or wrong timing format. Please follow provided format:{', '.join(box_col_len_err)}")    
+        if box_col_len_err:
+            raise BoxColumnLengthError(f"Following stations in the BOX sheets have either incorrect number of timings for boxes or wrong timing format. Please follow provided format:{', '.join(box_col_len_err)}")    
     for key, df in df_dict.items():
         df.drop(1, axis=1, inplace=True)
         df.columns = range(df.columns.size)
