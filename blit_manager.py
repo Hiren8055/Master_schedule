@@ -2,7 +2,6 @@ from collections import deque
 from matplotlib.text import Text
 from matplotlib.patches import FancyArrow
 from PySide2.QtWidgets import QMessageBox
-import time
 class BlitManager:
     def __init__(self, canvas, animated_artists=()):
         self.canvas = canvas
