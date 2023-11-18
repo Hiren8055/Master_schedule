@@ -1,6 +1,0 @@
-#pip install -r requirements.txt
-pandas
-openpyxl
-matplotlib 
-qt_material
-Pyside2
