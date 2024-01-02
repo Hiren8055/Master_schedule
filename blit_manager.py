@@ -35,7 +35,7 @@ class BlitManager:
         for i,a in enumerate(self._artists):
             if a == leave_out:
                 index = i
-                # print(f"the artist I AM NOT DRAWING IS {a}")
+                # #print(f"the artist I AM NOT DRAWING IS {a}")
             else:
                 fig.draw_artist(a)
         if index:

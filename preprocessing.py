@@ -60,7 +60,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
     rect_dict = dict()
     express_flag =False
     # for key in df_dict:
-    #     print(key)
+    #     #print(key)
     bx_dict["BOX_DN"] = df_dict.pop("BOX_DN")
     bx_dict["BOX_UP"] = df_dict.pop("BOX_UP")
     down_up = dict()
@@ -119,7 +119,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
             elif match_p2 := regex(cell,p2):
                 return match_p2[0]
             else:
-                # print(f"Regex error {cell}")
+                # #print(f"Regex error {cell}")
                 return np.nan
         new_str_df = new_df.astype(str)
         for i, (index, row) in enumerate(new_str_df.iterrows()):
@@ -133,7 +133,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         remark_df = df[df.index % 3 == 2].copy(deep = False)
         rect_dict[key] = [(label,time1,time2,remark,) for (label,c),(_,c_) in zip(time_df.items(),remark_df.items()) for  time1,time2,remark in zip(c.dropna().to_list()[::2],c.dropna().to_list()[1::2],c_.to_list())]
         box_col_len_err = [label for label,col in time_df.items() if len(col.dropna().to_list())%2!=0]
-        pp.pprint(rect_dict)
+        #pp.p#print(rect_dict)
         if box_col_len_err:
             raise BoxColumnLengthError(f"Following stations in the BOX sheets have either incorrect number of timings for boxes or wrong timing format. Please follow provided format:{', '.join(box_col_len_err)}")    
     for key, df in df_dict.items():
@@ -161,7 +161,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
                         regex_days = regex(days_val, days_var)
                     
                     if remark_var and days_var and regex_remark and regex_days:
-                        # print("Should not work both")
+                        # #print("Should not work both")
                         df_ = pd.concat([df_,srs], axis=1)
                     elif (bool(remark_var) ^ bool(days_var)) and ((remark_var and regex_remark) or (days_var and regex_days)):
                         df_ = pd.concat([df_,srs], axis=1)
@@ -175,7 +175,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         df.drop(0, axis=0, inplace=True)
         df.reset_index(drop=True, inplace=True)
         df.iloc[0,0] = np.nan
-        # print(df)
+        # #print(df)
         trains_list = df.iloc[0,1:].copy(deep=False).tolist()
         counter = Counter(trains_list)
         duplicates = [str(item) for item, count in counter.items() if count > 1]
@@ -206,7 +206,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
             bool_index = column.str.contains(p2, regex=True, na=False)
             df.loc[~bool_index, label] = np.nan
         regex = lambda x,p: re.findall(p,x)
-        df = df.applymap(lambda cell: regex(cell,p1)[0] if regex(cell,p1) else (regex(cell,p2)[0] if regex(cell,p2) else print(f"Regex error {cell}")), na_action = 'ignore')
+        df = df.applymap(lambda cell: regex(cell,p1)[0] if regex(cell,p1) else (regex(cell,p2)[0] if regex(cell,p2) else None), na_action = 'ignore')
         list_2d = []
         unit_test = []
         len_err = []
@@ -220,8 +220,8 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
             if not datapoints:
                 empty_err.append(trains_list[index])
             #     continue
-            # print(row_indices)
-            # print(len(row_indices))
+            # #print(row_indices)
+            # #print(len(row_indices))
             # can we revert if all
             #  if any train is greater then its not for local
             if len(row_indices) >=30:
@@ -247,7 +247,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         dwn_upp[key] = trains_list
         color_dict[key] = color_list
 
-    # print("express_flag",express_flag)
+    # #print("express_flag",express_flag)
     return down_up, dwn_upp, color_dict, rect_dict, express_flag
 
 def select( down_up,dwn_upp):
@@ -264,18 +264,18 @@ def select( down_up,dwn_upp):
     sheet = "DN"
     train_dict = {sheet:[]}
     while i<len(down_up[sheet]):
-        # print(down_up[sheet][i][0].split(":")[0])
-        # print(dwn_upp[sheet][1])
+        # #print(down_up[sheet][i][0].split(":")[0])
+        # #print(dwn_upp[sheet][1])
         # if (22 < int(down_up[sheet][i][0][1:3]) < 27):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
         if (19 <= int(down_up[sheet][i][0].split(":")[0]) <=20):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
-        # print(dwn)
-            # print((i-1)//2)
-            # print(dwn_upp[sheet][(i-1)//2])
+        # #print(dwn)
+            # #print((i-1)//2)
+            # #print(dwn_upp[sheet][(i-1)//2])
             train_dict[sheet].append(dwn_upp[sheet][(i-1)//2])
             new_dict[sheet].append(down_up[sheet][i-1])
             new_dict[sheet].append(down_up[sheet][i])
         i+=2
-    # print("train_dict",train_dict)
+    # #print("train_dict",train_dict)
     return new_dict, train_dict
 
 
@@ -308,7 +308,7 @@ def add_24_down_up(down_up):
                 if(arr_2[hi][x+1] < arr_2[hi][x]):
                     y = x+1
             if(y):
-                # print(True)
+                # #print(True)
                 arr_4 = [arr_2[hi][i] + 24 for i in range(y, len(arr_2[hi]))]
                 arr_2[hi]= arr_2[hi][:y]+ arr_4
             y = False

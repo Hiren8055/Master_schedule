@@ -1,3 +1,4 @@
+import warnings
 from PySide2 import QtWidgets
 from PySide2.QtGui import QFont
 from PySide2.QtWidgets import QScrollArea, QMessageBox, QApplication, QProgressBar,QLineEdit,QLabel
@@ -50,7 +51,7 @@ class CustomNavToolbar(NavigationToolbar):
             self.dragger.bm.adjust_subplots()
             global dragger
             dragger = self.dragger
-            QMessageBox.critical(self, "Alert", "Please press home again, and wait while the all labels on plot load, it might take some while.") 
+            QMessageBox.critical(self, "Alert", "Please press home again, and wait while all the labels on plot load. Do not drag the labels while they load. Please wait, it might take a while.") 
         else:
             self.dragger.bm.after_home(True)
         self.dragger.bm.adjust_subplots()
@@ -60,7 +61,7 @@ def save_pdfs(axes_indices, filenames, conn, shm):
     shm = shared_memory.SharedMemory(name=shm.name)
     fig = pickle.loads(shm.buf[:])
     axes = fig.get_axes()
-    print(f"filenames are : {filenames}")
+    #print(f"filenames are : {filenames}")
     for i, index in enumerate(axes_indices):
         b = axes[index].get_tightbbox().transformed(fig.dpi_scale_trans.inverted())            
         bbox = Bbox([[b.x0-0.3,b.y0-0.6],[b.x1+0.3,b.y1+0.7]])
@@ -81,7 +82,7 @@ class ExportWorker(QObject):
         self.fig_bytes = fig_bytes
         self.fig = pickle.loads(fig_bytes)
         self.shm = self.save_fig_to_shared_memory()
-        print("Worker initialize")
+        #print("Worker initialize")
     def process_distribution(self):
         cores = mp.cpu_count()
         # cores = 4
@@ -110,7 +111,7 @@ class ExportWorker(QObject):
         curr_axes = self.axes_to_cores[0]
         for i in range(1, self.cores):
             axes_indices = list(range(curr_axes, curr_axes+self.axes_to_cores[i]))
-            print(f"i:{i} axes index:{axes_indices}")
+            #print(f"i:{i} axes index:{axes_indices}")
             pre, post = tuple(self.file_name.split("."))
             filenames = [pre+self.file_axes[ax]+"."+post for ax in axes_indices]
             p = mp.Process(target=save_pdfs, args=(axes_indices, filenames, child_conn, self.shm))
@@ -124,14 +125,14 @@ class ExportWorker(QObject):
             self.counter += count
             self.update_signal.emit(self.counter)
     def run(self):
-        print("I am running")
+        #print("I am running")
         try:
             axes = self.fig.axes
-            print(axes)
-            print(f"meri lambai hai {len(axes)}")
+            #print(axes)
+            #print(f"meri lambai hai {len(axes)}")
             axes_indices = list(range(0, self.axes_to_cores[0]+1))
-            print(axes_indices)
-            print(self.axes_to_cores)
+            #print(axes_indices)
+            #print(self.axes_to_cores)
             for index in axes_indices:
                 b = axes[index].get_tightbbox().transformed(self.fig.dpi_scale_trans.inverted())
                 bbox = Bbox([[b.x0-0.3,b.y0-0.6],[b.x1+0.3,b.y1+0.7]])
@@ -172,7 +173,7 @@ class PlotWindow(QtWidgets.QWidget):
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = CustomNavToolbar(self.canvas)
         self.y_axis = ["CCG","MEL","CYR","GTR","BCT","MX","PL","PBHD","DDR","MRU","MM","BA","BDTS","KHAR","STC","VLP","ADH","JOS","RMAR","GMN","MDD","KILE","BVI","DIC",'MIRA',"BYR","NIG","BSR","NSP","VR","VTN","SAH","KLV","PLG","UOI","BOR","VGN","DRD","GVD","BRRD","UBR","SJN","BLD","KEB","VAPI","BAGD","UVD","PAD","ATUL","BL","DGI","JRS","BIM","AML","ACL","VDH","HXR","GNST","NVS","MRL","SCH","BHET","UDN","ST"]
-        self.y_labes = ["CCG 0.0","MEL 1.30","CYR 2.21","GTR 3.59","BCT 4.48","MX 5.95","PL 7.67","PBHD 8.89","DDR 10.17","MRU 11.75","MM 12.93","BA 14.66","BDTS 15.29","KHAR 16.29","STC 17.61","VLP 19.67","ADH 21.83","JOS 23.52","RMAR 25.37","GMN 26.9","MDD 29.32","KILE 31.22","BVI 33.98","DIC 36.34",'MIRA 39.76',"BYR 43.11","NIG 47.79","BSR 51.78","NSP 55.85","VR 59.98","VTN 68.42","SAH 76.74","KLV 82.55","PLG 90.92","UOI 97.15","BOR 102.8","VGN 111.5","DRD 123.7","GVD 134.8","BRRD 139.0","UBR 144.0","SJN 149.4","BLD 160.9","KEB 165.8","VAPI 172.0","BAGD 179.0","UVD 182.0","PAD 187.7","ATUL 191.0","BL 198.22","DGI 207.21","JRS 212.28","BIM 216.41","AML 221.72","ACL 225.33","VDH 228.87","HXR 232.0","GNST 234.0","NVS 237.33","MRL 245.63","SCH 252.26","BHET 257.3","UDN 262.77","ST 266.78"]    # print(down_up)        self.setWindowTitle("Matplotlib Plot")
+        self.y_labes = ["CCG 0.0","MEL 1.30","CYR 2.21","GTR 3.59","BCT 4.48","MX 5.95","PL 7.67","PBHD 8.89","DDR 10.17","MRU 11.75","MM 12.93","BA 14.66","BDTS 15.29","KHAR 16.29","STC 17.61","VLP 19.67","ADH 21.83","JOS 23.52","RMAR 25.37","GMN 26.9","MDD 29.32","KILE 31.22","BVI 33.98","DIC 36.34",'MIRA 39.76',"BYR 43.11","NIG 47.79","BSR 51.78","NSP 55.85","VR 59.98","VTN 68.42","SAH 76.74","KLV 82.55","PLG 90.92","UOI 97.15","BOR 102.8","VGN 111.5","DRD 123.7","GVD 134.8","BRRD 139.0","UBR 144.0","SJN 149.4","BLD 160.9","KEB 165.8","VAPI 172.0","BAGD 179.0","UVD 182.0","PAD 187.7","ATUL 191.0","BL 198.22","DGI 207.21","JRS 212.28","BIM 216.41","AML 221.72","ACL 225.33","VDH 228.87","HXR 232.0","GNST 234.0","NVS 237.33","MRL 245.63","SCH 252.26","BHET 257.3","UDN 262.77","ST 266.78"]    # #print(down_up)        self.setWindowTitle("Matplotlib Plot")
         self.new_canvas = None
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
@@ -241,8 +242,8 @@ class PlotWindow(QtWidgets.QWidget):
                     self.layout.addWidget(self.scroll_area,2,0,1,2)
                     self.toolbar.show()
                     self.scroll_area.show()
-                # print(str(self.remark_textbox.text()))
-                # print(str(self.days_textbox.text()))
+                # #print(str(self.remark_textbox.text()))
+                # #print(str(self.days_textbox.text()))
                 remark_var = str(self.remark_textbox.text())
                 days_var = str(self.days_textbox.text())
                 self.pl = plotted_(self.figure, self.y_axis, self.y_labes, self.canvas, self.layout,self.export_button,self.axes, self.scroll_area, self.toolbar)
@@ -253,12 +254,12 @@ class PlotWindow(QtWidgets.QWidget):
                 if select_flag:
                     down_up, dwn_upp = self.select(down_up, dwn_upp)
                 down_up = self.conversion(down_up)
-                # pp.pprint(f"1st:{rect_dict}")
+                # #pp.p#print(f"1st:{rect_dict}")
                 rect_dict = self.conversion_box(rect_dict)
-                # pp.pprint(f"conversion:{rect_dict}")
+                # #pp.p#print(f"conversion:{rect_dict}")
                 down_up = self.add_24_down_up(down_up)
                 rect_dict = self.box_add_24(rect_dict)
-                # pp.pprint(f"24 add:{rect_dict}") 
+                # #pp.p#print(f"24 add:{rect_dict}") 
                 self.figure.clear()
                 self.arr_drag_dict = self.plot_trains(down_up, dwn_upp, color_dict, rect_dict,express_flag)
                 self.export_button.setEnabled(True)
@@ -329,6 +330,7 @@ class PlotWindow(QtWidgets.QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Alert", "Your file has exported succesfully.")
 if __name__ == "__main__":
+    warnings.filterwarnings("ignore")
     app = QtWidgets.QApplication([])
     apply_stylesheet(app, theme='dark_blue.xml')
     window = PlotWindow()

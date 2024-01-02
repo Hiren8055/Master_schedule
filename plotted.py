@@ -102,7 +102,7 @@ class plotted_():
         self.axes = self.figure.subplots(nrows=3, ncols=3)
         # have to make  3 x 3 grid
         # set width of each subplot as 8
-        pp.pprint(f"{rect_dict}")
+        #pp.p#print(f"{rect_dict}")
         for key, arr_2d in station_dict.items():
             self.canvas.flush_events()
             
@@ -153,34 +153,34 @@ class plotted_():
             
             #formatfor below ditionary: {"DN": 'label', '[y]', '[x]', key..... ,"UP": 'label', '[y]', '[x]', key}
             new_dict['UPDN'] = new_dict['UP'] + new_dict['DN']
-            print("new_dict",new_dict)
+            #print("new_dict",new_dict)
 
             """ Called a func that extract up start and up end elements"""
             upStart, upEnd = self.extract_up_elem(new_dict,up_inter)  
 
-            print("upStart , upEnd",upStart, upEnd)
+            #print("upStart , upEnd",upStart, upEnd)
             """ Called a func that extract dn start and dn end elements"""        
             dnStart, dnEnd = self.extract_dn_elem(new_dict,dn_inter)
-            print("dnstart , dnend",dnStart, dnEnd)
+            #print("dnstart , dnend",dnStart, dnEnd)
 
 
             """ Called a func that colab up start and dn end elements"""
             upStart_dnEnd = self.merge_elements(upStart, dnEnd)
-            print("upStart_dnEnd",upStart_dnEnd)
+            #print("upStart_dnEnd",upStart_dnEnd)
             """ Called a func that colab dn start and up end elements"""        
             upEnd_dnStart = self.merge_elements(dnStart, upEnd)
-            print("dnStart_upEnd", upEnd_dnStart)
+            #print("dnStart_upEnd", upEnd_dnStart)
 
 ########################################## collision text for up and down #################################################\
 
-            # print("original position",upEnd_dnStart,upStart_dnEnd)
+            # #print("original position",upEnd_dnStart,upStart_dnEnd)
             arr_drag_dict_ueds = upEnd_dnStart_label(self.canvas, self.axes, express_flag, self.artist_list, upEnd_dnStart)
             arr_drag_dict_usde = upStart_dnEnd_label(self.canvas, self.axes, express_flag, self.artist_list, upStart_dnEnd)  
-            # print(len(arr_drag_dict_ueds))
-            # print(len(arr_drag_dict_usde))
+            # #print(len(arr_drag_dict_ueds))
+            # #print(len(arr_drag_dict_usde))
             arr_drag_dict = Merge(arr_drag_dict_ueds,arr_drag_dict_usde)
-            # print("arr_drag_dict",arr_drag_dict)
-            # print(len(arr_drag_dict))
+            # #print("arr_drag_dict",arr_drag_dict)
+            # #print(len(arr_drag_dict))
             
             # Merge both array with location of train with slashing
             # find without slashing values
