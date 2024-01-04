@@ -11,7 +11,7 @@ from matplotlib.transforms import Bbox, TransformedBbox
 from qt_material import apply_stylesheet
 from collections import Counter
 from blit_manager import BlitManager
-from preprocessing import excel_to_pandas, select, conversion, conversion_box, box_add_24, add_24_down_up, DuplicateTrainError, WrongStationError, SameLengthError, EmptyListError, WrongTimeFormatError, WrongBoxTimeFormatError, BoxColumnLengthError, IncorrectLengthOfRowsBoxError, ExportThreadError
+from preprocessing import excel_to_pandas, select, conversion, conversion_box, box_add_24, add_24_down_up, DuplicateTrainError, WrongStationError, SameLengthError, EmptyListError, WrongTimeFormatError, WrongBoxTimeFormatError, BoxColumnLengthError, IncorrectLengthOfRowsBoxError, ExportThreadError, OmittedSheetsError
 from labels import *
 from plotted import plotted_
 from matplotlib.text import Text
@@ -22,6 +22,7 @@ import pickle
 import time
 import pprint
 import multiprocessing as mp
+
 from multiprocessing import shared_memory
 import logging
 pp = pprint.PrettyPrinter(indent=0.1)
@@ -189,19 +190,24 @@ class PlotWindow(QtWidgets.QWidget):
         self.layout = QtWidgets.QGridLayout(self)
         self.remarks_label= QLabel()
         self.days_label = QLabel()
+        self.title_label = QLabel()
         self.remarks_label.setText("Remarks")
         self.days_label.setText("Days")
+        self.title_label.setText("Title")
         self.remark_textbox = QLineEdit(self)
         self.days_textbox = QLineEdit(self)
-        self.layout.addWidget(self.toolbar,0,0,1,2)
-        self.layout.addWidget(self.progress_bar,1,0,1,2)
-        self.layout.addWidget(self.scroll_area,2,0,1,2)
-        self.layout.addWidget(self.remarks_label,3,0)
-        self.layout.addWidget(self.remark_textbox,4,0)
-        self.layout.addWidget(self.days_label,3,1)
-        self.layout.addWidget(self.days_textbox,4,1)
-        self.layout.addWidget(self.button,5,0)  
-        self.layout.addWidget(self.export_button,5,1)
+        self.title_textbox = QLineEdit(self)
+        self.layout.addWidget(self.toolbar,0,0,1,6)
+        self.layout.addWidget(self.progress_bar,1,0,1,6)
+        self.layout.addWidget(self.scroll_area,2,0,1,6)
+        self.layout.addWidget(self.remarks_label,3,0,1,2)
+        self.layout.addWidget(self.remark_textbox,4,0,1,2)
+        self.layout.addWidget(self.days_label,3,2,1,2)
+        self.layout.addWidget(self.days_textbox,4,2,1,2)
+        self.layout.addWidget(self.title_label,3,4,1,2)
+        self.layout.addWidget(self.title_textbox,4,4,1,2)
+        self.layout.addWidget(self.button,5,0,1,3)
+        self.layout.addWidget(self.export_button,5,3,1,3)
         self.canvas.setMinimumSize(5800, 5000)
         self.canvas.setMaximumSize(5801, 5001)
         self.bm = None
@@ -237,15 +243,16 @@ class PlotWindow(QtWidgets.QWidget):
                     self.canvas.setMaximumSize(5801, 5001)
                     self.toolbar = CustomNavToolbar(self.canvas)
                     self.toolbar.move(0,0)
-                    self.layout.addWidget(self.toolbar,0,0,1,2)    
+                    self.layout.addWidget(self.toolbar,0,0,1,6)    
                     self.scroll_area.setWidget(self.canvas)
-                    self.layout.addWidget(self.scroll_area,2,0,1,2)
+                    self.layout.addWidget(self.scroll_area,2,0,1,6)
                     self.toolbar.show()
                     self.scroll_area.show()
                 # #print(str(self.remark_textbox.text()))
                 # #print(str(self.days_textbox.text()))
                 remark_var = str(self.remark_textbox.text())
                 days_var = str(self.days_textbox.text())
+                title_var = str(self.title_textbox.text())
                 self.pl = plotted_(self.figure, self.y_axis, self.y_labes, self.canvas, self.layout,self.export_button,self.axes, self.scroll_area, self.toolbar)
                 self.plot_trains = self.pl.plot_trains
                 self.loaded = True
@@ -261,7 +268,7 @@ class PlotWindow(QtWidgets.QWidget):
                 rect_dict = self.box_add_24(rect_dict)
                 # #pp.p#print(f"24 add:{rect_dict}") 
                 self.figure.clear()
-                self.arr_drag_dict = self.plot_trains(down_up, dwn_upp, color_dict, rect_dict,express_flag)
+                self.arr_drag_dict = self.plot_trains(down_up, dwn_upp, color_dict, rect_dict, express_flag, title_var)
                 self.export_button.setEnabled(True)
                 self.bm = None
                 self.bm = BlitManager(self.canvas, self.pl.artist_list)
@@ -289,8 +296,10 @@ class PlotWindow(QtWidgets.QWidget):
                 QMessageBox.critical(self, "Error", str(e)) 
             except IncorrectLengthOfRowsBoxError as e:
                 QMessageBox.critical(self, "Error", str(e))
-            except Exception as e:
-                QMessageBox.critical(self, "Error", str(e)) 
+            except OmittedSheetsError as e:
+                QMessageBox.critical(self, "Error", str(e))
+            # except Exception as e:
+            #     QMessageBox.critical(self, "Error", str(e)) 
     def make_pickle(self):
         fig_bytes = pickle.dumps(self.figure)
         return fig_bytes
@@ -330,6 +339,7 @@ class PlotWindow(QtWidgets.QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Alert", "Your file has exported succesfully.")
 if __name__ == "__main__":
+    mp.freeze_support()
     warnings.filterwarnings("ignore")
     app = QtWidgets.QApplication([])
     apply_stylesheet(app, theme='dark_blue.xml')

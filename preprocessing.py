@@ -7,6 +7,11 @@ from PySide2.QtWidgets import QMessageBox
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=0.1)
 
+class OmittedSheetsError(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
 class DuplicateTrainError(Exception):
     def __init__(self, message):
         self.message = message
@@ -58,9 +63,16 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
     df_dict = pd.read_excel(filename, sheet_name=None, header=None, dtype = "object")
     bx_dict = dict()
     rect_dict = dict()
-    express_flag =False
+    express_flag = False
     # for key in df_dict:
     #     #print(key)
+    sheets = ["DN","UP","BOX_DN","BOX_UP"]
+    omitted_sheets = []
+    for sheet in sheets:
+        if sheet not in df_dict:
+            omitted_sheets.append(sheet)
+    if omitted_sheets:
+            raise OmittedSheetsError(f"Either wrong names are given to sheets or the sheets are absent in the excel file. Please use the provided naming conventions for sheets and that all sheets are present. Following are the absent sheets:{', '.join(omitted_sheets)}")
     bx_dict["BOX_DN"] = df_dict.pop("BOX_DN")
     bx_dict["BOX_UP"] = df_dict.pop("BOX_UP")
     down_up = dict()
@@ -69,11 +81,12 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
     unit_test_dict = dict()
     for key, df in bx_dict.items():
         df.drop(0,axis=1,inplace=True)
+        if df.iloc[1:,:].isnull().all().all():
+            continue
         type_str = lambda x: str(x)
         df = df.map(type_str, na_action='ignore')
         df.columns = range(df.columns.size)
         df.iloc[0,:] = df.iloc[0,:].str.strip()
-        df
         stations = df.iloc[0,:].squeeze().copy(deep=False)
         wrong_stations = stations.isin(y_axis)
         # time_start = df[1,:].squeeze().copy(deep=False)
