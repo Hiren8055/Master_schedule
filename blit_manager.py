@@ -1,5 +1,5 @@
 from collections import deque
-from matplotlib.text import Text
+from matplotlib.text import Text, Annotation
 from matplotlib.patches import FancyArrow
 from PySide2.QtWidgets import QMessageBox
 class BlitManager:
@@ -90,10 +90,13 @@ class BlitManager:
         del self
     def after_home(self, zoomed_in):
         if zoomed_in is True:
-            for i in range(10):
+            for i in range(3):
                 self.update()
             
             for art in self._artists:
                 if isinstance(art,Text) or isinstance(art,FancyArrow):
                     art.set_visible(True)
+                if isinstance(art, Annotation):
+                    art.set_visible(True)
                     self.update()
+            self.update()

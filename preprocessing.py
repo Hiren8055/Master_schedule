@@ -79,6 +79,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
     dwn_upp = dict()
     color_dict = dict()
     unit_test_dict = dict()
+    regex = lambda x,p: re.findall(p,x)
     for key, df in bx_dict.items():
         df.drop(0,axis=1,inplace=True)
         if df.iloc[1:,:].isnull().all().all():
@@ -123,7 +124,6 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
             bool_index = column.str.contains(p2, regex=True, na=False)
             bool_index[2::3] = True
             new_df.loc[~bool_index, label] = np.nan
-        regex = lambda x,p: re.findall(p,x)
         def mapper(cell, p1, p2):
             if cell is pd.NA or cell is np.nan:
                 return pd.NA

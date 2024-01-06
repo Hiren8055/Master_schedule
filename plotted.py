@@ -85,7 +85,7 @@ class plotted_():
                     self.axes[index_0][index_1].text(start_time, station+1, str(remark), clip_on=True)
         if title:
             title = title_stns[index_0] + " SECTION " + title
-            self.axes[index_0][index_1].set_title(title, fontdict=title_font)
+            self.axes[index_0][index_1].set_title(title, pad = 230, fontdict=title_font)
         self.axes[index_0][index_1].xaxis.grid(True, which='major', linestyle='-', color='black')
         self.axes[index_0][index_1].xaxis.grid(True, which='minor', linestyle='-')
         self.axes[index_0][index_1].xaxis.set_minor_locator(MultipleLocator(10 / 60))

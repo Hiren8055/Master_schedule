@@ -298,8 +298,8 @@ class PlotWindow(QtWidgets.QWidget):
                 QMessageBox.critical(self, "Error", str(e))
             except OmittedSheetsError as e:
                 QMessageBox.critical(self, "Error", str(e))
-            # except Exception as e:
-            #     QMessageBox.critical(self, "Error", str(e)) 
+            except Exception as e:
+                QMessageBox.critical(self, "Error", str(e)) 
     def make_pickle(self):
         fig_bytes = pickle.dumps(self.figure)
         return fig_bytes
