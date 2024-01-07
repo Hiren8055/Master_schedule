@@ -1,8 +1,8 @@
 import warnings
 from PySide2 import QtWidgets
-from PySide2.QtGui import QFont
-from PySide2.QtWidgets import QScrollArea, QMessageBox, QApplication, QProgressBar,QLineEdit,QLabel
-from PySide2.QtCore import QObject, QThread, Signal, QTimer
+from PySide2.QtGui import QFont, QKeyEvent, QKeySequence
+from PySide2.QtWidgets import QShortcut,    QScrollArea, QMessageBox, QApplication, QProgressBar,QLineEdit,QLabel
+from PySide2.QtCore import QObject, QThread, Signal, QTimer, Qt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -77,7 +77,7 @@ class ExportWorker(QObject):
     def __init__(self, file_name, fig_bytes):
         super().__init__()
         self.file_name = file_name
-        self.file_axes = ["0-8_CCG-VR","8-16_CCG-VR","16-24_CCG-VR", "0-8_VR-BL", "8-16_VR-BL", "16-24_VR-BL", "0-8_BL-ST", "8-16_BL-ST", "16-24_BL-ST"]
+        self.file_axes = ["_0-8_CCG-VR","_8-16_CCG-VR","_16-24_CCG-VR", "_0-8_VR-BL", "_8-16_VR-BL", "_16-24_VR-BL", "_0-8_BL-ST", "_8-16_BL-ST", "_16-24_BL-ST"]
         self.counter = 1
         self.cores, self.axes_to_cores = self.process_distribution()   
         self.fig_bytes = fig_bytes
@@ -197,6 +197,11 @@ class PlotWindow(QtWidgets.QWidget):
         self.remark_textbox = QLineEdit(self)
         self.days_textbox = QLineEdit(self)
         self.title_textbox = QLineEdit(self)
+        reload_shortcut = QShortcut(QKeySequence("Ctrl+R"), self)
+        reload_shortcut.activated.connect(self.ctrl_r)
+        save_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
+        save_shortcut.activated.connect(self.export_plot)
+        self.reload = False
         self.layout.addWidget(self.toolbar,0,0,1,6)
         self.layout.addWidget(self.progress_bar,1,0,1,6)
         self.layout.addWidget(self.scroll_area,2,0,1,6)
@@ -209,6 +214,7 @@ class PlotWindow(QtWidgets.QWidget):
         self.layout.addWidget(self.button,5,0,1,3)
         self.layout.addWidget(self.export_button,5,3,1,3)
         self.canvas.setMinimumSize(5800, 5000)
+        self.canvas_size = [5800,5000]
         self.canvas.setMaximumSize(5801, 5001)
         self.bm = None
         self.artist_list = []
@@ -216,9 +222,36 @@ class PlotWindow(QtWidgets.QWidget):
         self.loaded = False
         self.blit = True
         self.arr_drag_dict = None
+    
+    def ctrl_r(self):
+        self.reload = True
+        self.load_file()
 
+    def keyPressEvent(self, event: QKeyEvent):
+        if event.key() == Qt.Key_Equal:
+            self.canvas_size = [int(dim+dim/4) for dim in self.canvas_size] 
+            x, y = self.canvas_size
+            self.canvas.setMinimumSize(x, y)
+            self.canvas.setMaximumSize(x+1,y+1)            
+        elif event.key() == Qt.Key_Minus:
+            self.canvas_size = [int(dim-dim/4) for dim in self.canvas_size] 
+            x, y = self.canvas_size
+            self.canvas.setMinimumSize(x, y)
+            self.canvas.setMaximumSize(x+1,y+1)
+        elif event.key() == Qt.Key_Home:
+            self.canvas_size = [5800, 5000]
+            x, y = self.canvas_size
+            self.canvas.setMinimumSize(x, y)
+            self.canvas.setMaximumSize(x+1,y+1)
+        
     def load_file(self):
-        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Excel File", "", "Excel Files (*.xlsx)")
+        if not self.reload:
+            file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Excel File", "", "Excel Files (*.xlsx)")
+            self.previous_name = file_name
+        else:
+            file_name = self.previous_name
+            self.reload = False
+
         if file_name:
             try:
                 if self.loaded is True:
@@ -299,7 +332,7 @@ class PlotWindow(QtWidgets.QWidget):
             except OmittedSheetsError as e:
                 QMessageBox.critical(self, "Error", str(e))
             except Exception as e:
-                QMessageBox.critical(self, "Error", str(e)) 
+                QMessageBox.critical(self, "Error", "Error while loading chart or reading data, please restart the application and check Excel format.") 
     def make_pickle(self):
         fig_bytes = pickle.dumps(self.figure)
         return fig_bytes
@@ -309,6 +342,8 @@ class PlotWindow(QtWidgets.QWidget):
         try:
             if file_name:
                 # self.layout.removeWidget(self.toolbar)
+                self.canvas.setMinimumSize(5800, 5000)
+                self.canvas.setMaximumSize(5801, 5001)                
                 self.export_button.setEnabled(False)
                 fig_pickle = self.make_pickle()
                 self.export_worker = ExportWorker(file_name, fig_pickle)
@@ -317,8 +352,11 @@ class PlotWindow(QtWidgets.QWidget):
                 self.export_thread.started.connect(self.export_worker.run)
                 self.export_worker.update_signal.connect(self.update_progress_bar)
                 self.export_worker.update_signal.connect(self.update_progress_bar)
+                self.export_worker.error_signal.connect(self.raise_export_exception)
                 self.export_thread.finished.connect(self.export_thread.deleteLater)
                 self.export_thread.start()
+        except ExportThreadError as e:
+            QMessageBox.critical(self, "Error", str(e))
         except Exception as e:
             QMessageBox.critical(self, "Error", "Something went wrong while exporting. Please restart application and check excel format.")
     def raise_export_exception(self):
@@ -336,6 +374,7 @@ class PlotWindow(QtWidgets.QWidget):
                 self.bm.exporting = False
                 # self.progress_bar.hide()
                 self.progress_bar.setValue(0)
+                self.export_button.setEnabled(True)
         except Exception as e:
             QMessageBox.critical(self, "Alert", "Your file has exported succesfully.")
 if __name__ == "__main__":
