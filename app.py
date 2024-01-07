@@ -176,6 +176,7 @@ class PlotWindow(QtWidgets.QWidget):
         self.y_axis = ["CCG","MEL","CYR","GTR","BCT","MX","PL","PBHD","DDR","MRU","MM","BA","BDTS","KHAR","STC","VLP","ADH","JOS","RMAR","GMN","MDD","KILE","BVI","DIC",'MIRA',"BYR","NIG","BSR","NSP","VR","VTN","SAH","KLV","PLG","UOI","BOR","VGN","DRD","GVD","BRRD","UBR","SJN","BLD","KEB","VAPI","BAGD","UVD","PAD","ATUL","BL","DGI","JRS","BIM","AML","ACL","VDH","HXR","GNST","NVS","MRL","SCH","BHET","UDN","ST"]
         self.y_labes = ["CCG 0.0","MEL 1.30","CYR 2.21","GTR 3.59","BCT 4.48","MX 5.95","PL 7.67","PBHD 8.89","DDR 10.17","MRU 11.75","MM 12.93","BA 14.66","BDTS 15.29","KHAR 16.29","STC 17.61","VLP 19.67","ADH 21.83","JOS 23.52","RMAR 25.37","GMN 26.9","MDD 29.32","KILE 31.22","BVI 33.98","DIC 36.34",'MIRA 39.76',"BYR 43.11","NIG 47.79","BSR 51.78","NSP 55.85","VR 59.98","VTN 68.42","SAH 76.74","KLV 82.55","PLG 90.92","UOI 97.15","BOR 102.8","VGN 111.5","DRD 123.7","GVD 134.8","BRRD 139.0","UBR 144.0","SJN 149.4","BLD 160.9","KEB 165.8","VAPI 172.0","BAGD 179.0","UVD 182.0","PAD 187.7","ATUL 191.0","BL 198.22","DGI 207.21","JRS 212.28","BIM 216.41","AML 221.72","ACL 225.33","VDH 228.87","HXR 232.0","GNST 234.0","NVS 237.33","MRL 245.63","SCH 252.26","BHET 257.3","UDN 262.77","ST 266.78"]    # #print(down_up)        self.setWindowTitle("Matplotlib Plot")
         self.new_canvas = None
+        self.save_ongoing = False
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setWidget(self.canvas)
@@ -340,8 +341,9 @@ class PlotWindow(QtWidgets.QWidget):
     def export_plot(self):
         file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save Plot", "", "PDF Files (*.pdf);;PNG Files (*.png);;SVG Files (*.svg)")
         try:
-            if file_name:
+            if file_name and not self.save_ongoing:
                 # self.layout.removeWidget(self.toolbar)
+                self.save_ongoing = True
                 self.canvas.setMinimumSize(5800, 5000)
                 self.canvas.setMaximumSize(5801, 5001)                
                 self.export_button.setEnabled(False)
@@ -374,6 +376,7 @@ class PlotWindow(QtWidgets.QWidget):
                 self.bm.exporting = False
                 # self.progress_bar.hide()
                 self.progress_bar.setValue(0)
+                self.save_ongoing = False
                 self.export_button.setEnabled(True)
         except Exception as e:
             QMessageBox.critical(self, "Alert", "Your file has exported succesfully.")
