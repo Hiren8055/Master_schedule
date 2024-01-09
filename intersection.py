@@ -10,7 +10,7 @@ def intersection(self, station_dict, trains_dict):
     def intercept_selection_pts(y_target,index,updn):
         '''function selects the for labels 
         It has condition for for not having point at that station it will find by line intersection at that station by select the 2 station above and below
-        using 2 lines intersection method 
+        using 2 lines intersection method
         '''
 
         # add try and except in function 
@@ -83,7 +83,7 @@ def intersection(self, station_dict, trains_dict):
             inx = 0;iny = 0  
         elif (24 <= x <= 32 and 0 <= y <= 29):
             # #print("condition triggered for label MINUSING")
-            inx = 0;iny = 0
+            inx = 0; iny = 0
         # for 0, 1
         elif (8 <= x < 16 and 0 <= y <= 29) :
             # #print("condition triggered for label")

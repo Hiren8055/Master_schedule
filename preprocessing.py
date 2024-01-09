@@ -60,7 +60,9 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
     return
     down_up: dict containing all stations and hault timings {'DN':[[station_name],[timings]], 'UP':[[station_name],[timings]]}
     dwn_upp: list with all train number (trains)"""
+    self.canvas.flush_events()
     df_dict = pd.read_excel(filename, sheet_name=None, header=None, dtype = "object")
+    self.canvas.flush_events()
     bx_dict = dict()
     rect_dict = dict()
     express_flag = False
@@ -80,7 +82,9 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
     color_dict = dict()
     unit_test_dict = dict()
     regex = lambda x,p: re.findall(p,x)
+    ea_trt= r"(EA|TRT)"
     for key, df in bx_dict.items():
+        self.canvas.flush_events()
         df.drop(0,axis=1,inplace=True)
         if df.iloc[1:,:].isnull().all().all():
             continue
@@ -97,6 +101,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         stacked_series = time_df.stack()
         matches = stacked_series.str.extractall(pattern)
         matched_values = matches[0].tolist()
+        self.canvas.flush_events()
         if matched_values:
             matched_values = [str(item) for item in matched_values]
             raise WrongBoxTimeFormatError(f"The following cells in the BOX sheets have HH:MM time format, please use HH:MM:SS format instead:{', '.join(matched_values)}")
@@ -114,6 +119,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         for i, (index, row) in enumerate(new_df.iterrows()):
             if i % 3 == 0:
                 val_checker = pd.concat([val_checker,row], axis = 0)
+        self.canvas.flush_events()
         values = val_checker.copy(deep=False).stack()
         non_matches = values[~values.str.match(pattern_checker, na=False)].astype(str).tolist()
         if non_matches:
@@ -146,12 +152,19 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         remark_df = df[df.index % 3 == 2].copy(deep = False)
         rect_dict[key] = [(label,time1,time2,remark,) for (label,c),(_,c_) in zip(time_df.items(),remark_df.items()) for  time1,time2,remark in zip(c.dropna().to_list()[::2],c.dropna().to_list()[1::2],c_.to_list())]
         box_col_len_err = [label for label,col in time_df.items() if len(col.dropna().to_list())%2!=0]
+        self.canvas.flush_events()
         #pp.p#print(rect_dict)
         if box_col_len_err:
             raise BoxColumnLengthError(f"Following stations in the BOX sheets have either incorrect number of timings for boxes or wrong timing format. Please follow provided format:{', '.join(box_col_len_err)}")    
     for key, df in df_dict.items():
-        df.drop(1, axis=1, inplace=True)
+        self.canvas.flush_events()
+        df.drop(1, axis=1, inplace=True)    
         df.columns = range(df.columns.size)
+        print(df)
+        # df = df.drop(df[df.apply(lambda row: bool(regex(row.astype(str).iat[0], ea_trt)), axis=0)].index)
+        df = df[~df[0].str.contains(ea_trt, na=False, case=False, regex=True)]
+        df.reset_index(drop = True, inplace=True)
+        print(df)
         df_ = pd.DataFrame()
         df_ = pd.concat([df_, df.iloc[:,0]])
         for col, srs in df.items():
@@ -180,6 +193,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
                         df_ = pd.concat([df_,srs], axis=1)
                 else:
                     df[col] = srs
+                self.canvas.flush_events()
         if remark_var or days_var:
             df = df_.copy(deep=False)
         color_list = df.iloc[0,1:].copy(deep=False).tolist()
@@ -194,6 +208,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         duplicates = [str(item) for item, count in counter.items() if count > 1]
         if duplicates:
             raise DuplicateTrainError(f"Following duplicate trains are present in spread sheet: {', '.join(duplicates)}")
+        self.canvas.flush_events()
         df.drop(0, axis=0, inplace=True)
         df.reset_index(drop=True, inplace=True)
         df.iloc[:, 0].ffill(inplace=True)
@@ -209,7 +224,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         df = df.astype(str)
         pattern = r'(^\d\d:\d\d(?!:))'
         stacked_series = df.stack()
-        matches = stacked_series.str.extractall(pattern)
+        matches = stacked_series.astype(str).str.extractall(pattern)
         matched_values = matches[0].tolist()
         if matched_values:
             matched_values = [str(item) for item in matched_values]
@@ -218,15 +233,17 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         for label, column in df.items():
             bool_index = column.str.contains(p2, regex=True, na=False)
             df.loc[~bool_index, label] = np.nan
+            self.canvas.flush_events()
         regex = lambda x,p: re.findall(p,x)
         df = df.applymap(lambda cell: regex(cell,p1)[0] if regex(cell,p1) else (regex(cell,p2)[0] if regex(cell,p2) else None), na_action = 'ignore')
         list_2d = []
         unit_test = []
         len_err = []
         empty_err = []
-        
+
         # df = df.loc[:,~df.columns.duplicated()].copy()
         for index, (label, column) in enumerate(df.items()):
+            self.canvas.flush_events()
             column.dropna(inplace=True)
             row_indices = column.index.tolist()
             datapoints = column.tolist()
@@ -249,12 +266,14 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         # if empty_err:
             # empty_err = [str(item) for item in empty_err]
             # raise EmptyListError(f"Following trains have do have empty lists: {', '.join(empty_err)}")
+        self.canvas.flush_events()
         unit_test = [(train,clr,stns,time,) for train,clr,stns,time in unit_test if stns and time]
+        self.canvas.flush_events()
         trains_list,color_list,station_list,train_timings = tuple(list(i) for i in tuple(zip(*unit_test)))
+        self.canvas.flush_events()
         for stns,timings in zip(station_list,train_timings):
             list_2d = list_2d + [stns,timings]
-
-        
+        self.canvas.flush_events()
         unit_test_dict[key] = unit_test
         down_up[key] = list_2d
         dwn_upp[key] = trains_list
