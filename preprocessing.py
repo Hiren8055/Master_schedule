@@ -160,11 +160,9 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         self.canvas.flush_events()
         df.drop(1, axis=1, inplace=True)    
         df.columns = range(df.columns.size)
-        print(df)
         # df = df.drop(df[df.apply(lambda row: bool(regex(row.astype(str).iat[0], ea_trt)), axis=0)].index)
         df = df[~df[0].str.contains(ea_trt, na=False, case=False, regex=True)]
         df.reset_index(drop = True, inplace=True)
-        print(df)
         df_ = pd.DataFrame()
         df_ = pd.concat([df_, df.iloc[:,0]])
         for col, srs in df.items():

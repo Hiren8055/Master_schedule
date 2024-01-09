@@ -16,6 +16,7 @@ from labels import *
 from plotted import plotted_
 from matplotlib.text import Text
 from Draggable import dragged
+from drop_down import CheckableComboBox
 import traceback
 import matplotlib.pyplot as plt
 import pickle
@@ -196,7 +197,8 @@ class PlotWindow(QtWidgets.QWidget):
         self.days_label.setText("Days")
         self.title_label.setText("Title")
         self.remark_textbox = QLineEdit(self)
-        self.days_textbox = QLineEdit(self)
+        self.days_drop_down = CheckableComboBox(self)
+        self.days_drop_down.addItems(['Mo','Tu','We','Th','Fr','Sa','Su','Daily'])
         self.title_textbox = QLineEdit(self)
         reload_shortcut = QShortcut(QKeySequence("Ctrl+R"), self)
         reload_shortcut.activated.connect(self.ctrl_r)
@@ -209,7 +211,7 @@ class PlotWindow(QtWidgets.QWidget):
         self.layout.addWidget(self.remarks_label,3,0,1,2)
         self.layout.addWidget(self.remark_textbox,4,0,1,2)
         self.layout.addWidget(self.days_label,3,2,1,2)
-        self.layout.addWidget(self.days_textbox,4,2,1,2)
+        self.layout.addWidget(self.days_drop_down,4,2,1,2)
         self.layout.addWidget(self.title_label,3,4,1,2)
         self.layout.addWidget(self.title_textbox,4,4,1,2)
         self.layout.addWidget(self.load_button,5,0,1,3)
@@ -291,7 +293,10 @@ class PlotWindow(QtWidgets.QWidget):
                     # #print(str(self.remark_textbox.text()))
                     # #print(str(self.days_textbox.text()))
                     remark_var = str(self.remark_textbox.text())
-                    days_var = str(self.days_textbox.text())
+                    days_list = self.days_drop_down.currentData()
+                    days_var = str("|".join(days_list))
+                    if days_var:
+                        days_var = f"({days_var})"
                     title_var = str(self.title_textbox.text())
                     self.pl = plotted_(self.figure, self.y_axis, self.y_labes, self.canvas, self.layout,self.export_button,self.axes, self.scroll_area, self.toolbar)
                     self.plot_trains = self.pl.plot_trains
