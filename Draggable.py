@@ -18,7 +18,7 @@ class dragged():
             if isinstance(event.artist, Text):
                 self.dragged = event.artist
                 self.key = str(self.dragged.get_gid())
-                # print(self.key)
+                # #print(self.key)
                 transf = event.artist.axes.transData.inverted()
                 if self.arr_drag_dict[self.key] is not False:
                     self.text = str(self.dragged.get_text()) 
@@ -38,13 +38,13 @@ class dragged():
         try:
             if self.dragged is not None :
                 old_pos = self.dragged.get_position()
-                # print(old_pos)
+                # #print(old_pos)
                 display_coords = (event.x, event.y)
                 axes_coords = self.dragged.axes.transData.inverted().transform(display_coords)
                 new_pos = (old_pos[0] + axes_coords[0] - self.pick_pos[0],old_pos[1] + axes_coords[1] - self.pick_pos[1])
                 if self.arr_drag_dict[self.key] is not False:
                     annot_origin = self.arr_drag_dict[self.key]
-                    print(self.text)
+                    #print(self.text)
                     annot = self.dragged.axes.annotate(text = self.text, xy = annot_origin, xytext = new_pos, fontsize=8, arrowprops={"width":0.01, "headlength":5, "headwidth":5, "color":"black", "edgecolor":None, "linewidth":0.2}, rotation= "vertical", picker = True)
                     # annot = self.dragged.axes.text(x=new_pos[0],y=new_pos[1], s = self.text , rotation= "vertical")
                     annot.set_gid(self.key)

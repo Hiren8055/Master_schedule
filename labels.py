@@ -87,44 +87,44 @@ def extract_up_elem(new_dict,upInter):
     new_data = [new_data0, new_data1, new_data2, new_data3]
 
     upEnd = new_data.copy()
-    # #print("upstart",upStart)
-    # #print(len(upStart[0]))
-    # #print(len(upInter[0]))
+    # ##print("upstart",upStart)
+    # ##print(len(upStart[0]))
+    # ##print(len(upInter[0]))
     # upStart = upStart + upInter
 
     # remove the train where the label and x is same
     # have to change the arrows direction and labels
     # remove it from upEnd and put it in upStart
     # convert the array into string
-    # #print("downStart",upEnd[0])
-    # #print("Dninter",upInter[0])
+    # ##print("downStart",upEnd[0])
+    # ##print("Dninter",upInter[0])
     j=0
     # to make all the values in string
-    #print("before removing upEnd", upEnd)
-    #print("before removing upStart", upStart)
+    ##print("before removing upEnd", upEnd)
+    ##print("before removing upStart", upStart)
     upEnd[0] = list(map(str, upEnd[0]))
 
     while j < len(upInter[0]):
-        #print("up inter",str(upInter[0][j]))
+        ##print("up inter",str(upInter[0][j]))
         if str(upInter[0][j]) in upEnd[0]:
             ind = upEnd[0].index(str(upInter[0][j]))
-            # #print(str(upInter[0][j]))
-            # #print(ind)
-            # #print(upEnd[0])
-            # #print(upEnd[1])
-            # #print(len(upEnd[0]))
-            # #print(len(upEnd[1]))
+            # ##print(str(upInter[0][j]))
+            # ##print(ind)
+            # ##print(upEnd[0])
+            # ##print(upEnd[1])
+            # ##print(len(upEnd[0]))
+            # ##print(len(upEnd[1]))
             if upInter[1][j] > 24:
                 upInter[1][j] = upInter[1][j] - 24
-            # #print("dsaf",upInter[1][j],upInter[2][j])
-            # #print(upEnd[1][ind],upEnd[2][ind])
+            # ##print("dsaf",upInter[1][j],upInter[2][j])
+            # ##print(upEnd[1][ind],upEnd[2][ind])
             if upInter[1][j] == upEnd[1][ind] and upInter[2][j] == upEnd[2][ind]:
-                # #print(str(upInter[0][j]))
+                # ##print(str(upInter[0][j]))
                 # drop that index
-                # #print("drop 1",upInter[0].pop(j))
-                # #print(upInter[1].pop(j))
-                # #print(upInter[2].pop(j))
-                # #print(upInter[3].pop(j))
+                # ##print("drop 1",upInter[0].pop(j))
+                # ##print(upInter[1].pop(j))
+                # ##print(upInter[2].pop(j))
+                # ##print(upInter[3].pop(j))
                 upEnd[0].pop(ind)
                 upEnd[1].pop(ind)
                 upEnd[2].pop(ind)
@@ -142,10 +142,10 @@ def extract_up_elem(new_dict,upInter):
             elif i==1 or i==2:
                 upStart[i].append(upInter[i][j])
 
-    # #print("After downStart",upEnd[0])
-    # #print("After dninter",upInter[0])
-    # #print(upStart)
-    # #print(len(upStart[0]))
+    # ##print("After downStart",upEnd[0])
+    # ##print("After dninter",upInter[0])
+    # ##print(upStart)
+    # ##print(len(upStart[0]))
     # do only testing merge to plot
     return upStart, upEnd    #start, end
 
@@ -223,30 +223,30 @@ def extract_dn_elem(new_dict,dnInter):
 
 
     
-    # #print("dnInter",dnInter)
+    # ##print("dnInter",dnInter)
     j = 0
-    # #print("downStart",dnStart[0])
-    # #print("dninter",dnInter[0])
+    # ##print("downStart",dnStart[0])
+    # ##print("dninter",dnInter[0])
 
     # to make all the values in string
     dnEnd[0] = list(map(str, dnEnd[0]))
-    # #print("before removing dnStart", dnStart)
-    # #print("before removing dnEnd", dnEnd)
+    # ##print("before removing dnStart", dnStart)
+    # ##print("before removing dnEnd", dnEnd)
 
     # removes the number
     while j < len(dnInter[0]):
-        # #print("dn_inter",str(dnInter[0][j]))
+        # ##print("dn_inter",str(dnInter[0][j]))
         if str(dnInter[0][j]) in dnEnd[0]:
             ind = dnEnd[0].index(str(dnInter[0][j]))
-            # ##print(ind)
+            # ###print(ind)
             if dnInter[1][j] > 24:
                 dnInter[1][j] = dnInter[1][j] - 24
-            # ##print("dsaf",dnInter[1][j],dnInter[2][j])
-            # ##print(dnStart[1][ind],dnStart[2][ind])
-            ##print(dnInter[1][j],dnEnd[1][ind])
-            ##print(dnInter[2][j],dnEnd[2][ind])
+            # ###print("dsaf",dnInter[1][j],dnInter[2][j])
+            # ###print(dnStart[1][ind],dnStart[2][ind])
+            ###print(dnInter[1][j],dnEnd[1][ind])
+            ###print(dnInter[2][j],dnEnd[2][ind])
             if dnInter[1][j] == dnEnd[1][ind] and dnInter[2][j] == dnEnd[2][ind]:
-                # ##print(str(dnInter[0][j]))
+                # ###print(str(dnInter[0][j]))
                 # drop that index
                 dnEnd[0].pop(ind)
                 dnEnd[1].pop(ind)
@@ -262,14 +262,14 @@ def extract_dn_elem(new_dict,dnInter):
                 dnEnd[i].append(str(dnInter[i][j]))
             elif i==1 or i==2:
                 dnEnd[i].append(dnInter[i][j])
-    # ##print("After downStart",dnStart[0])
-    # ##print("After dninter",dnInter[0])
-    # ##print("in the function dnEnd", dnEnd)
-    # ##print(dnEnd)
-    # ##print(len(dnEnd[0]))
-    # ##print(len(dnEnd[1]))
-    # ##print(len(dnEnd[2]))
-    # ##print(len(dnEnd[3]))
+    # ###print("After downStart",dnStart[0])
+    # ###print("After dninter",dnInter[0])
+    # ###print("in the function dnEnd", dnEnd)
+    # ###print(dnEnd)
+    # ###print(len(dnEnd[0]))
+    # ###print(len(dnEnd[1]))
+    # ###print(len(dnEnd[2]))
+    # ###print(len(dnEnd[3]))
 
     return dnStart, dnEnd     
 
@@ -301,50 +301,50 @@ def extract_current_axes_ue_ds(x, y):
     first_axes_flag = False
     second_axes_flag = False
     if (0 <= x < 8 and 0 <= y <= 29 ) :
-        # ##print("condition triggered for label")
+        # ###print("condition triggered for label")
         inx = 0;iny = 0;first_axes_flag = True
     elif (24 <= x <= 32 and 0 <= y <= 29):
-        # ##print("condition triggered for label MINUSING")
+        # ###print("condition triggered for label MINUSING")
         inx = 0;iny = 0;first_axes_flag = True
     # for 0, 1
     elif (8 <= x < 16 and 0 <= y <= 29) :
-        # ##print("condition triggered for label")
+        # ###print("condition triggered for label")
         inx = 0;iny = 1;first_axes_flag = True
     # for 0, 2
     elif (16 <= x <= 24 and 0 <= y <= 29) :
-        # ##print("condition triggered for label")
+        # ###print("condition triggered for label")
         inx = 0;iny = 2;first_axes_flag = True
 
     # for 1, 0
     elif (0 <= x < 8 and 29 < y <= 49) :
-        # ##print("condition triggered for label")
+        # ###print("condition triggered for label")
         inx = 1;iny = 0;second_axes_flag = True
     elif (24 <= x <= 32 and 29 < y <= 49):
-        # ##print("condition triggered for label MINUSING")
+        # ###print("condition triggered for label MINUSING")
         inx = 1;iny = 0;second_axes_flag = True
     # for 1, 1
     elif (8 <= x < 16 and 29 < y <= 49) :
-        # ##print("condition triggered for label")
+        # ###print("condition triggered for label")
         inx = 1;iny = 1;second_axes_flag = True
     # for 1, 2
     elif (16 <= x <= 24 and 29 < y <= 49) :
-        # ##print("condition triggered for label")
+        # ###print("condition triggered for label")
         inx = 1;iny = 2;second_axes_flag = True
 
     # for 2, 0
     elif (0 <= x < 8 and 49 < y <= 63) :
-        # ##print("condition triggered for label")
+        # ###print("condition triggered for label")
         inx = 2;iny = 0
     elif (24 <= x <= 32 and 49 < y <= 63):
-        # #print("condition triggered for label MINUSING")
+        # ##print("condition triggered for label MINUSING")
         inx = 2;iny = 0
     # for 2, 1
     elif (8 <= x < 16 and 49 < y <= 63) :
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 2;iny = 1
     # for 2, 2
     elif (16 <= x <= 24 and 49 < y <= 63) :
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 2;iny = 2 
 
     if inx == 0:
@@ -363,51 +363,51 @@ def extract_current_axes_us_de(x, y):
     second_axes_flag = False
     
     if (0 <= x < 8 and 0 <= y <= 29 ) :
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 0;iny = 0; first_axes_flag = True
     elif (24 <= x <= 32 and 0 <= y <= 29):
-        # #print("condition triggered for label MINUSING")
+        # ##print("condition triggered for label MINUSING")
         inx = 0;iny = 0; first_axes_flag = True
     # for 0, 1
     elif (8 <= x < 16 and 0 <= y <= 29) :
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 0;iny = 1; first_axes_flag = True
     # for 0, 2
     elif (16 <= x <= 24 and 0 <= y <= 29) :
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 0;iny = 2; first_axes_flag = True
 
     # for 1, 0
     elif (0 <= x < 8 and 29 < y <= 49) :
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 1;iny = 0; second_axes_flag = True
     elif (24 <= x <= 32 and 29 < y <= 49):
-        # #print("condition triggered for label MINUSING")
+        # ##print("condition triggered for label MINUSING")
         inx = 1;iny = 0; second_axes_flag = True
     # for 1, 1
     elif (8 <= x < 16 and 29 < y <= 49) :
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 1;iny = 1; second_axes_flag = True
     # for 1, 2
     elif (16 <= x <= 24 and 29 < y <= 49) :
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 1;iny = 2; second_axes_flag = True
 
 
     # for 2, 0
     elif (0 <= x < 8 and 49 < y <= 63) :
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 2;iny = 0
     elif (24 <= x <= 32 and 49 < y <= 63):
-        # #print("condition triggered for label MINUSING")
+        # ##print("condition triggered for label MINUSING")
         inx = 2;iny = 0
     # for 2, 1
     elif (8 <= x < 16 and 49 < y <= 63) :
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 2;iny = 1
     # for 2, 2
     elif (16 <= x <= 24 and 49 < y <= 63) :
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 2;iny = 2 
 
     if inx == 0:
@@ -423,52 +423,52 @@ def add_arrow_labels(x, y):
 
     # for 0, 0
     if (0 <= x < 8 and 0 <= y <= 29 ):
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 0;iny = 0;arrow_first_axes_flag = True  
     elif (24 <= x <= 32 and 0 <= y <= 29):
-        # #print("condition triggered for label MINUSING")
+        # ##print("condition triggered for label MINUSING")
         inx = 0;iny = 0;arrow_first_axes_flag = True
     # for 0, 1
     elif (8 <= x < 16 and 0 <= y <= 29):
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 0;iny = 1;arrow_first_axes_flag = True
     # for 0, 2
     elif (16 <= x <= 24 and 0 <= y <= 29):
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 0;iny = 2;arrow_first_axes_flag = True
 
 
     # for 1, 0
     elif (0 <= x < 8 and 29 < y <= 49):
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 1;iny = 0;arrow_second_axes_flag = True
     elif (24 <= x <= 32 and 29 < y <= 49):
-        # #print("condition triggered for label MINUSING")
+        # ##print("condition triggered for label MINUSING")
         inx = 1;iny = 0;arrow_second_axes_flag = True
     # for 1, 1
     elif (8 <= x < 16 and 29 < y <= 49):
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 1;iny = 1;arrow_second_axes_flag = True
     # for 1, 2
     elif (16 <= x <= 24 and 29 < y <= 49):
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 1;iny = 2;arrow_second_axes_flag = True
 
 
     # for 2, 0
     elif (0 <= x < 8 and 49 < y <= 63):
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 2;iny = 0
     elif (24 <= x <= 32 and 49 < y <= 63):
-        # #print("condition triggered for label MINUSING")
+        # ##print("condition triggered for label MINUSING")
         inx = 2;iny = 0
     # for 2, 1
     elif (8 <= x < 16 and 49 < y <= 63) :
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 2;iny = 1
     # for 2, 2
     elif (16 <= x <= 24 and 49 < y <= 63) :
-        # #print("condition triggered for label")
+        # ##print("condition triggered for label")
         inx = 2;iny = 2 
     return inx, iny, x, y#, arrow_first_axes_flag, arrow_second_axes_flag
 

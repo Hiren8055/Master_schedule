@@ -1,7 +1,8 @@
+import warnings
 from PySide2 import QtWidgets
-from PySide2.QtGui import QFont
-from PySide2.QtWidgets import QScrollArea, QMessageBox, QApplication, QProgressBar,QLineEdit,QLabel
-from PySide2.QtCore import QObject, QThread, Signal, QTimer
+from PySide2.QtGui import QFont, QKeyEvent, QKeySequence
+from PySide2.QtWidgets import QShortcut,    QScrollArea, QMessageBox, QApplication, QProgressBar,QLineEdit,QLabel
+from PySide2.QtCore import QObject, QThread, Signal, QTimer, Qt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -10,7 +11,7 @@ from matplotlib.transforms import Bbox, TransformedBbox
 from qt_material import apply_stylesheet
 from collections import Counter
 from blit_manager import BlitManager
-from preprocessing import excel_to_pandas, select, conversion, conversion_box, box_add_24, add_24_down_up, DuplicateTrainError, WrongStationError, SameLengthError, EmptyListError, WrongTimeFormatError, WrongBoxTimeFormatError, BoxColumnLengthError, IncorrectLengthOfRowsBoxError, ExportThreadError
+from preprocessing import excel_to_pandas, select, conversion, conversion_box, box_add_24, add_24_down_up, DuplicateTrainError, WrongStationError, SameLengthError, EmptyListError, WrongTimeFormatError, WrongBoxTimeFormatError, BoxColumnLengthError, IncorrectLengthOfRowsBoxError, ExportThreadError, OmittedSheetsError
 from labels import *
 from plotted import plotted_
 from matplotlib.text import Text
@@ -21,6 +22,7 @@ import pickle
 import time
 import pprint
 import multiprocessing as mp
+
 from multiprocessing import shared_memory
 import logging
 pp = pprint.PrettyPrinter(indent=0.1)
@@ -50,7 +52,7 @@ class CustomNavToolbar(NavigationToolbar):
             self.dragger.bm.adjust_subplots()
             global dragger
             dragger = self.dragger
-            QMessageBox.critical(self, "Alert", "Please press home again, and wait while the all labels on plot load, it might take some while.") 
+            QMessageBox.critical(self, "Alert", "Please press home again, and wait while all the labels on plot load. Do not drag the labels while they load. Please wait, it might take a while.") 
         else:
             self.dragger.bm.after_home(True)
         self.dragger.bm.adjust_subplots()
@@ -60,7 +62,7 @@ def save_pdfs(axes_indices, filenames, conn, shm):
     shm = shared_memory.SharedMemory(name=shm.name)
     fig = pickle.loads(shm.buf[:])
     axes = fig.get_axes()
-    print(f"filenames are : {filenames}")
+    #print(f"filenames are : {filenames}")
     for i, index in enumerate(axes_indices):
         b = axes[index].get_tightbbox().transformed(fig.dpi_scale_trans.inverted())            
         bbox = Bbox([[b.x0-0.3,b.y0-0.6],[b.x1+0.3,b.y1+0.7]])
@@ -75,13 +77,13 @@ class ExportWorker(QObject):
     def __init__(self, file_name, fig_bytes):
         super().__init__()
         self.file_name = file_name
-        self.file_axes = ["0-8_CCG-VR","8-16_CCG-VR","16-24_CCG-VR", "0-8_VR-BL", "8-16_VR-BL", "16-24_VR-BL", "0-8_BL-ST", "8-16_BL-ST", "16-24_BL-ST"]
+        self.file_axes = ["_0-8_CCG-VR","_8-16_CCG-VR","_16-24_CCG-VR", "_0-8_VR-BL", "_8-16_VR-BL", "_16-24_VR-BL", "_0-8_BL-ST", "_8-16_BL-ST", "_16-24_BL-ST"]
         self.counter = 1
         self.cores, self.axes_to_cores = self.process_distribution()   
         self.fig_bytes = fig_bytes
         self.fig = pickle.loads(fig_bytes)
         self.shm = self.save_fig_to_shared_memory()
-        print("Worker initialize")
+        #print("Worker initialize")
     def process_distribution(self):
         cores = mp.cpu_count()
         # cores = 4
@@ -110,7 +112,7 @@ class ExportWorker(QObject):
         curr_axes = self.axes_to_cores[0]
         for i in range(1, self.cores):
             axes_indices = list(range(curr_axes, curr_axes+self.axes_to_cores[i]))
-            print(f"i:{i} axes index:{axes_indices}")
+            #print(f"i:{i} axes index:{axes_indices}")
             pre, post = tuple(self.file_name.split("."))
             filenames = [pre+self.file_axes[ax]+"."+post for ax in axes_indices]
             p = mp.Process(target=save_pdfs, args=(axes_indices, filenames, child_conn, self.shm))
@@ -124,14 +126,14 @@ class ExportWorker(QObject):
             self.counter += count
             self.update_signal.emit(self.counter)
     def run(self):
-        print("I am running")
+        #print("I am running")
         try:
             axes = self.fig.axes
-            print(axes)
-            print(f"meri lambai hai {len(axes)}")
+            #print(axes)
+            #print(f"meri lambai hai {len(axes)}")
             axes_indices = list(range(0, self.axes_to_cores[0]+1))
-            print(axes_indices)
-            print(self.axes_to_cores)
+            #print(axes_indices)
+            #print(self.axes_to_cores)
             for index in axes_indices:
                 b = axes[index].get_tightbbox().transformed(self.fig.dpi_scale_trans.inverted())
                 bbox = Bbox([[b.x0-0.3,b.y0-0.6],[b.x1+0.3,b.y1+0.7]])
@@ -172,15 +174,16 @@ class PlotWindow(QtWidgets.QWidget):
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = CustomNavToolbar(self.canvas)
         self.y_axis = ["CCG","MEL","CYR","GTR","BCT","MX","PL","PBHD","DDR","MRU","MM","BA","BDTS","KHAR","STC","VLP","ADH","JOS","RMAR","GMN","MDD","KILE","BVI","DIC",'MIRA',"BYR","NIG","BSR","NSP","VR","VTN","SAH","KLV","PLG","UOI","BOR","VGN","DRD","GVD","BRRD","UBR","SJN","BLD","KEB","VAPI","BAGD","UVD","PAD","ATUL","BL","DGI","JRS","BIM","AML","ACL","VDH","HXR","GNST","NVS","MRL","SCH","BHET","UDN","ST"]
-        self.y_labes = ["CCG 0.0","MEL 1.30","CYR 2.21","GTR 3.59","BCT 4.48","MX 5.95","PL 7.67","PBHD 8.89","DDR 10.17","MRU 11.75","MM 12.93","BA 14.66","BDTS 15.29","KHAR 16.29","STC 17.61","VLP 19.67","ADH 21.83","JOS 23.52","RMAR 25.37","GMN 26.9","MDD 29.32","KILE 31.22","BVI 33.98","DIC 36.34",'MIRA 39.76',"BYR 43.11","NIG 47.79","BSR 51.78","NSP 55.85","VR 59.98","VTN 68.42","SAH 76.74","KLV 82.55","PLG 90.92","UOI 97.15","BOR 102.8","VGN 111.5","DRD 123.7","GVD 134.8","BRRD 139.0","UBR 144.0","SJN 149.4","BLD 160.9","KEB 165.8","VAPI 172.0","BAGD 179.0","UVD 182.0","PAD 187.7","ATUL 191.0","BL 198.22","DGI 207.21","JRS 212.28","BIM 216.41","AML 221.72","ACL 225.33","VDH 228.87","HXR 232.0","GNST 234.0","NVS 237.33","MRL 245.63","SCH 252.26","BHET 257.3","UDN 262.77","ST 266.78"]    # print(down_up)        self.setWindowTitle("Matplotlib Plot")
+        self.y_labes = ["CCG 0.0","MEL 1.30","CYR 2.21","GTR 3.59","BCT 4.48","MX 5.95","PL 7.67","PBHD 8.89","DDR 10.17","MRU 11.75","MM 12.93","BA 14.66","BDTS 15.29","KHAR 16.29","STC 17.61","VLP 19.67","ADH 21.83","JOS 23.52","RMAR 25.37","GMN 26.9","MDD 29.32","KILE 31.22","BVI 33.98","DIC 36.34",'MIRA 39.76',"BYR 43.11","NIG 47.79","BSR 51.78","NSP 55.85","VR 59.98","VTN 68.42","SAH 76.74","KLV 82.55","PLG 90.92","UOI 97.15","BOR 102.8","VGN 111.5","DRD 123.7","GVD 134.8","BRRD 139.0","UBR 144.0","SJN 149.4","BLD 160.9","KEB 165.8","VAPI 172.0","BAGD 179.0","UVD 182.0","PAD 187.7","ATUL 191.0","BL 198.22","DGI 207.21","JRS 212.28","BIM 216.41","AML 221.72","ACL 225.33","VDH 228.87","HXR 232.0","GNST 234.0","NVS 237.33","MRL 245.63","SCH 252.26","BHET 257.3","UDN 262.77","ST 266.78"]    # #print(down_up)        self.setWindowTitle("Matplotlib Plot")
         self.new_canvas = None
+        self.save_ongoing = False
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setWidget(self.canvas)
         self.progress_bar = QProgressBar()
         # self.progress_bar.hide()
-        self.button = QtWidgets.QPushButton("Load Excel File")
-        self.button.clicked.connect(self.load_file)
+        self.load_button = QtWidgets.QPushButton("Load Excel File")
+        self.load_button.clicked.connect(self.load_file)
         self.axes = None
         self.export_button = QtWidgets.QPushButton("Export Plot")
         self.export_button.clicked.connect(self.export_plot)
@@ -188,20 +191,31 @@ class PlotWindow(QtWidgets.QWidget):
         self.layout = QtWidgets.QGridLayout(self)
         self.remarks_label= QLabel()
         self.days_label = QLabel()
+        self.title_label = QLabel()
         self.remarks_label.setText("Remarks")
         self.days_label.setText("Days")
+        self.title_label.setText("Title")
         self.remark_textbox = QLineEdit(self)
         self.days_textbox = QLineEdit(self)
-        self.layout.addWidget(self.toolbar,0,0,1,2)
-        self.layout.addWidget(self.progress_bar,1,0,1,2)
-        self.layout.addWidget(self.scroll_area,2,0,1,2)
-        self.layout.addWidget(self.remarks_label,3,0)
-        self.layout.addWidget(self.remark_textbox,4,0)
-        self.layout.addWidget(self.days_label,3,1)
-        self.layout.addWidget(self.days_textbox,4,1)
-        self.layout.addWidget(self.button,5,0)  
-        self.layout.addWidget(self.export_button,5,1)
+        self.title_textbox = QLineEdit(self)
+        reload_shortcut = QShortcut(QKeySequence("Ctrl+R"), self)
+        reload_shortcut.activated.connect(self.ctrl_r)
+        save_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
+        save_shortcut.activated.connect(self.export_plot)
+        self.reload = False
+        self.layout.addWidget(self.toolbar,0,0,1,6)
+        self.layout.addWidget(self.progress_bar,1,0,1,6)
+        self.layout.addWidget(self.scroll_area,2,0,1,6)
+        self.layout.addWidget(self.remarks_label,3,0,1,2)
+        self.layout.addWidget(self.remark_textbox,4,0,1,2)
+        self.layout.addWidget(self.days_label,3,2,1,2)
+        self.layout.addWidget(self.days_textbox,4,2,1,2)
+        self.layout.addWidget(self.title_label,3,4,1,2)
+        self.layout.addWidget(self.title_textbox,4,4,1,2)
+        self.layout.addWidget(self.load_button,5,0,1,3)
+        self.layout.addWidget(self.export_button,5,3,1,3)
         self.canvas.setMinimumSize(5800, 5000)
+        self.canvas_size = [5800,5000]
         self.canvas.setMaximumSize(5801, 5001)
         self.bm = None
         self.artist_list = []
@@ -209,87 +223,150 @@ class PlotWindow(QtWidgets.QWidget):
         self.loaded = False
         self.blit = True
         self.arr_drag_dict = None
+        self.loading = False
+    
+    def ctrl_r(self):
+        self.reload = True
+        self.load_file()
 
+    def keyPressEvent(self, event: QKeyEvent):
+        if event.key() == Qt.Key_Equal:
+            self.canvas_size = [int(dim+dim/4) for dim in self.canvas_size] 
+            x, y = self.canvas_size
+            self.canvas.setMinimumSize(x, y)
+            self.canvas.setMaximumSize(x+1,y+1)            
+        elif event.key() == Qt.Key_Minus:
+            self.canvas_size = [int(dim-dim/4) for dim in self.canvas_size] 
+            x, y = self.canvas_size
+            self.canvas.setMinimumSize(x, y)
+            self.canvas.setMaximumSize(x+1,y+1)
+        elif event.key() == Qt.Key_Home:
+            self.canvas_size = [5800, 5000]
+            x, y = self.canvas_size
+            self.canvas.setMinimumSize(x, y)
+            self.canvas.setMaximumSize(x+1,y+1)
+        
     def load_file(self):
-        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Excel File", "", "Excel Files (*.xlsx)")
+        if not self.reload:
+            file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Excel File", "", "Excel Files (*.xlsx)")
+            self.previous_name = file_name
+        else:
+            file_name = self.previous_name
+            self.reload = False
+
         if file_name:
             try:
-                if self.loaded is True:
-                    self.bm.stop_work()
+                if self.loading is True:
+                    pass
+                else:
+                    self.load_button.setEnabled(False)
+                    self.loading = True
+                    if self.loaded is True:
+                        self.bm.stop_work()
+                        self.bm = None
+                        self.scroll_area.hide()
+                        self.toolbar.hide()
+                        self.layout.removeWidget(self.toolbar)
+                        self.toolbar.deleteLater()
+                        self.toolbar = None
+                        self.layout.removeWidget(self.scroll_area)
+                        self.scroll_area.deleteLater()
+                        self.scroll_area = None
+                        self.timer = QTimer(self)
+                        self.timer.start(1000)
+                        self.timer.stop()
+                        self.scroll_area = QScrollArea()
+                        self.scroll_area.setWidgetResizable(True)
+                        self.figure = Figure(figsize=(10, 50))
+                        self.canvas = FigureCanvas(self.figure)
+                        self.canvas.setMinimumSize(5800, 5000)
+                        self.canvas.setMaximumSize(5801, 5001)
+                        self.toolbar = CustomNavToolbar(self.canvas)
+                        self.toolbar.move(0,0)
+                        self.layout.addWidget(self.toolbar,0,0,1,6)    
+                        self.scroll_area.setWidget(self.canvas)
+                        self.layout.addWidget(self.scroll_area,2,0,1,6)
+                        self.toolbar.show()
+                        self.scroll_area.show()
+                    # #print(str(self.remark_textbox.text()))
+                    # #print(str(self.days_textbox.text()))
+                    remark_var = str(self.remark_textbox.text())
+                    days_var = str(self.days_textbox.text())
+                    title_var = str(self.title_textbox.text())
+                    self.pl = plotted_(self.figure, self.y_axis, self.y_labes, self.canvas, self.layout,self.export_button,self.axes, self.scroll_area, self.toolbar)
+                    self.plot_trains = self.pl.plot_trains
+                    select_flag = False
+                    down_up, dwn_upp, color_dict, rect_dict, express_flag =  self.excel_to_pandas(file_name, self.y_axis, remark_var,days_var)
+                    if select_flag:
+                        down_up, dwn_upp = self.select(down_up, dwn_upp)
+                    down_up = self.conversion(down_up)
+                    self.canvas.flush_events()
+                    # #pp.p#print(f"1st:{rect_dict}")
+                    rect_dict = self.conversion_box(rect_dict)
+                    # #pp.p#print(f"conversion:{rect_dict}")
+                    down_up = self.add_24_down_up(down_up)
+                    rect_dict = self.box_add_24(rect_dict)
+                    # #pp.p#print(f"24 add:{rect_dict}") 
+                    self.figure.clear()
+                    self.arr_drag_dict = self.plot_trains(down_up, dwn_upp, color_dict, rect_dict, express_flag, title_var)
                     self.bm = None
-                    self.scroll_area.hide()
-                    self.toolbar.hide()
-                    self.layout.removeWidget(self.toolbar)
-                    self.toolbar.deleteLater()
-                    self.toolbar = None
-                    self.layout.removeWidget(self.scroll_area)
-                    self.scroll_area.deleteLater()
-                    self.scroll_area = None
-                    self.timer = QTimer(self)
-                    self.timer.start(1000)
-                    self.timer.stop()
-                    self.scroll_area = QScrollArea()
-                    self.scroll_area.setWidgetResizable(True)
-                    self.figure = Figure(figsize=(10, 50))
-                    self.canvas = FigureCanvas(self.figure)
-                    self.canvas.setMinimumSize(5800, 5000)
-                    self.canvas.setMaximumSize(5801, 5001)
-                    self.toolbar = CustomNavToolbar(self.canvas)
-                    self.toolbar.move(0,0)
-                    self.layout.addWidget(self.toolbar,0,0,1,2)    
-                    self.scroll_area.setWidget(self.canvas)
-                    self.layout.addWidget(self.scroll_area,2,0,1,2)
-                    self.toolbar.show()
-                    self.scroll_area.show()
-                # print(str(self.remark_textbox.text()))
-                # print(str(self.days_textbox.text()))
-                remark_var = str(self.remark_textbox.text())
-                days_var = str(self.days_textbox.text())
-                self.pl = plotted_(self.figure, self.y_axis, self.y_labes, self.canvas, self.layout,self.export_button,self.axes, self.scroll_area, self.toolbar)
-                self.plot_trains = self.pl.plot_trains
-                self.loaded = True
-                select_flag = False
-                down_up, dwn_upp, color_dict, rect_dict, express_flag =  self.excel_to_pandas(file_name, self.y_axis, remark_var,days_var)
-                if select_flag:
-                    down_up, dwn_upp = self.select(down_up, dwn_upp)
-                down_up = self.conversion(down_up)
-                # pp.pprint(f"1st:{rect_dict}")
-                rect_dict = self.conversion_box(rect_dict)
-                # pp.pprint(f"conversion:{rect_dict}")
-                down_up = self.add_24_down_up(down_up)
-                rect_dict = self.box_add_24(rect_dict)
-                # pp.pprint(f"24 add:{rect_dict}") 
-                self.figure.clear()
-                self.arr_drag_dict = self.plot_trains(down_up, dwn_upp, color_dict, rect_dict,express_flag)
-                self.export_button.setEnabled(True)
-                self.bm = None
-                self.bm = BlitManager(self.canvas, self.pl.artist_list)
-                global dragger
-                dragger = dragged(self.canvas,self.arr_drag_dict, self.bm)
-                self.canvas.mpl_connect("pick_event", dragger.on_pick_event)
-                # self.canvas.mpl_connect("motion_notify_event", self.on_motion_event)
-                self.canvas.mpl_connect("button_release_event", dragger.on_release_event)
-                self.canvas.figure.subplots_adjust(left = 0.017, hspace = 1.3)
-                dragger.bm.adjust_subplots()
-                self.canvas.draw()
+                    self.bm = BlitManager(self.canvas, self.pl.artist_list)
+                    global dragger
+                    dragger = dragged(self.canvas,self.arr_drag_dict, self.bm)
+                    self.canvas.mpl_connect("pick_event", dragger.on_pick_event)
+                    # self.canvas.mpl_connect("motion_notify_event", self.on_motion_event)
+                    self.canvas.mpl_connect("button_release_event", dragger.on_release_event)
+                    self.canvas.figure.subplots_adjust(left = 0.017, hspace = 1.3)
+                    dragger.bm.adjust_subplots()
+                    self.canvas.draw()
+                    self.loaded = True
+                    self.loading = False
+                    self.export_button.setEnabled(True)
+                    self.load_button.setEnabled(True)
+                    self.canvas.flush_events()
             except DuplicateTrainError as e:
                 QMessageBox.critical(self, "Error", str(e))
+                self.load_button.setEnabled(True)
+                self.loading = False
             except WrongStationError as e:
                 QMessageBox.critical(self, "Error", str(e))
+                self.load_button.setEnabled(True)
+                self.loading = False
             except SameLengthError as e:
                 QMessageBox.critical(self, "Error", str(e))
+                self.load_button.setEnabled(True)
+                self.loading = False
             except EmptyListError as e:
-                QMessageBox.critical(self, "Error", str(e))              
+                QMessageBox.critical(self, "Error", str(e))
+                self.load_button.setEnabled(True)
+                self.loading = False
             except WrongTimeFormatError as e:
-                QMessageBox.critical(self, "Error", str(e)) 
+                QMessageBox.critical(self, "Error", str(e))
+                self.load_button.setEnabled(True)
+                self.loading = False
             except WrongBoxTimeFormatError as e:
-                QMessageBox.critical(self, "Error", str(e)) 
+                QMessageBox.critical(self, "Error", str(e))
+                self.load_button.setEnabled(True)
+                self.loading = False
             except BoxColumnLengthError as e:
-                QMessageBox.critical(self, "Error", str(e)) 
+                QMessageBox.critical(self, "Error", str(e))
+                self.load_button.setEnabled(True)
+                self.loading = False
             except IncorrectLengthOfRowsBoxError as e:
                 QMessageBox.critical(self, "Error", str(e))
+                self.load_button.setEnabled(True)
+                self.loading = False
+            except OmittedSheetsError as e:
+                QMessageBox.critical(self, "Error", str(e))
+                self.load_button.setEnabled(True)
+                self.loading = False
             except Exception as e:
-                QMessageBox.critical(self, "Error", str(e)) 
+                QMessageBox.critical(self, "Error", "Error while loading chart or reading data, please restart the application and check Excel format.") 
+                tb = traceback.format_exc()
+                print(str(e))
+                print(str(tb))
+                self.loaded = False
+
     def make_pickle(self):
         fig_bytes = pickle.dumps(self.figure)
         return fig_bytes
@@ -297,8 +374,11 @@ class PlotWindow(QtWidgets.QWidget):
     def export_plot(self):
         file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save Plot", "", "PDF Files (*.pdf);;PNG Files (*.png);;SVG Files (*.svg)")
         try:
-            if file_name:
+            if file_name and not self.save_ongoing:
                 # self.layout.removeWidget(self.toolbar)
+                self.save_ongoing = True
+                self.canvas.setMinimumSize(5800, 5000)
+                self.canvas.setMaximumSize(5801, 5001)                
                 self.export_button.setEnabled(False)
                 fig_pickle = self.make_pickle()
                 self.export_worker = ExportWorker(file_name, fig_pickle)
@@ -307,8 +387,11 @@ class PlotWindow(QtWidgets.QWidget):
                 self.export_thread.started.connect(self.export_worker.run)
                 self.export_worker.update_signal.connect(self.update_progress_bar)
                 self.export_worker.update_signal.connect(self.update_progress_bar)
+                self.export_worker.error_signal.connect(self.raise_export_exception)
                 self.export_thread.finished.connect(self.export_thread.deleteLater)
                 self.export_thread.start()
+        except ExportThreadError as e:
+            QMessageBox.critical(self, "Error", str(e))
         except Exception as e:
             QMessageBox.critical(self, "Error", "Something went wrong while exporting. Please restart application and check excel format.")
     def raise_export_exception(self):
@@ -326,9 +409,13 @@ class PlotWindow(QtWidgets.QWidget):
                 self.bm.exporting = False
                 # self.progress_bar.hide()
                 self.progress_bar.setValue(0)
+                self.save_ongoing = False
+                self.export_button.setEnabled(True)
         except Exception as e:
             QMessageBox.critical(self, "Alert", "Your file has exported succesfully.")
 if __name__ == "__main__":
+    mp.freeze_support()
+    warnings.filterwarnings("ignore")
     app = QtWidgets.QApplication([])
     apply_stylesheet(app, theme='dark_blue.xml')
     window = PlotWindow()

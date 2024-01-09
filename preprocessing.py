@@ -7,6 +7,11 @@ from PySide2.QtWidgets import QMessageBox
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=0.1)
 
+class OmittedSheetsError(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
 class DuplicateTrainError(Exception):
     def __init__(self, message):
         self.message = message
@@ -55,25 +60,38 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
     return
     down_up: dict containing all stations and hault timings {'DN':[[station_name],[timings]], 'UP':[[station_name],[timings]]}
     dwn_upp: list with all train number (trains)"""
+    self.canvas.flush_events()
     df_dict = pd.read_excel(filename, sheet_name=None, header=None, dtype = "object")
+    self.canvas.flush_events()
     bx_dict = dict()
     rect_dict = dict()
-    express_flag =False
+    express_flag = False
     # for key in df_dict:
-    #     print(key)
+    #     #print(key)
+    sheets = ["DN","UP","BOX_DN","BOX_UP"]
+    omitted_sheets = []
+    for sheet in sheets:
+        if sheet not in df_dict:
+            omitted_sheets.append(sheet)
+    if omitted_sheets:
+            raise OmittedSheetsError(f"Either wrong names are given to sheets or the sheets are absent in the excel file. Please use the provided naming conventions for sheets and that all sheets are present. Following are the absent sheets:{', '.join(omitted_sheets)}")
     bx_dict["BOX_DN"] = df_dict.pop("BOX_DN")
     bx_dict["BOX_UP"] = df_dict.pop("BOX_UP")
     down_up = dict()
     dwn_upp = dict()
     color_dict = dict()
     unit_test_dict = dict()
+    regex = lambda x,p: re.findall(p,x)
+    ea_trt= r"(EA|TRT)"
     for key, df in bx_dict.items():
+        self.canvas.flush_events()
         df.drop(0,axis=1,inplace=True)
+        if df.iloc[1:,:].isnull().all().all():
+            continue
         type_str = lambda x: str(x)
         df = df.map(type_str, na_action='ignore')
         df.columns = range(df.columns.size)
         df.iloc[0,:] = df.iloc[0,:].str.strip()
-        df
         stations = df.iloc[0,:].squeeze().copy(deep=False)
         wrong_stations = stations.isin(y_axis)
         # time_start = df[1,:].squeeze().copy(deep=False)
@@ -83,6 +101,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         stacked_series = time_df.stack()
         matches = stacked_series.str.extractall(pattern)
         matched_values = matches[0].tolist()
+        self.canvas.flush_events()
         if matched_values:
             matched_values = [str(item) for item in matched_values]
             raise WrongBoxTimeFormatError(f"The following cells in the BOX sheets have HH:MM time format, please use HH:MM:SS format instead:{', '.join(matched_values)}")
@@ -100,6 +119,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         for i, (index, row) in enumerate(new_df.iterrows()):
             if i % 3 == 0:
                 val_checker = pd.concat([val_checker,row], axis = 0)
+        self.canvas.flush_events()
         values = val_checker.copy(deep=False).stack()
         non_matches = values[~values.str.match(pattern_checker, na=False)].astype(str).tolist()
         if non_matches:
@@ -110,7 +130,6 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
             bool_index = column.str.contains(p2, regex=True, na=False)
             bool_index[2::3] = True
             new_df.loc[~bool_index, label] = np.nan
-        regex = lambda x,p: re.findall(p,x)
         def mapper(cell, p1, p2):
             if cell is pd.NA or cell is np.nan:
                 return pd.NA
@@ -119,7 +138,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
             elif match_p2 := regex(cell,p2):
                 return match_p2[0]
             else:
-                # print(f"Regex error {cell}")
+                # #print(f"Regex error {cell}")
                 return np.nan
         new_str_df = new_df.astype(str)
         for i, (index, row) in enumerate(new_str_df.iterrows()):
@@ -133,12 +152,19 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         remark_df = df[df.index % 3 == 2].copy(deep = False)
         rect_dict[key] = [(label,time1,time2,remark,) for (label,c),(_,c_) in zip(time_df.items(),remark_df.items()) for  time1,time2,remark in zip(c.dropna().to_list()[::2],c.dropna().to_list()[1::2],c_.to_list())]
         box_col_len_err = [label for label,col in time_df.items() if len(col.dropna().to_list())%2!=0]
-        pp.pprint(rect_dict)
+        self.canvas.flush_events()
+        #pp.p#print(rect_dict)
         if box_col_len_err:
             raise BoxColumnLengthError(f"Following stations in the BOX sheets have either incorrect number of timings for boxes or wrong timing format. Please follow provided format:{', '.join(box_col_len_err)}")    
     for key, df in df_dict.items():
-        df.drop(1, axis=1, inplace=True)
+        self.canvas.flush_events()
+        df.drop(1, axis=1, inplace=True)    
         df.columns = range(df.columns.size)
+        print(df)
+        # df = df.drop(df[df.apply(lambda row: bool(regex(row.astype(str).iat[0], ea_trt)), axis=0)].index)
+        df = df[~df[0].str.contains(ea_trt, na=False, case=False, regex=True)]
+        df.reset_index(drop = True, inplace=True)
+        print(df)
         df_ = pd.DataFrame()
         df_ = pd.concat([df_, df.iloc[:,0]])
         for col, srs in df.items():
@@ -161,12 +187,13 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
                         regex_days = regex(days_val, days_var)
                     
                     if remark_var and days_var and regex_remark and regex_days:
-                        # print("Should not work both")
+                        # #print("Should not work both")
                         df_ = pd.concat([df_,srs], axis=1)
                     elif (bool(remark_var) ^ bool(days_var)) and ((remark_var and regex_remark) or (days_var and regex_days)):
                         df_ = pd.concat([df_,srs], axis=1)
                 else:
                     df[col] = srs
+                self.canvas.flush_events()
         if remark_var or days_var:
             df = df_.copy(deep=False)
         color_list = df.iloc[0,1:].copy(deep=False).tolist()
@@ -175,12 +202,13 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         df.drop(0, axis=0, inplace=True)
         df.reset_index(drop=True, inplace=True)
         df.iloc[0,0] = np.nan
-        # print(df)
+        # #print(df)
         trains_list = df.iloc[0,1:].copy(deep=False).tolist()
         counter = Counter(trains_list)
         duplicates = [str(item) for item, count in counter.items() if count > 1]
         if duplicates:
             raise DuplicateTrainError(f"Following duplicate trains are present in spread sheet: {', '.join(duplicates)}")
+        self.canvas.flush_events()
         df.drop(0, axis=0, inplace=True)
         df.reset_index(drop=True, inplace=True)
         df.iloc[:, 0].ffill(inplace=True)
@@ -196,7 +224,7 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         df = df.astype(str)
         pattern = r'(^\d\d:\d\d(?!:))'
         stacked_series = df.stack()
-        matches = stacked_series.str.extractall(pattern)
+        matches = stacked_series.astype(str).str.extractall(pattern)
         matched_values = matches[0].tolist()
         if matched_values:
             matched_values = [str(item) for item in matched_values]
@@ -205,23 +233,25 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         for label, column in df.items():
             bool_index = column.str.contains(p2, regex=True, na=False)
             df.loc[~bool_index, label] = np.nan
+            self.canvas.flush_events()
         regex = lambda x,p: re.findall(p,x)
-        df = df.applymap(lambda cell: regex(cell,p1)[0] if regex(cell,p1) else (regex(cell,p2)[0] if regex(cell,p2) else print(f"Regex error {cell}")), na_action = 'ignore')
+        df = df.applymap(lambda cell: regex(cell,p1)[0] if regex(cell,p1) else (regex(cell,p2)[0] if regex(cell,p2) else None), na_action = 'ignore')
         list_2d = []
         unit_test = []
         len_err = []
         empty_err = []
-        
+
         # df = df.loc[:,~df.columns.duplicated()].copy()
         for index, (label, column) in enumerate(df.items()):
+            self.canvas.flush_events()
             column.dropna(inplace=True)
             row_indices = column.index.tolist()
             datapoints = column.tolist()
             if not datapoints:
                 empty_err.append(trains_list[index])
             #     continue
-            # print(row_indices)
-            # print(len(row_indices))
+            # #print(row_indices)
+            # #print(len(row_indices))
             # can we revert if all
             #  if any train is greater then its not for local
             if len(row_indices) >=30:
@@ -236,18 +266,20 @@ def excel_to_pandas(self, filename,y_axis, remark_var, days_var):
         # if empty_err:
             # empty_err = [str(item) for item in empty_err]
             # raise EmptyListError(f"Following trains have do have empty lists: {', '.join(empty_err)}")
+        self.canvas.flush_events()
         unit_test = [(train,clr,stns,time,) for train,clr,stns,time in unit_test if stns and time]
+        self.canvas.flush_events()
         trains_list,color_list,station_list,train_timings = tuple(list(i) for i in tuple(zip(*unit_test)))
+        self.canvas.flush_events()
         for stns,timings in zip(station_list,train_timings):
             list_2d = list_2d + [stns,timings]
-
-        
+        self.canvas.flush_events()
         unit_test_dict[key] = unit_test
         down_up[key] = list_2d
         dwn_upp[key] = trains_list
         color_dict[key] = color_list
 
-    # print("express_flag",express_flag)
+    # #print("express_flag",express_flag)
     return down_up, dwn_upp, color_dict, rect_dict, express_flag
 
 def select( down_up,dwn_upp):
@@ -264,18 +296,18 @@ def select( down_up,dwn_upp):
     sheet = "DN"
     train_dict = {sheet:[]}
     while i<len(down_up[sheet]):
-        # print(down_up[sheet][i][0].split(":")[0])
-        # print(dwn_upp[sheet][1])
+        # #print(down_up[sheet][i][0].split(":")[0])
+        # #print(dwn_upp[sheet][1])
         # if (22 < int(down_up[sheet][i][0][1:3]) < 27):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
         if (19 <= int(down_up[sheet][i][0].split(":")[0]) <=20):# and (70 < int(down_up["UP"][i][0][4:6]) < 80):
-        # print(dwn)
-            # print((i-1)//2)
-            # print(dwn_upp[sheet][(i-1)//2])
+        # #print(dwn)
+            # #print((i-1)//2)
+            # #print(dwn_upp[sheet][(i-1)//2])
             train_dict[sheet].append(dwn_upp[sheet][(i-1)//2])
             new_dict[sheet].append(down_up[sheet][i-1])
             new_dict[sheet].append(down_up[sheet][i])
         i+=2
-    # print("train_dict",train_dict)
+    # #print("train_dict",train_dict)
     return new_dict, train_dict
 
 
@@ -308,7 +340,7 @@ def add_24_down_up(down_up):
                 if(arr_2[hi][x+1] < arr_2[hi][x]):
                     y = x+1
             if(y):
-                # print(True)
+                # #print(True)
                 arr_4 = [arr_2[hi][i] + 24 for i in range(y, len(arr_2[hi]))]
                 arr_2[hi]= arr_2[hi][:y]+ arr_4
             y = False

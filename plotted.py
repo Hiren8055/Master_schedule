@@ -34,7 +34,18 @@ class plotted_():
         self.artist_list = []
 
 
-    def plot(self,index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end,xlim_start,xlim_end, color_dict, station_dict, rect_dict):
+    def plot(self,index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end,xlim_start,xlim_end, color_dict, station_dict, rect_dict, title):
+        title_font = {
+            'family': 'serif',   # You can change the font family as needed
+            'weight': 'bold',
+            'size': 32,
+        }
+        title_stns = {
+            0: "CCG-VR",
+            1: "VR-BL",
+            2:"BL-ST",
+        }
+        
         sub_y_axis = self.y_labes[start_sub_y_axis:end_sub_y_axis]
         sub_y_vals = range(start_sub_y_axis, end_sub_y_axis)
         self.axes[index_0][index_1].minorticks_on()
@@ -71,7 +82,10 @@ class plotted_():
                 rect = patches.Rectangle((xmin, ymin), width=xmax-xmin, height= ymax-ymin, alpha=0.6, edgecolor='m', hatch=grid, facecolor='none')
                 self.artist_list.append(self.axes[index_0][index_1].add_patch(rect))
                 if remark and remark is not np.nan:
-                    self.axes[index_0][index_1].text(start_time, station+1, str(remark), clip_on=True) 
+                    self.axes[index_0][index_1].text(start_time, station+1, str(remark), clip_on=True)
+        if title:
+            title = title_stns[index_0] + " SECTION " + title
+            self.axes[index_0][index_1].set_title(title, pad = 230, fontdict=title_font)
         self.axes[index_0][index_1].xaxis.grid(True, which='major', linestyle='-', color='black')
         self.axes[index_0][index_1].xaxis.grid(True, which='minor', linestyle='-')
         self.axes[index_0][index_1].xaxis.set_minor_locator(MultipleLocator(10 / 60))
@@ -81,8 +95,6 @@ class plotted_():
         self.axes[index_0][index_1].set_yticks(range(start_sub_y_axis,end_sub_y_axis))
         self.axes[index_0][index_1].set_yticklabels(sub_y_axis)
         self.canvas.flush_events()
-
-
         self.axes[index_0][index_1].tick_params(axis='x', which='minor', labelbottom=True)
         self.axes[index_0][index_1].tick_params(labeltop=True, labelright=True)
         minor_labels = ["10", "20", "30", "40", "50"] * 8
@@ -98,11 +110,11 @@ class plotted_():
         self.canvas.flush_events()
 
 
-    def plot_trains(self, station_dict, trains_dict, color_dict, rect_dict, express_flag):
+    def plot_trains(self, station_dict, trains_dict, color_dict, rect_dict, express_flag, title):
         self.axes = self.figure.subplots(nrows=3, ncols=3)
         # have to make  3 x 3 grid
         # set width of each subplot as 8
-        pp.pprint(f"{rect_dict}")
+        #pp.p#print(f"{rect_dict}")
         for key, arr_2d in station_dict.items():
             self.canvas.flush_events()
             
@@ -125,17 +137,17 @@ class plotted_():
         arr2 = [8, 9, 10, 11, 12, 13, 14, 15, 16]
         arr3 = [16, 17, 18, 19, 20, 21, 22, 23, 24]
         
-        self.plot(0,0,arr1,0,30,      0,15,        0,8, color_dict, station_dict, rect_dict)
-        self.plot(1,0,arr1,29,50,    0,19,        0,8, color_dict, station_dict, rect_dict)   
-        self.plot(2,0,arr1,49,64,    0,19,        0,8, color_dict, station_dict, rect_dict) 
+        self.plot(0,0,arr1,0,30,      0,15,        0,8, color_dict, station_dict, rect_dict, title)
+        self.plot(1,0,arr1,29,50,    0,19,        0,8, color_dict, station_dict, rect_dict, title)   
+        self.plot(2,0,arr1,49,64,    0,19,        0,8, color_dict, station_dict, rect_dict, title) 
 
-        self.plot(0,1,arr2,0,30,      0,15,        8,16, color_dict,   station_dict, rect_dict)
-        self.plot(1,1,arr2,29,50,    0,19,       8,16,  color_dict,  station_dict, rect_dict)
-        self.plot(2,1,arr2,49,64,    0,19,       8,16,  color_dict,  station_dict, rect_dict)
+        self.plot(0,1,arr2,0,30,      0,15,        8,16, color_dict,   station_dict, rect_dict, title)
+        self.plot(1,1,arr2,29,50,    0,19,       8,16,  color_dict,  station_dict, rect_dict, title)
+        self.plot(2,1,arr2,49,64,    0,19,       8,16,  color_dict,  station_dict, rect_dict, title)
 
-        self.plot(0,2,arr3,0,30,      0,15,       16,24,  color_dict,  station_dict, rect_dict)
-        self.plot(1,2,arr3,29,50,    0,19,       16,24,  color_dict,  station_dict, rect_dict)
-        self.plot(2,2,arr3,49,64,    0,19,        16,24,  color_dict,  station_dict, rect_dict)
+        self.plot(0,2,arr3,0,30,      0,15,       16,24,  color_dict,  station_dict, rect_dict, title)
+        self.plot(1,2,arr3,29,50,    0,19,       16,24,  color_dict,  station_dict, rect_dict, title)
+        self.plot(2,2,arr3,49,64,    0,19,        16,24,  color_dict,  station_dict, rect_dict, title)
 
         def plot_labels():
 
@@ -153,34 +165,34 @@ class plotted_():
             
             #formatfor below ditionary: {"DN": 'label', '[y]', '[x]', key..... ,"UP": 'label', '[y]', '[x]', key}
             new_dict['UPDN'] = new_dict['UP'] + new_dict['DN']
-            print("new_dict",new_dict)
+            #print("new_dict",new_dict)
 
             """ Called a func that extract up start and up end elements"""
             upStart, upEnd = self.extract_up_elem(new_dict,up_inter)  
 
-            print("upStart , upEnd",upStart, upEnd)
+            #print("upStart , upEnd",upStart, upEnd)
             """ Called a func that extract dn start and dn end elements"""        
             dnStart, dnEnd = self.extract_dn_elem(new_dict,dn_inter)
-            print("dnstart , dnend",dnStart, dnEnd)
+            #print("dnstart , dnend",dnStart, dnEnd)
 
 
             """ Called a func that colab up start and dn end elements"""
             upStart_dnEnd = self.merge_elements(upStart, dnEnd)
-            print("upStart_dnEnd",upStart_dnEnd)
+            #print("upStart_dnEnd",upStart_dnEnd)
             """ Called a func that colab dn start and up end elements"""        
             upEnd_dnStart = self.merge_elements(dnStart, upEnd)
-            print("dnStart_upEnd", upEnd_dnStart)
+            #print("dnStart_upEnd", upEnd_dnStart)
 
 ########################################## collision text for up and down #################################################\
 
-            # print("original position",upEnd_dnStart,upStart_dnEnd)
+            # #print("original position",upEnd_dnStart,upStart_dnEnd)
             arr_drag_dict_ueds = upEnd_dnStart_label(self.canvas, self.axes, express_flag, self.artist_list, upEnd_dnStart)
             arr_drag_dict_usde = upStart_dnEnd_label(self.canvas, self.axes, express_flag, self.artist_list, upStart_dnEnd)  
-            # print(len(arr_drag_dict_ueds))
-            # print(len(arr_drag_dict_usde))
+            # #print(len(arr_drag_dict_ueds))
+            # #print(len(arr_drag_dict_usde))
             arr_drag_dict = Merge(arr_drag_dict_ueds,arr_drag_dict_usde)
-            # print("arr_drag_dict",arr_drag_dict)
-            # print(len(arr_drag_dict))
+            # #print("arr_drag_dict",arr_drag_dict)
+            # #print(len(arr_drag_dict))
             
             # Merge both array with location of train with slashing
             # find without slashing values
