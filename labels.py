@@ -353,7 +353,47 @@ def extract_current_axes_ue_ds(x, y):
         return 0.6, 0.14, 0.26,first_axes_flag, second_axes_flag, inx
     elif inx == 2:
         return 0.6, 0.14, 0.15,first_axes_flag,second_axes_flag, inx
-    
+
+def extract_current_axes_ue_ds_st_bsl(x, y):
+    first_axes_flag = False
+    second_axes_flag = False
+    if (0 <= x < 8 and 0 <= y <= 25 ) :
+        # ###print("condition triggered for label")
+        inx = 0;iny = 0;first_axes_flag = True
+    elif (24 <= x <= 32 and 0 <= y <= 25):
+        # ###print("condition triggered for label MINUSING")
+        inx = 0;iny = 0;first_axes_flag = True
+    # for 0, 1
+    elif (8 <= x < 16 and 0 <= y <= 25) :
+        # ###print("condition triggered for label")
+        inx = 0;iny = 1;first_axes_flag = True
+    # for 0, 2
+    elif (16 <= x <= 24 and 0 <= y <= 25) :
+        # ###print("condition triggered for label")
+        inx = 0;iny = 2;first_axes_flag = True
+
+    # for 1, 0
+    elif (0 <= x < 8 and 25 < y <= 46) :
+        # ###print("condition triggered for label")
+        inx = 1;iny = 0;second_axes_flag = True
+    elif (24 <= x <= 32 and 25 < y <= 46):
+        # ###print("condition triggered for label MINUSING")
+        inx = 1;iny = 0;second_axes_flag = True
+    # for 1, 1
+    elif (8 <= x < 16 and 25 < y <= 46) :
+        # ###print("condition triggered for label")
+        inx = 1;iny = 1;second_axes_flag = True
+    # for 1, 2
+    elif (16 <= x <= 24 and 25 < y <= 46) :
+        # ###print("condition triggered for label")
+        inx = 1;iny = 2;second_axes_flag = True
+
+
+    if inx == 0:
+        return 0.65, 0.18, 0.26,first_axes_flag,second_axes_flag, inx
+    elif inx == 1:
+        return 0.6, 0.14, 0.26,first_axes_flag, second_axes_flag, inx
+
 # Have to add condition to label for both the axes 1st and 2nd same 
 # Can give a flag as it has to #print twice in 2 different plots
 # need to identify which axes and time zone it belongs to 
@@ -417,7 +457,47 @@ def extract_current_axes_us_de(x, y):
     elif inx == 2:
         return 0.6, 0.26, 0.15, first_axes_flag, second_axes_flag, inx
     
+def extract_current_axes_us_de_st_bsl(x, y):
+    first_axes_flag = False
+    second_axes_flag = False
+    
+    if (0 <= x < 8 and 0 <= y <= 25 ) :
+        # ##print("condition triggered for label")
+        inx = 0;iny = 0; first_axes_flag = True
+    elif (24 <= x <= 32 and 0 <= y <= 25):
+        # ##print("condition triggered for label MINUSING")
+        inx = 0;iny = 0; first_axes_flag = True
+    # for 0, 1
+    elif (8 <= x < 16 and 0 <= y <= 25) :
+        # ##print("condition triggered for label")
+        inx = 0;iny = 1; first_axes_flag = True
+    # for 0, 2
+    elif (16 <= x <= 24 and 0 <= y <= 25) :
+        # ##print("condition triggered for label")
+        inx = 0;iny = 2; first_axes_flag = True
 
+    # for 1, 0
+    elif (0 <= x < 8 and 25 < y <= 46) :
+        # ##print("condition triggered for label")
+        inx = 1;iny = 0; second_axes_flag = True
+    elif (24 <= x <= 32 and 25 < y <= 46):
+        # ##print("condition triggered for label MINUSING")
+        inx = 1;iny = 0; second_axes_flag = True
+    # for 1, 1
+    elif (8 <= x < 16 and 25 < y <= 46) :
+        # ##print("condition triggered for label")
+        inx = 1;iny = 1; second_axes_flag = True
+    # for 1, 2
+    elif (16 <= x <= 24 and 25 < y <= 46) :
+        # ##print("condition triggered for label")
+        inx = 1;iny = 2; second_axes_flag = True
+
+
+    if inx == 0:
+        return 0.6, 0.42, 0.30, first_axes_flag, second_axes_flag, inx
+    elif inx == 1:
+        return 0.6, 0.33, 0.22, first_axes_flag, second_axes_flag, inx
+    
 def add_arrow_labels(x, y):
     inx, iny = 0, 0   #NOTE: not necessary
 
@@ -472,3 +552,41 @@ def add_arrow_labels(x, y):
         inx = 2;iny = 2 
     return inx, iny, x, y#, arrow_first_axes_flag, arrow_second_axes_flag
 
+def add_arrow_labels_st_bsl(x, y):
+    inx, iny = 0, 0   #NOTE: not necessary
+
+    # for 0, 0
+    if (0 <= x < 8 and 0 <= y <= 25 ):
+        # ##print("condition triggered for label")
+        inx = 0;iny = 0;arrow_first_axes_flag = True  
+    elif (24 <= x <= 32 and 0 <= y <= 25):
+        # ##print("condition triggered for label MINUSING")
+        inx = 0;iny = 0;arrow_first_axes_flag = True
+    # for 0, 1
+    elif (8 <= x < 16 and 0 <= y <= 25):
+        # ##print("condition triggered for label")
+        inx = 0;iny = 1;arrow_first_axes_flag = True
+    # for 0, 2
+    elif (16 <= x <= 24 and 0 <= y <= 25):
+        # ##print("condition triggered for label")
+        inx = 0;iny = 2;arrow_first_axes_flag = True
+
+
+    # for 1, 0
+    elif (0 <= x < 8 and 25 < y <= 46):
+        # ##print("condition triggered for label")
+        inx = 1;iny = 0;arrow_second_axes_flag = True
+    elif (24 <= x <= 32 and 25 < y <= 46):
+        # ##print("condition triggered for label MINUSING")
+        inx = 1;iny = 0;arrow_second_axes_flag = True
+    # for 1, 1
+    elif (8 <= x < 16 and 25 < y <= 46):
+        # ##print("condition triggered for label")
+        inx = 1;iny = 1;arrow_second_axes_flag = True
+    # for 1, 2
+    elif (16 <= x <= 24 and 25 < y <= 46):
+        # ##print("condition triggered for label")
+        inx = 1;iny = 2;arrow_second_axes_flag = True
+
+
+    

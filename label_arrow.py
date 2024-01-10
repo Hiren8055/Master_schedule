@@ -1,5 +1,5 @@
 import uuid
-from labels import extract_current_axes_ue_ds, extract_current_axes_us_de, add_arrow_labels
+from labels import extract_current_axes_ue_ds, extract_current_axes_us_de, add_arrow_labels,extract_current_axes_us_de_st_bsl,extract_current_axes_ue_ds_st_bsl,add_arrow_labels_st_bsl
 # Have to make the an array with slashing and original position
 
 def built_dict(dict_name, text_label,train_x,train_y):
@@ -147,7 +147,7 @@ def condition_for_text_buffer(label, len_of_labels, arrow_label_buffer, slash_bu
     # return arrow_label_buffer
 
 
-def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
+def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart,section):
     """ this function plot arrow and labels for up-end and down-start"""
     canvas.flush_events()
     k = 1
@@ -168,8 +168,10 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
         y = upEnd_dnStart[2][i]
         key = upEnd_dnStart[3][i]
         len_of_labels = len(label_)
-
-        arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag, second_axes_flag, inx = extract_current_axes_ue_ds(x, y)
+        if section == "CCG-ST":
+            arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag, second_axes_flag, inx = extract_current_axes_ue_ds(x, y)
+        else:    
+            arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag, second_axes_flag, inx = extract_current_axes_ue_ds_st_bsl(x, y)
         arrow_label_buffer, slash_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, slash_buffer, inx, True)        
         # arrow_label_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, inx, True)        
         if x == 8 or x == 16 or x == 24:
@@ -227,7 +229,10 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
             # to plot vr labels on 2nd axes
 
             if express_flag:
-                arrow_plot_buffer_inx1, arrow_label_buffer_inx1, slash_buffer_inx1,first_axes_flag, second_axes_flag, _ = extract_current_axes_ue_ds(x, y+2)
+                if section == "CCG-ST":
+                    arrow_plot_buffer_inx1, arrow_label_buffer_inx1, slash_buffer_inx1,first_axes_flag, second_axes_flag, _ = extract_current_axes_ue_ds(x, y+2)
+                else:    
+                    arrow_plot_buffer_inx1, arrow_label_buffer_inx1, slash_buffer_inx1,first_axes_flag, second_axes_flag, _ = extract_current_axes_ue_ds_st_bsl(x, y+2)
                 if abs(x - previous_x) <= 0.03 and y == previous_y:
                     label_var = '/'
                     y_buffer_inx1  = y_buffer_inx1  + (slash_buffer_inx1 * (len_of_labels + 1)) 
@@ -273,8 +278,11 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
                 else:
                     artist_list.append(axes[inx][iny].arrow(dup_x, y - arrow_plot_buffer, 0, 0.5, width = 0.005, clip_on = False))
 
-            # to plot vr labels on 2nd axes 
-            arrow_plot_buffer_inx2, arrow_label_buffer_inx2, slash_buffer_inx2,first_axes_flag, second_axes_flag, _ = extract_current_axes_ue_ds(x, y+2)
+            # to plot vr labels on 2nd axes
+            if section == "CCG-ST":
+                arrow_plot_buffer_inx2, arrow_label_buffer_inx2, slash_buffer_inx2,first_axes_flag, second_axes_flag, _ = extract_current_axes_ue_ds(x, y+2)
+            else:
+                arrow_plot_buffer_inx2, arrow_label_buffer_inx2, slash_buffer_inx2,first_axes_flag, second_axes_flag, _ = extract_current_axes_ue_ds_st_bsl(x, y+2)
             if abs(x - previous_x) <= 0.03 and y == previous_y:
                 label_var = '/'
                 y_buffer_inx2 = y_buffer_inx2 + (slash_buffer_inx2 * (len_of_labels + 1)) 
@@ -330,7 +338,7 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
     # #print("drag_dict_ueds",drag_dict_ueds)
     return drag_dict_ueds
 
-def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):   
+def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd,section):   
     """ this function plot arrow and labels for up-start and down-end"""
     canvas.flush_events()
     k = 1
@@ -349,8 +357,11 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
         y = upStart_dnEnd[2][i]
         key = upStart_dnEnd[3][i]
         len_of_labels = len(label_)
+        if section == 'CCG-ST':
+            arrow_plot_buffer, arrow_label_buffer, slash_buffer, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de(x, y)
+        else:
+            arrow_plot_buffer, arrow_label_buffer, slash_buffer, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de_st_bsl(x, y)
 
-        arrow_plot_buffer, arrow_label_buffer, slash_buffer, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de(x, y)
         arrow_label_buffer, slash_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, slash_buffer, inx, False)        
         # arrow_label_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, inx, False)        
         if x == 8 or x == 16 or x == 24:
@@ -394,7 +405,10 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
             
             # to plot vr labels on 2nd axes 
             if express_flag:
-                arrow_plot_buffer_inx1, arrow_label_buffer_inx1, slash_buffer_inx1, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de(x, y+2)
+                if section == 'CCG-ST':
+                    arrow_plot_buffer_inx1, arrow_label_buffer_inx1, slash_buffer_inx1, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de(x, y+2)
+                else:
+                    arrow_plot_buffer_inx1, arrow_label_buffer_inx1, slash_buffer_inx1, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de_st_bsl(x, y+2)
                 arrow_label_buffer_inx1, slash_buffer_inx1 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx1, slash_buffer_inx1, inx, True)        
                 # arrow_label_buffer_inx1 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx1, inx, False)        
 
@@ -465,8 +479,10 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
                 else:
                     artist_list.append(axes[inx][iny].arrow(dup_x, y, 0, 0.5, width = 0.005, clip_on = False))
 
-
-            arrow_plot_buffer_inx2, arrow_label_buffer_inx2, slash_buffer_inx2, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de(x, y+2)
+            if section == 'CCG-ST':
+                arrow_plot_buffer_inx2, arrow_label_buffer_inx2, slash_buffer_inx2, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de(x, y+2)
+            else:    
+                arrow_plot_buffer_inx2, arrow_label_buffer_inx2, slash_buffer_inx2, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de_st_bsl(x, y+2)
             arrow_label_buffer_inx2, slash_buffer_inx2 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx2, slash_buffer_inx2, inx, True)        
             # arrow_label_buffer_inx2 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx2, inx, False)        
             
