@@ -110,7 +110,7 @@ class plotted_():
         self.canvas.flush_events()
 
 
-    def plot_trains(self, station_dict, trains_dict, color_dict, rect_dict, express_flag, title):
+    def plot_trains_ccg_st(self, station_dict, trains_dict, color_dict, rect_dict, express_flag, title):
         self.axes = self.figure.subplots(nrows=3, ncols=3)
         # have to make  3 x 3 grid
         # set width of each subplot as 8
@@ -207,3 +207,39 @@ class plotted_():
         # self.canvas.figure.subplots_adjust(left = 0.017, hspace = 0.13)
         self.canvas.figure.subplots_adjust(left = 0.017, hspace = 1.3)
         return arr_drag_dict
+    
+    def plot_trains_st_bsl(self, station_dict, trains_dict, color_dict, rect_dict, express_flag, title):
+        self.axes = self.figure.subplots(nrows=2, ncols=3)
+        # have to make  3 x 3 grid
+        # set width of each subplot as 8
+        #pp.p#print(f"{rect_dict}")
+        for key, arr_2d in station_dict.items():
+            self.canvas.flush_events()
+            
+            for i in range(0, len(arr_2d), 2):
+                self.canvas.flush_events()
+
+                for j in range(len(arr_2d[i])):
+                    arr_2d[i][j] = self.y_axis.index(arr_2d[i][j])
+                    self.canvas.flush_events()
+
+        self.canvas.flush_events()
+
+        for key, box_list in rect_dict.items():
+            for i, (station, *_) in enumerate(box_list):
+                station = self.y_axis.index(station)
+                box_list[i] = station,*_,
+
+    ######################################################################################################    
+        arr1 = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        arr2 = [8, 9, 10, 11, 12, 13, 14, 15, 16]
+        arr3 = [16, 17, 18, 19, 20, 21, 22, 23, 24]
+        
+        self.plot(0,0,arr1,0,26,      0,15,        0,8, color_dict, station_dict, rect_dict, title)
+        self.plot(1,0,arr1,25,46,    0,19,        0,8, color_dict, station_dict, rect_dict, title)   
+
+        self.plot(0,1,arr2,0,26,      0,15,        8,16, color_dict,   station_dict, rect_dict, title)
+        self.plot(1,1,arr2,25,46,    0,19,       8,16,  color_dict,  station_dict, rect_dict, title)
+
+        self.plot(0,2,arr3,0,26,      0,15,       16,24,  color_dict,  station_dict, rect_dict, title)
+        self.plot(1,2,arr3,25,46,    0,19,       16,24,  color_dict,  station_dict, rect_dict, title)

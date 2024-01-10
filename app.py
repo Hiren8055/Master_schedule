@@ -1,7 +1,7 @@
 import warnings
 from PySide2 import QtWidgets
 from PySide2.QtGui import QFont, QKeyEvent, QKeySequence
-from PySide2.QtWidgets import QShortcut,    QScrollArea, QMessageBox, QApplication, QProgressBar,QLineEdit,QLabel
+from PySide2.QtWidgets import QShortcut, QComboBox, QScrollArea, QMessageBox, QApplication, QProgressBar,QLineEdit,QLabel
 from PySide2.QtCore import QObject, QThread, Signal, QTimer, Qt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -174,8 +174,12 @@ class PlotWindow(QtWidgets.QWidget):
         self.figure = Figure(figsize=(10, 50))
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = CustomNavToolbar(self.canvas)
-        self.y_axis = ["CCG","MEL","CYR","GTR","BCT","MX","PL","PBHD","DDR","MRU","MM","BA","BDTS","KHAR","STC","VLP","ADH","JOS","RMAR","GMN","MDD","KILE","BVI","DIC",'MIRA',"BYR","NIG","BSR","NSP","VR","VTN","SAH","KLV","PLG","UOI","BOR","VGN","DRD","GVD","BRRD","UBR","SJN","BLD","KEB","VAPI","BAGD","UVD","PAD","ATUL","BL","DGI","JRS","BIM","AML","ACL","VDH","HXR","GNST","NVS","MRL","SCH","BHET","UDN","ST"]
-        self.y_labes = ["CCG 0.0","MEL 1.30","CYR 2.21","GTR 3.59","BCT 4.48","MX 5.95","PL 7.67","PBHD 8.89","DDR 10.17","MRU 11.75","MM 12.93","BA 14.66","BDTS 15.29","KHAR 16.29","STC 17.61","VLP 19.67","ADH 21.83","JOS 23.52","RMAR 25.37","GMN 26.9","MDD 29.32","KILE 31.22","BVI 33.98","DIC 36.34",'MIRA 39.76',"BYR 43.11","NIG 47.79","BSR 51.78","NSP 55.85","VR 59.98","VTN 68.42","SAH 76.74","KLV 82.55","PLG 90.92","UOI 97.15","BOR 102.8","VGN 111.5","DRD 123.7","GVD 134.8","BRRD 139.0","UBR 144.0","SJN 149.4","BLD 160.9","KEB 165.8","VAPI 172.0","BAGD 179.0","UVD 182.0","PAD 187.7","ATUL 191.0","BL 198.22","DGI 207.21","JRS 212.28","BIM 216.41","AML 221.72","ACL 225.33","VDH 228.87","HXR 232.0","GNST 234.0","NVS 237.33","MRL 245.63","SCH 252.26","BHET 257.3","UDN 262.77","ST 266.78"]    # #print(down_up)        self.setWindowTitle("Matplotlib Plot")
+        self.y_axis = None
+        self.y_labes = None
+        self.ccg_st_list = ["CCG","MEL","CYR","GTR","BCT","MX","PL","PBHD","DDR","MRU","MM","BA","BDTS","KHAR","STC","VLP","ADH","JOS","RMAR","GMN","MDD","KILE","BVI","DIC",'MIRA',"BYR","NIG","BSR","NSP","VR","VTN","SAH","KLV","PLG","UOI","BOR","VGN","DRD","GVD","BRRD","UBR","SJN","BLD","KEB","VAPI","BAGD","UVD","PAD","ATUL","BL","DGI","JRS","BIM","AML","ACL","VDH","HXR","GNST","NVS","MRL","SCH","BHET","UDN","ST"]
+        self.ccg_st_labes = ["CCG 0.0","MEL 1.30","CYR 2.21","GTR 3.59","BCT 4.48","MX 5.95","PL 7.67","PBHD 8.89","DDR 10.17","MRU 11.75","MM 12.93","BA 14.66","BDTS 15.29","KHAR 16.29","STC 17.61","VLP 19.67","ADH 21.83","JOS 23.52","RMAR 25.37","GMN 26.9","MDD 29.32","KILE 31.22","BVI 33.98","DIC 36.34",'MIRA 39.76',"BYR 43.11","NIG 47.79","BSR 51.78","NSP 55.85","VR 59.98","VTN 68.42","SAH 76.74","KLV 82.55","PLG 90.92","UOI 97.15","BOR 102.8","VGN 111.5","DRD 123.7","GVD 134.8","BRRD 139.0","UBR 144.0","SJN 149.4","BLD 160.9","KEB 165.8","VAPI 172.0","BAGD 179.0","UVD 182.0","PAD 187.7","ATUL 191.0","BL 198.22","DGI 207.21","JRS 212.28","BIM 216.41","AML 221.72","ACL 225.33","VDH 228.87","HXR 232.0","GNST 234.0","NVS 237.33","MRL 245.63","SCH 252.26","BHET 257.3","UDN 262.77","ST 266.78"]    # #print(down_up)        self.setWindowTitle("Matplotlib Plot")
+        self.st_bsl_list = ["ST", "UDN", "NOL", "CHM", "BGMR", "GGAR", "BIY", "TBV", "MGRL", "MID", "KRAI", "LTV", "VYA", "KKRD", "DSD", "USD", "LKKD", "BBAI", "NWU", "KFF", "6CPD", "KHTG", "KBH", "BAWD", "DWD", "NDB", "CUE", "TISI", "RNL", "DDE", "VKH", "SNSL", "SNK", "HOL", "NDN", "BEW", "PDP", "BRTK", "AN", "TKHE", "BHEN", "DXG", "CHLK", "PLD", "JL", "BSL"]
+        self.st_bsl_labes = ["ST 3.99","UDN 00.0","NOL 5.6","CHM 11.1","BGMR 15.5","GGAR 20.6","BIY 27.1","TBV 33.6","MGRL 36.8","MID 41.6","KRAI 47.4","LTV 49.4","VYA 56.8","KKRD 68.1","DSD 70.7","USD 75.6","LKKD 81.1","BBAI 87.5","NWU 99.1","KFF 104.00","6CPD 115.4","KHTG 125.0","KBH 133.5","BAWD 140.4","DWD 147.2","NDB 156.31","CUE 161.06","TISI 169.24","RNL 178.72","DDE 190.68","VKH 198.85","SNSL 204.2","SNK 210.13","HOL 217.92","NDN 223.35","BEW 230.16","PDP 235.74","BRTK 243.9","AN 251.52","TKHE 263.0","BHEN 269.6","DXG 276.47","CHLK 283.7","PLD 295.21","JL 306.93","BSL 331.93"]
         self.new_canvas = None
         self.save_ongoing = False
         self.scroll_area = QScrollArea()
@@ -189,33 +193,43 @@ class PlotWindow(QtWidgets.QWidget):
         self.export_button = QtWidgets.QPushButton("Export Plot")
         self.export_button.clicked.connect(self.export_plot)
         self.export_button.setEnabled(False)
-        self.layout = QtWidgets.QGridLayout(self)
         self.remarks_label= QLabel()
         self.days_label = QLabel()
         self.title_label = QLabel()
+        self.section_label = QLabel()
         self.remarks_label.setText("Remarks")
         self.days_label.setText("Days")
         self.title_label.setText("Title")
+        self.section_label.setText("Section")
         self.remark_textbox = QLineEdit(self)
         self.days_drop_down = CheckableComboBox(self)
         self.days_drop_down.addItems(['Mo','Tu','We','Th','Fr','Sa','Su','Daily'])
         self.title_textbox = QLineEdit(self)
+        self.section_drop_down = QComboBox(self)
+        self.section_drop_down.addItems(["CCG-ST", "ST-BSL"])
         reload_shortcut = QShortcut(QKeySequence("Ctrl+R"), self)
         reload_shortcut.activated.connect(self.ctrl_r)
         save_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
         save_shortcut.activated.connect(self.export_plot)
         self.reload = False
-        self.layout.addWidget(self.toolbar,0,0,1,6)
-        self.layout.addWidget(self.progress_bar,1,0,1,6)
-        self.layout.addWidget(self.scroll_area,2,0,1,6)
-        self.layout.addWidget(self.remarks_label,3,0,1,2)
-        self.layout.addWidget(self.remark_textbox,4,0,1,2)
-        self.layout.addWidget(self.days_label,3,2,1,2)
-        self.layout.addWidget(self.days_drop_down,4,2,1,2)
-        self.layout.addWidget(self.title_label,3,4,1,2)
-        self.layout.addWidget(self.title_textbox,4,4,1,2)
-        self.layout.addWidget(self.load_button,5,0,1,3)
-        self.layout.addWidget(self.export_button,5,3,1,3)
+        self.layout = QtWidgets.QGridLayout(self)
+        self.layout.setColumnStretch(0, 1)  
+        self.layout.setColumnStretch(1, 1)
+        self.layout.setColumnStretch(2, 1)
+        self.layout.setColumnStretch(3, 1)
+        self.layout.addWidget(self.toolbar,0,0,1,4)
+        self.layout.addWidget(self.progress_bar,1,0,1,4)
+        self.layout.addWidget(self.scroll_area,2,0,1,4)
+        self.layout.addWidget(self.title_label,3,0,1,1)
+        self.layout.addWidget(self.title_textbox,4,0,1,1)
+        self.layout.addWidget(self.remarks_label,3,1,1,1)
+        self.layout.addWidget(self.remark_textbox,4,1,1,1)
+        self.layout.addWidget(self.days_label,3,2,1,1)
+        self.layout.addWidget(self.days_drop_down,4,2,1,1)
+        self.layout.addWidget(self.section_label,3,3,1,1)
+        self.layout.addWidget(self.section_drop_down,4,3,1,1)
+        self.layout.addWidget(self.load_button,5,0,1,2)
+        self.layout.addWidget(self.export_button,5,2,1,2)
         self.canvas.setMinimumSize(5800, 5000)
         self.canvas_size = [5800,5000]
         self.canvas.setMaximumSize(5801, 5001)
@@ -290,16 +304,25 @@ class PlotWindow(QtWidgets.QWidget):
                         self.layout.addWidget(self.scroll_area,2,0,1,6)
                         self.toolbar.show()
                         self.scroll_area.show()
-                    # #print(str(self.remark_textbox.text()))
-                    # #print(str(self.days_textbox.text()))
+                    
+                    section_var = self.section_drop_down.currentText()
                     remark_var = str(self.remark_textbox.text())
                     days_list = self.days_drop_down.currentData()
                     days_var = str("|".join(days_list))
                     if days_var:
                         days_var = f"({days_var})"
                     title_var = str(self.title_textbox.text())
+                    if section_var == "CCG-ST":
+                        self.y_axis = self.ccg_st_list
+                        self.y_labes = self.ccg_st_labes
+                    else:
+                        self.y_axis = self.st_bsl_list
+                        self.y_labes = self.st_bsl_labes
                     self.pl = plotted_(self.figure, self.y_axis, self.y_labes, self.canvas, self.layout,self.export_button,self.axes, self.scroll_area, self.toolbar)
-                    self.plot_trains = self.pl.plot_trains
+                    if section_var == "CCG-ST":
+                        self.plot_trains = self.pl.plot_trains_ccg_st
+                    else:
+                        self.plot_trains = self.pl.plot_trains_st_bsl
                     select_flag = False
                     down_up, dwn_upp, color_dict, rect_dict, express_flag =  self.excel_to_pandas(file_name, self.y_axis, remark_var,days_var)
                     if select_flag:
