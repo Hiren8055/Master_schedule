@@ -23,7 +23,6 @@ import pickle
 import time
 import pprint
 import multiprocessing as mp
-
 from multiprocessing import shared_memory
 import logging
 pp = pprint.PrettyPrinter(indent=0.1)
@@ -59,16 +58,19 @@ class CustomNavToolbar(NavigationToolbar):
         self.dragger.bm.adjust_subplots()
         self.zoomed_in = False
 
-def save_pdfs(axes_indices, filenames, conn, shm):
+def save_pdfs(axes_indices, filenames, conn, shm, section):
     shm = shared_memory.SharedMemory(name=shm.name)
     fig = pickle.loads(shm.buf[:])
     axes = fig.get_axes()
     #print(f"filenames are : {filenames}")
     for i, index in enumerate(axes_indices):
-        b = axes[index].get_tightbbox().transformed(fig.dpi_scale_trans.inverted())            
+        b = axes[index].get_tightbbox().transformed(fig.dpi_scale_trans.inverted())
         bbox = Bbox([[b.x0-0.3,b.y0-0.6],[b.x1+0.3,b.y1+0.7]])
         fig.savefig(filenames[i], bbox_inches=bbox, pad_inches=1)
-        conn.send(11)
+        if section[:-1] == "ST-BSL":
+            conn.send(16)
+        elif section[:-1] == "CCG-ST":
+            conn.send(11)
     shm.close()
 
 class ExportWorker(QObject):
@@ -79,11 +81,13 @@ class ExportWorker(QObject):
         super().__init__()
         self.file_name = file_name
         self.section = section
+        print(f"section is: {section}")
         if self.section and self.section == "CCG-ST":
+            self.counter = 1
             self.file_axes = ["_0-8_CCG-VR","_8-16_CCG-VR","_16-24_CCG-VR", "_0-8_VR-BL", "_8-16_VR-BL", "_16-24_VR-BL", "_0-8_BL-ST", "_8-16_BL-ST", "_16-24_BL-ST"]
-        elif self.section and self.section == "BSL-ST":
+        elif self.section and self.section == "ST-BSL":
+            self.counter = 4
             self.file_axes =  ["_0-8_ST-NDB","_8-16_ST-NDB","_16-24_ST-NDB", "_0-8_NDB-NSL", "_8-16_NDB-NSL", "_16-24_NDB-NSL"]
-        self.counter = 1
         self.cores, self.axes_to_cores = self.process_distribution()   
         self.fig_bytes = fig_bytes
         self.fig = pickle.loads(fig_bytes)
@@ -92,12 +96,18 @@ class ExportWorker(QObject):
     def process_distribution(self):
         cores = mp.cpu_count()
         # cores = 4
-        if cores >= 9:
+        if cores >= 9 and self.section == "CCG-ST":
             axes_to_cores = [1,1,1,1,1,1,1,1,1]
             cores = 9
+        elif cores>=6 and self.section == "ST-BSL":
+            axes_to_cores = [1,1,1,1,1,1]
+            cores = 6
         else:
             axes_to_cores = []
-            q, r = divmod(9, cores)
+            if self.section == "CCG-ST":
+                q, r = divmod(9, cores)
+            elif self.section == "ST-BSL":
+                q,r = divmod(6, cores)
             for i in range(cores):
                 extra = max(0,r-i)
                 if extra:
@@ -120,7 +130,7 @@ class ExportWorker(QObject):
             #print(f"i:{i} axes index:{axes_indices}")
             pre, post = tuple(self.file_name.split("."))
             filenames = [pre+self.file_axes[ax]+"."+post for ax in axes_indices]
-            p = mp.Process(target=save_pdfs, args=(axes_indices, filenames, child_conn, self.shm))
+            p = mp.Process(target=save_pdfs, args=(axes_indices, filenames, child_conn, self.shm, self.section+"x"))
             processes.append(p)
             p.start()
             curr_axes = axes_indices[-1]+1
@@ -147,16 +157,19 @@ class ExportWorker(QObject):
                 if index == 0:
                     self.spawn_process()
                 self.fig.savefig(filename, bbox_inches=bbox, pad_inches=1)
-                self.counter+= 11
+                if self.section == "CCG-ST":
+                    self.counter+= 11
+                elif self.section == "ST-BSL":
+                    self.counter+= 16
                 self.update_signal.emit(self.counter)
             self.shm.close()
             self.shm.unlink()
         except Exception as e:
-            # error_message = f"Error in thread: {e}"
-            # tb = traceback.format_exc()
-            # self.error_signal.emit(f"{error_message}\n the Traceback is: {tb}")
-            # logging.error(error_message)
-            # logging.error(traceback.format_exc())
+            error_message = f"Error in thread: {e}"
+            tb = traceback.format_exc()
+            self.error_signal.emit(f"{error_message}\n the Traceback is: {tb}")
+            logging.error(error_message)
+            logging.error(traceback.format_exc())
             self.error_signal.emit(f"Something went wrong while exporting, please restart the application and check the excel format.")
 
 class PlotWindow(QtWidgets.QWidget):
@@ -214,7 +227,7 @@ class PlotWindow(QtWidgets.QWidget):
         reload_shortcut = QShortcut(QKeySequence("Ctrl+R"), self)
         reload_shortcut.activated.connect(self.ctrl_r)
         save_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
-        save_shortcut.activated.connect(self.export_plot)
+        save_shortcut.activated.connect(self.ctrl_s)
         self.reload = False
         self.layout = QtWidgets.QGridLayout(self)
         self.layout.setColumnStretch(0, 1)  
@@ -245,10 +258,14 @@ class PlotWindow(QtWidgets.QWidget):
         self.arr_drag_dict = None
         self.loading = False
         self.loaded_section = None
-    
+        self.previous_name = None
     def ctrl_r(self):
         self.reload = True
         self.load_file()
+    
+    def ctrl_s(self):
+        if self.loaded is True:
+            self.export_plot()
 
     def keyPressEvent(self, event: QKeyEvent):
         if event.key() == Qt.Key_Equal:
@@ -363,54 +380,63 @@ class PlotWindow(QtWidgets.QWidget):
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
                 self.loaded_section = None
+                self.loaded = False
                 self.export_button.setEnabled(False)
                 self.loading = False
             except WrongStationError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
                 self.loaded_section = None
+                self.loaded = False
                 self.export_button.setEnabled(False)
                 self.loading = False
             except SameLengthError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
                 self.loaded_section = None
+                self.loaded = False
                 self.export_button.setEnabled(False)
                 self.loading = False
             except EmptyListError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
                 self.loaded_section = None
+                self.loaded = False
                 self.export_button.setEnabled(False)
                 self.loading = False
             except WrongTimeFormatError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
                 self.loaded_section = None
+                self.loaded = False
                 self.export_button.setEnabled(False)
                 self.loading = False
             except WrongBoxTimeFormatError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
                 self.loaded_section = None
+                self.loaded = False
                 self.export_button.setEnabled(False)
                 self.loading = False
             except BoxColumnLengthError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
                 self.loaded_section = None
+                self.loaded = False
                 self.export_button.setEnabled(False)
                 self.loading = False
             except IncorrectLengthOfRowsBoxError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
                 self.loaded_section = None
+                self.loaded = False
                 self.export_button.setEnabled(False)
                 self.loading = False
             except OmittedSheetsError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
                 self.loaded_section = None
+                self.loaded = False
                 self.export_button.setEnabled(False)
                 self.loading = False
             except Exception as e:
@@ -419,6 +445,7 @@ class PlotWindow(QtWidgets.QWidget):
                 print(str(e))
                 print(str(tb))
                 self.loaded_section = None
+                self.loaded = False
                 self.export_button.setEnabled(False)
                 self.loading = False
 
@@ -436,28 +463,36 @@ class PlotWindow(QtWidgets.QWidget):
                 self.canvas.setMaximumSize(5801, 5001)                
                 self.export_button.setEnabled(False)
                 fig_pickle = self.make_pickle()
-                self.export_worker = ExportWorker(file_name, fig_pickle)
+                self.export_worker = ExportWorker(file_name, fig_pickle, self.loaded_section)
                 self.export_thread = QThread()
                 self.export_worker.moveToThread(self.export_thread)
                 self.export_thread.started.connect(self.export_worker.run)
-                self.export_worker.update_signal.connect(self.update_progress_bar)
                 self.export_worker.update_signal.connect(self.update_progress_bar)
                 self.export_worker.error_signal.connect(self.raise_export_exception)
                 self.export_thread.finished.connect(self.export_thread.deleteLater)
                 self.export_thread.start()
         except ExportThreadError as e:
             QMessageBox.critical(self, "Error", str(e))
+            tb = traceback.format_exc()
+            print(str(e))
+            print(str(tb))
             self.save_ongoing = False
             self.export_button.setEnabled(False)
             self.loaded_section = None
+            self.loaded = False
         except Exception as e:
             QMessageBox.critical(self, "Error", "Something went wrong while exporting. Please restart application and check excel format.")
+            tb = traceback.format_exc()
+            print(str(e))
+            print(str(tb))
             self.save_ongoing = False
             self.export_button.setEnabled(False)
             self.loaded_section = None
+            self.loaded = False
 
-    def raise_export_exception(self):
-        raise ExportThreadError
+    def raise_export_exception(self, tb):
+        print(tb)
+        raise ExportThreadError("Error hahahaha")
     
     def update_progress_bar(self, progress):
         try:
