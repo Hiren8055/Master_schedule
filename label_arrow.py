@@ -151,7 +151,7 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart):
     """ this function plot arrow and labels for up-end and down-start"""
     canvas.flush_events()
     k = 1
-    previous_x, previous_y= 0, 0
+    previous_x, previous_y,previous_len_of_labels= 0, 0,0
     label_var = ''
     final_y = 0
     y_buffer = 0
@@ -334,7 +334,7 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd):
     """ this function plot arrow and labels for up-start and down-end"""
     canvas.flush_events()
     k = 1
-    previous_x, previous_y= 0, 0
+    previous_x, previous_y, previous_len_of_labels= 0, 0,0
     label_var = ''
     final_y = 0
     y_buffer = 0

@@ -1,5 +1,5 @@
 import numpy as np
-def intersection(self, station_dict, trains_dict):
+def intersection(self, station_dict, trains_dict,section):
     # "Input with train array and output plot intersection at particular y"
     # have to use conversion function in between to convert the time and axis domain
     # have to only give the intersection in mid subplot with index 1
@@ -141,7 +141,7 @@ def intersection(self, station_dict, trains_dict):
         # #print(len(station_dict))
         # updn = "UP"
         
-        # logic is for plotting up train on down of 2nd axes that is on BL
+        # logic is for plotting up train on down of 2nd axes that is on BL and 3rd axis BL
         # and down train on VR
         if updn == "UP":
             y_target = 49
@@ -198,32 +198,88 @@ def intersection(self, station_dict, trains_dict):
                 inter_plot_arr.append([x_target, y_target])
                 arr_index.append(i)
 
-        # stations_for_intersection = [29,50]        
-        # for j in range(len(stations_for_intersection)):
-        #     y_target = stations_for_intersection[j]
-        #     for i in range(0,len(station_dict[updn]),2):
-        #         # #print(i)
-        #         # trains_dict[updn][]
-        #         # #print("station_dict",station_dict[updn][i])
-        #         inter_arr = intercept_selection_pts(y_target,i, updn)
-                
-        #         if inter_arr == False:
-        #             continue    
-        #         elif inter_arr[1]!=y_target:
-        #             x_target, y_target = intercept(y_target, inter_arr[0] ,inter_arr[1])
-        #             inter_plot_arr.append([x_target, y_target])
-        #             arr_index.append(i)
-        #         else:
-        #             x_target, y_target = inter_arr[0], inter_arr[1]
-        #             inter_plot_arr.append([x_target, y_target])
-        #             arr_index.append(i)
-
-
-
-        # #print(len(inter_plot_arr),len(arr_index)) 
-        # #print(arr_index)      
-        # #print(trains_dict)
+   
+        '''second loop is for drawing the points stored in inter_plot_arr'''                
+        # need to dicrimate up and below arrow
         # #print(len(trains_dict["UP"]))
+        intersection_trains =[[],[],[],[]]
+        bufy = 1.8
+        for i in range(len(inter_plot_arr)):
+            inx, iny,_,_ = add_arrow_labels_intercept(inter_plot_arr[i][0],inter_plot_arr[i][1])
+            # #print("inx iny",inx,iny)
+            intersection_trains[0].append(trains_dict[updn][arr_index[i]//2])
+            intersection_trains[1].append(inter_plot_arr[i][0])
+            intersection_trains[2].append(inter_plot_arr[i][1])
+            intersection_trains[3].append(updn)
+
+        return intersection_trains
+    
+
+    def intercept_pts_bsl_st(updn):
+        # drawing fucntion for intersecting points
+        '''drawing intersection points it gives the point of intersection and then '''
+        inter_plot_arr = []
+        # #print(len(station_dict))
+        # updn = "UP"
+        
+        # logic is for plotting up train on down of 2nd axes that is on BL
+        # and down train on VR
+        if updn == "UP":
+            y_target = 25
+        elif updn == "DN":
+            y_target = 25
+        # elif updn == "DN":
+        #     y_target = 49
+        # try:
+        '''first loop is for find the point'''
+        arr_index = []
+        
+        # create a loop for both the index or invert it 
+
+        for i in range(0,len(station_dict[updn]),2):
+            # #print(i)
+            # trains_dict[updn][]
+            # #print("station_dict",station_dict[updn][i])
+            inter_arr = intercept_selection_pts(y_target,i, updn)
+            
+            if inter_arr == False:
+                continue    
+            elif inter_arr[1]!=y_target:
+                x_target, y_target = intercept(y_target, inter_arr[0] ,inter_arr[1])
+                inter_plot_arr.append([x_target, y_target])
+                arr_index.append(i)
+            else:
+                x_target, y_target = inter_arr[0], inter_arr[1]
+                inter_plot_arr.append([x_target, y_target])
+                arr_index.append(i)
+        
+        # logic is for plotting up train on 2nd axes on VR
+        # and down train on BL
+        # this was add to make a all the train appear on both VR and BL station irrespective of the up and dn direction
+        
+        if updn == "DN":
+            y_target = 25
+        elif updn == "UP":
+            y_target = 25
+
+        for i in range(0,len(station_dict[updn]),2):
+            # #print(i)
+            # trains_dict[updn][]
+            # #print("station_dict",station_dict[updn][i])
+            inter_arr = intercept_selection_pts(y_target,i, updn)
+            
+            if inter_arr == False:
+                continue    
+            elif inter_arr[1]!=y_target:
+                x_target, y_target = intercept(y_target, inter_arr[0] ,inter_arr[1])
+                inter_plot_arr.append([x_target, y_target])
+                arr_index.append(i)
+            else:
+                x_target, y_target = inter_arr[0], inter_arr[1]
+                inter_plot_arr.append([x_target, y_target])
+                arr_index.append(i)
+
+
         '''second loop is for drawing the points stored in inter_plot_arr'''                
         # need to dicrimate up and below arrow
         # #print(len(trains_dict["UP"]))
@@ -246,9 +302,12 @@ def intersection(self, station_dict, trains_dict):
         return intersection_trains
     # will have a intersection array for down and up
     # def intercept_plot(inter_plot_arr):
-
-    up_intersecting_points = intercept_pts("UP")
-    down_intersecting_points = intercept_pts("DN")
+    if section == "CCG-ST":
+        up_intersecting_points = intercept_pts("UP")
+        down_intersecting_points = intercept_pts("DN")
+    else:
+        up_intersecting_points = intercept_pts_bsl_st("UP")
+        down_intersecting_points = intercept_pts_bsl_st("DN")
     return up_intersecting_points, down_intersecting_points
     # Pass output list 
     # Need to know where train is going up or down
