@@ -75,10 +75,14 @@ class ExportWorker(QObject):
     update_signal = Signal(int)
     error_signal = Signal(str)
     # new_fig = Figure(figsize=(10, 50))
-    def __init__(self, file_name, fig_bytes):
+    def __init__(self, file_name, fig_bytes, section):
         super().__init__()
         self.file_name = file_name
-        self.file_axes = ["_0-8_CCG-VR","_8-16_CCG-VR","_16-24_CCG-VR", "_0-8_VR-BL", "_8-16_VR-BL", "_16-24_VR-BL", "_0-8_BL-ST", "_8-16_BL-ST", "_16-24_BL-ST"]
+        self.section = section
+        if self.section and self.section == "CCG-ST":
+            self.file_axes = ["_0-8_CCG-VR","_8-16_CCG-VR","_16-24_CCG-VR", "_0-8_VR-BL", "_8-16_VR-BL", "_16-24_VR-BL", "_0-8_BL-ST", "_8-16_BL-ST", "_16-24_BL-ST"]
+        elif self.section and self.section == "BSL-ST":
+            self.file_axes =  ["_0-8_ST-NDB","_8-16_ST-NDB","_16-24_ST-NDB", "_0-8_NDB-NSL", "_8-16_NDB-NSL", "_16-24_NDB-NSL"]
         self.counter = 1
         self.cores, self.axes_to_cores = self.process_distribution()   
         self.fig_bytes = fig_bytes
@@ -240,6 +244,7 @@ class PlotWindow(QtWidgets.QWidget):
         self.blit = True
         self.arr_drag_dict = None
         self.loading = False
+        self.loaded_section = None
     
     def ctrl_r(self):
         self.reload = True
@@ -272,6 +277,7 @@ class PlotWindow(QtWidgets.QWidget):
 
         if file_name:
             try:
+                self.export_button.setEnabled(False)
                 if self.loading is True:
                     pass
                 else:
@@ -336,7 +342,7 @@ class PlotWindow(QtWidgets.QWidget):
                     rect_dict = self.box_add_24(rect_dict)
                     # #pp.p#print(f"24 add:{rect_dict}") 
                     self.figure.clear()
-                    self.arr_drag_dict = self.plot_trains(down_up, dwn_upp, color_dict, rect_dict, express_flag, title_var)
+                    self.arr_drag_dict = self.plot_trains(down_up, dwn_upp, color_dict, rect_dict, express_flag, title_var, section_var)
                     self.bm = None
                     self.bm = BlitManager(self.canvas, self.pl.artist_list)
                     global dragger
@@ -349,51 +355,72 @@ class PlotWindow(QtWidgets.QWidget):
                     self.canvas.draw()
                     self.loaded = True
                     self.loading = False
+                    self.loaded_section = section_var
                     self.export_button.setEnabled(True)
                     self.load_button.setEnabled(True)
                     self.canvas.flush_events()
             except DuplicateTrainError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
+                self.loaded_section = None
+                self.export_button.setEnabled(False)
                 self.loading = False
             except WrongStationError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
+                self.loaded_section = None
+                self.export_button.setEnabled(False)
                 self.loading = False
             except SameLengthError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
+                self.loaded_section = None
+                self.export_button.setEnabled(False)
                 self.loading = False
             except EmptyListError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
+                self.loaded_section = None
+                self.export_button.setEnabled(False)
                 self.loading = False
             except WrongTimeFormatError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
+                self.loaded_section = None
+                self.export_button.setEnabled(False)
                 self.loading = False
             except WrongBoxTimeFormatError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
+                self.loaded_section = None
+                self.export_button.setEnabled(False)
                 self.loading = False
             except BoxColumnLengthError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
+                self.loaded_section = None
+                self.export_button.setEnabled(False)
                 self.loading = False
             except IncorrectLengthOfRowsBoxError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
+                self.loaded_section = None
+                self.export_button.setEnabled(False)
                 self.loading = False
             except OmittedSheetsError as e:
                 QMessageBox.critical(self, "Error", str(e))
                 self.load_button.setEnabled(True)
+                self.loaded_section = None
+                self.export_button.setEnabled(False)
                 self.loading = False
             except Exception as e:
                 QMessageBox.critical(self, "Error", "Error while loading chart or reading data, please restart the application and check Excel format.") 
                 tb = traceback.format_exc()
                 print(str(e))
                 print(str(tb))
-                self.loaded = False
+                self.loaded_section = None
+                self.export_button.setEnabled(False)
+                self.loading = False
 
     def make_pickle(self):
         fig_bytes = pickle.dumps(self.figure)
@@ -420,10 +447,18 @@ class PlotWindow(QtWidgets.QWidget):
                 self.export_thread.start()
         except ExportThreadError as e:
             QMessageBox.critical(self, "Error", str(e))
+            self.save_ongoing = False
+            self.export_button.setEnabled(False)
+            self.loaded_section = None
         except Exception as e:
             QMessageBox.critical(self, "Error", "Something went wrong while exporting. Please restart application and check excel format.")
+            self.save_ongoing = False
+            self.export_button.setEnabled(False)
+            self.loaded_section = None
+
     def raise_export_exception(self):
         raise ExportThreadError
+    
     def update_progress_bar(self, progress):
         try:
             self.progress_bar.setValue(progress)
@@ -441,6 +476,7 @@ class PlotWindow(QtWidgets.QWidget):
                 self.export_button.setEnabled(True)
         except Exception as e:
             QMessageBox.critical(self, "Alert", "Your file has exported succesfully.")
+
 if __name__ == "__main__":
     mp.freeze_support()
     warnings.filterwarnings("ignore")

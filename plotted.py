@@ -34,17 +34,23 @@ class plotted_():
         self.artist_list = []
 
 
-    def plot(self,index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end,xlim_start,xlim_end, color_dict, station_dict, rect_dict, title):
+    def plot(self,index_0,index_1,arr,start_sub_y_axis,end_sub_y_axis,ylim_start,ylim_end,xlim_start,xlim_end, color_dict, station_dict, rect_dict, title, section):
         title_font = {
             'family': 'serif',   # You can change the font family as needed
             'weight': 'bold',
             'size': 32,
         }
-        title_stns = {
-            0: "CCG-VR",
-            1: "VR-BL",
-            2:"BL-ST",
-        }
+        if section == "CCG-ST":
+            title_stns = {
+                0: "CCG-VR",
+                1: "VR-BL",
+                2:"BL-ST",
+            }
+        else:
+            title_stns = {
+                0: "ST-NDB",
+                1: "NDB-BSL",
+            }
         
         sub_y_axis = self.y_labes[start_sub_y_axis:end_sub_y_axis]
         sub_y_vals = range(start_sub_y_axis, end_sub_y_axis)
@@ -110,7 +116,7 @@ class plotted_():
         self.canvas.flush_events()
 
 
-    def plot_trains_ccg_st(self, station_dict, trains_dict, color_dict, rect_dict, express_flag, title):
+    def plot_trains_ccg_st(self, station_dict, trains_dict, color_dict, rect_dict, express_flag, title, section):
         self.axes = self.figure.subplots(nrows=3, ncols=3)
         # have to make  3 x 3 grid
         # set width of each subplot as 8
@@ -137,17 +143,17 @@ class plotted_():
         arr2 = [8, 9, 10, 11, 12, 13, 14, 15, 16]
         arr3 = [16, 17, 18, 19, 20, 21, 22, 23, 24]
         
-        self.plot(0,0,arr1,0,30,      0,15,        0,8, color_dict, station_dict, rect_dict, title)
-        self.plot(1,0,arr1,29,50,    0,19,        0,8, color_dict, station_dict, rect_dict, title)   
-        self.plot(2,0,arr1,49,64,    0,19,        0,8, color_dict, station_dict, rect_dict, title) 
+        self.plot(0,0,arr1,0,30,      0,15,        0,8, color_dict, station_dict, rect_dict, title, section)
+        self.plot(1,0,arr1,29,50,    0,19,        0,8, color_dict, station_dict, rect_dict, title, section)   
+        self.plot(2,0,arr1,49,64,    0,19,        0,8, color_dict, station_dict, rect_dict, title, section) 
 
-        self.plot(0,1,arr2,0,30,      0,15,        8,16, color_dict,   station_dict, rect_dict, title)
-        self.plot(1,1,arr2,29,50,    0,19,       8,16,  color_dict,  station_dict, rect_dict, title)
-        self.plot(2,1,arr2,49,64,    0,19,       8,16,  color_dict,  station_dict, rect_dict, title)
+        self.plot(0,1,arr2,0,30,      0,15,        8,16, color_dict,   station_dict, rect_dict, title, section)
+        self.plot(1,1,arr2,29,50,    0,19,       8,16,  color_dict,  station_dict, rect_dict, title, section)
+        self.plot(2,1,arr2,49,64,    0,19,       8,16,  color_dict,  station_dict, rect_dict, title, section)
 
-        self.plot(0,2,arr3,0,30,      0,15,       16,24,  color_dict,  station_dict, rect_dict, title)
-        self.plot(1,2,arr3,29,50,    0,19,       16,24,  color_dict,  station_dict, rect_dict, title)
-        self.plot(2,2,arr3,49,64,    0,19,        16,24,  color_dict,  station_dict, rect_dict, title)
+        self.plot(0,2,arr3,0,30,      0,15,       16,24,  color_dict,  station_dict, rect_dict, title, section)
+        self.plot(1,2,arr3,29,50,    0,19,       16,24,  color_dict,  station_dict, rect_dict, title, section, section)
+        self.plot(2,2,arr3,49,64,    0,19,        16,24,  color_dict,  station_dict, rect_dict, title, section)
 
         def plot_labels():
 
@@ -208,7 +214,7 @@ class plotted_():
         self.canvas.figure.subplots_adjust(left = 0.017, hspace = 1.3)
         return arr_drag_dict
     
-    def plot_trains_st_bsl(self, station_dict, trains_dict, color_dict, rect_dict, express_flag, title):
+    def plot_trains_st_bsl(self, station_dict, trains_dict, color_dict, rect_dict, express_flag, title, section):
         self.axes = self.figure.subplots(nrows=2, ncols=3)
         # have to make  3 x 3 grid
         # set width of each subplot as 8
@@ -235,11 +241,11 @@ class plotted_():
         arr2 = [8, 9, 10, 11, 12, 13, 14, 15, 16]
         arr3 = [16, 17, 18, 19, 20, 21, 22, 23, 24]
         
-        self.plot(0,0,arr1,0,26,      0,15,        0,8, color_dict, station_dict, rect_dict, title)
-        self.plot(1,0,arr1,25,46,    0,19,        0,8, color_dict, station_dict, rect_dict, title)   
+        self.plot(0,0,arr1,0,26,      0,15,        0,8, color_dict, station_dict, rect_dict, title, section)
+        self.plot(1,0,arr1,25,46,    0,19,        0,8, color_dict, station_dict, rect_dict, title, section)   
 
-        self.plot(0,1,arr2,0,26,      0,15,        8,16, color_dict,   station_dict, rect_dict, title)
-        self.plot(1,1,arr2,25,46,    0,19,       8,16,  color_dict,  station_dict, rect_dict, title)
+        self.plot(0,1,arr2,0,26,      0,15,        8,16, color_dict,   station_dict, rect_dict, title, section)
+        self.plot(1,1,arr2,25,46,    0,19,       8,16,  color_dict,  station_dict, rect_dict, title, section)
 
-        self.plot(0,2,arr3,0,26,      0,15,       16,24,  color_dict,  station_dict, rect_dict, title)
-        self.plot(1,2,arr3,25,46,    0,19,       16,24,  color_dict,  station_dict, rect_dict, title)
+        self.plot(0,2,arr3,0,26,      0,15,       16,24,  color_dict,  station_dict, rect_dict, title, section)
+        self.plot(1,2,arr3,25,46,    0,19,       16,24,  color_dict,  station_dict, rect_dict, title, section)
