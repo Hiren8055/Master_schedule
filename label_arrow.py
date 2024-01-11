@@ -142,7 +142,7 @@ def condition_for_text_buffer_st_bsl(label, len_of_labels, arrow_label_buffer, s
                 slash_buffer = slash_buffer - 0.01             #done
             elif  inx == 1:
                 arrow_label_buffer = arrow_label_buffer - 0.04 #done
-                slash_buffer = slash_buffer - 0.03             #done
+                slash_buffer = slash_buffer - 0.02             #done
 
         else:               
             # ueds 
@@ -160,7 +160,7 @@ def condition_for_text_buffer_st_bsl(label, len_of_labels, arrow_label_buffer, s
         if flag_ueds == False:
             # usde
             if inx == 0: 
-                arrow_label_buffer = arrow_label_buffer - 0.06 #done
+                arrow_label_buffer = arrow_label_buffer - 0.05 #done
                 slash_buffer = slash_buffer - 0.00             #done
             elif  inx == 1:
                 arrow_label_buffer = arrow_label_buffer - 0.05 #done
@@ -213,7 +213,7 @@ def condition_for_text_buffer_st_bsl(label, len_of_labels, arrow_label_buffer, s
             # ueds
             if inx == 0: 
                 arrow_label_buffer = arrow_label_buffer - 0.08 #done
-                slash_buffer = slash_buffer + 0.00
+                slash_buffer = slash_buffer + 0.010            #done
             elif inx == 1: 
                 arrow_label_buffer = arrow_label_buffer - 0.10 #issue of intersection
                 slash_buffer = slash_buffer - 0.03             #issue of intersection
