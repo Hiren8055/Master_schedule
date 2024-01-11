@@ -11,23 +11,7 @@ def built_dict(dict_name, text_label,train_x,train_y):
 
 def condition_for_text_buffer(label, len_of_labels, arrow_label_buffer, slash_buffer, inx, flag_ueds):
     """should take input len of labels and return variable constant based on len of label"""
-    # if len_of_labels <= 5:
-    #     #print("entered in below 5")
-    #     if inx == 0:
-    #         arrow_label_buffer = 0.55
-    #     elif  inx == 1:
-    #         arrow_label_buffer = 0.42
-    #     elif inx == 2:
-    #         arrow_label_buffer = 0.27
-    #     # ueds
-    #     elif inx == 0:
-    #         arrow_label_buffer = 0.18
-    #     elif  inx == 1:
-    #         arrow_label_buffer = 0.16
-    #     elif  inx == 2:
-    #         arrow_label_buffer = 0.14
-    #     # else:
-    #     #     #print("no arrow_label_buffer exists") 
+
     if 5 <len_of_labels <=7:
         # #print("entered in 5 and 7")
         # #print(label,inx,len_of_labels)
@@ -144,7 +128,103 @@ def condition_for_text_buffer(label, len_of_labels, arrow_label_buffer, slash_bu
     #         #print("nan label is found with inx: ", inx, "and label name: ", label)
 
     return arrow_label_buffer, slash_buffer
-    # return arrow_label_buffer
+
+def condition_for_text_buffer_st_bsl(label, len_of_labels, arrow_label_buffer, slash_buffer, inx, flag_ueds):
+    """should take input len of labels and return variable constant based on len of label"""
+
+    if 5 <len_of_labels <=7:
+        # if label == 'W,F,Sa,Su 12843':
+        #     print('label: W,F,Sa,Su 12843 is found in 8 to 10')  
+        if flag_ueds == False:
+            # usde
+            if inx == 0:
+                arrow_label_buffer = arrow_label_buffer - 0.04 #done
+                slash_buffer = slash_buffer - 0.01             #done
+            elif  inx == 1:
+                arrow_label_buffer = arrow_label_buffer - 0.04 #done
+                slash_buffer = slash_buffer - 0.03             #done
+
+        else:               
+            # ueds 
+            if inx == 0:
+                arrow_label_buffer = arrow_label_buffer - 0.03 #done
+                slash_buffer = slash_buffer + 0.01             #done
+            elif inx == 1: 
+                arrow_label_buffer = arrow_label_buffer - 0.02 #issue of intersection
+                slash_buffer = slash_buffer - 0.05             #issue of intersection
+
+    elif 7 < len_of_labels <= 10:
+        # TODO: there is problem regarding up start in intersection from virar
+        # if label == 'W,F,Sa,Su 12843':
+        #     print('label: W,F,Sa,Su 12843 is found in 8 to 10')  
+        if flag_ueds == False:
+            # usde
+            if inx == 0: 
+                arrow_label_buffer = arrow_label_buffer - 0.06 #done
+                slash_buffer = slash_buffer - 0.00             #done
+            elif  inx == 1:
+                arrow_label_buffer = arrow_label_buffer - 0.05 #done
+                slash_buffer = slash_buffer - 0.02             #done
+
+        else:
+            # ueds
+            if inx == 0:
+                arrow_label_buffer = arrow_label_buffer - 0.05 #done
+                slash_buffer = slash_buffer + 0.02             #done
+            elif inx == 1:
+                arrow_label_buffer = arrow_label_buffer - 0.02 #issue of intersection
+                slash_buffer = slash_buffer - 0.03             #issue of intersection
+
+
+    elif 10 < len_of_labels <= 15:
+        # if label == 'W,F,Sa,Su 12843':
+        #     print('label: W,F,Sa,Su 12843 is found in 11 to 15')  
+        if flag_ueds == False:
+            # usde
+            if inx == 0:
+                arrow_label_buffer = arrow_label_buffer - 0.06 #done
+                slash_buffer = slash_buffer + 0.001
+            elif  inx == 1:
+                arrow_label_buffer = arrow_label_buffer - 0.07 #done
+                slash_buffer = slash_buffer - 0.025            #done
+
+        else:
+            # ueds
+            if inx == 0:
+                arrow_label_buffer = arrow_label_buffer - 0.06  #done
+                slash_buffer = slash_buffer + 0.01              #done
+            elif  inx == 1:
+                arrow_label_buffer = arrow_label_buffer -  0.05 #issue of intersection
+                slash_buffer = slash_buffer - 0.03              #issue of intersection
+
+    elif 15 < len_of_labels:
+        # if label == 'W,F,Sa,Su 12843':
+        #     print('label: W,F,Sa,Su 12843 is found in greater than 15')        
+        if flag_ueds == False:
+            # usde
+            if inx == 0: 
+                arrow_label_buffer = arrow_label_buffer - 0.09 #done
+                slash_buffer = slash_buffer + 0.01
+            elif inx == 1: 
+                arrow_label_buffer = arrow_label_buffer - 0.09 #done
+                slash_buffer = slash_buffer - 0.03
+
+        else:
+            # ueds
+            if inx == 0: 
+                arrow_label_buffer = arrow_label_buffer - 0.08 #done
+                slash_buffer = slash_buffer + 0.00
+            elif inx == 1: 
+                arrow_label_buffer = arrow_label_buffer - 0.10 #issue of intersection
+                slash_buffer = slash_buffer - 0.03             #issue of intersection
+
+    # else:
+    #     # #print("Problem in len of labels for the label: ", label)
+    #     if label[:3] == 'nan':
+    #         #print("nan label is found with inx: ", inx, "and label name: ", label)
+
+    return arrow_label_buffer, slash_buffer
+
 
 
 def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart,section):
@@ -170,10 +250,10 @@ def upEnd_dnStart_label(canvas, axes, express_flag, artist_list, upEnd_dnStart,s
         len_of_labels = len(label_)
         if section == "CCG-ST":
             arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag, second_axes_flag, inx = extract_current_axes_ue_ds(x, y)
+            arrow_label_buffer, slash_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, slash_buffer, inx, True)        
         else:    
             arrow_plot_buffer, arrow_label_buffer, slash_buffer,first_axes_flag, second_axes_flag, inx = extract_current_axes_ue_ds_st_bsl(x, y)
-        arrow_label_buffer, slash_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, slash_buffer, inx, True)        
-        # arrow_label_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, inx, True)        
+            arrow_label_buffer, slash_buffer = condition_for_text_buffer_st_bsl(label_, len_of_labels, arrow_label_buffer, slash_buffer, inx, True)        
         if x == 8 or x == 16 or x == 24:
             x = x - 0.01
         if abs(x - previous_x) <= 0.03 and y == previous_y:
@@ -359,11 +439,11 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd,s
         len_of_labels = len(label_)
         if section == 'CCG-ST':
             arrow_plot_buffer, arrow_label_buffer, slash_buffer, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de(x, y)
+            arrow_label_buffer, slash_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, slash_buffer, inx, False)        
         else:
             arrow_plot_buffer, arrow_label_buffer, slash_buffer, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de_st_bsl(x, y)
+            arrow_label_buffer, slash_buffer = condition_for_text_buffer_st_bsl(label_, len_of_labels, arrow_label_buffer, slash_buffer, inx, False)        
 
-        arrow_label_buffer, slash_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, slash_buffer, inx, False)        
-        # arrow_label_buffer = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer, inx, False)        
         if x == 8 or x == 16 or x == 24:
             x = x - 0.01
         if abs(x - previous_x) <= 0.03 and y == previous_y and not (x == 8 or x==16) :
@@ -407,10 +487,10 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd,s
             if express_flag:
                 if section == 'CCG-ST':
                     arrow_plot_buffer_inx1, arrow_label_buffer_inx1, slash_buffer_inx1, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de(x, y+2)
+                    arrow_label_buffer_inx1, slash_buffer_inx1 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx1, slash_buffer_inx1, inx, True)        
                 else:
                     arrow_plot_buffer_inx1, arrow_label_buffer_inx1, slash_buffer_inx1, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de_st_bsl(x, y+2)
-                arrow_label_buffer_inx1, slash_buffer_inx1 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx1, slash_buffer_inx1, inx, True)        
-                # arrow_label_buffer_inx1 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx1, inx, False)        
+                    arrow_label_buffer_inx1, slash_buffer_inx1 = condition_for_text_buffer_st_bsl(label_, len_of_labels, arrow_label_buffer_inx1, slash_buffer_inx1, inx, True)        
 
                 # arrow_label_buffer_inx1 = arrow_label_buffer_inx1 - 
                 # if abs(x - previous_x) <= 0.03 and y == previous_y:
@@ -481,10 +561,10 @@ def upStart_dnEnd_label(canvas, axes, express_flag, artist_list, upStart_dnEnd,s
 
             if section == 'CCG-ST':
                 arrow_plot_buffer_inx2, arrow_label_buffer_inx2, slash_buffer_inx2, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de(x, y+2)
+                arrow_label_buffer_inx2, slash_buffer_inx2 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx2, slash_buffer_inx2, inx, True)        
             else:    
                 arrow_plot_buffer_inx2, arrow_label_buffer_inx2, slash_buffer_inx2, first_axes_flag, second_axes_flag, inx = extract_current_axes_us_de_st_bsl(x, y+2)
-            arrow_label_buffer_inx2, slash_buffer_inx2 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx2, slash_buffer_inx2, inx, True)        
-            # arrow_label_buffer_inx2 = condition_for_text_buffer(label_, len_of_labels, arrow_label_buffer_inx2, inx, False)        
+                arrow_label_buffer_inx2, slash_buffer_inx2 = condition_for_text_buffer_st_bsl(label_, len_of_labels, arrow_label_buffer_inx2, slash_buffer_inx2, inx, True)        
             
             if abs(x - previous_x) <= 0.03 and y == previous_y and not (x == 8 or x==16):
                 label_var = '/'
