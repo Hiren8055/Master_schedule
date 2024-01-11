@@ -257,27 +257,27 @@ def intersection(self, station_dict, trains_dict,section):
         # and down train on BL
         # this was add to make a all the train appear on both VR and BL station irrespective of the up and dn direction
         
-        if updn == "DN":
-            y_target = 25
-        elif updn == "UP":
-            y_target = 25
+        # if updn == "DN":
+        #     y_target = 25
+        # elif updn == "UP":
+        #     y_target = 25
 
-        for i in range(0,len(station_dict[updn]),2):
-            # #print(i)
-            # trains_dict[updn][]
-            # #print("station_dict",station_dict[updn][i])
-            inter_arr = intercept_selection_pts(y_target,i, updn)
+        # for i in range(0,len(station_dict[updn]),2):
+        #     # #print(i)
+        #     # trains_dict[updn][]
+        #     # #print("station_dict",station_dict[updn][i])
+        #     inter_arr = intercept_selection_pts(y_target,i, updn)
             
-            if inter_arr == False:
-                continue    
-            elif inter_arr[1]!=y_target:
-                x_target, y_target = intercept(y_target, inter_arr[0] ,inter_arr[1])
-                inter_plot_arr.append([x_target, y_target])
-                arr_index.append(i)
-            else:
-                x_target, y_target = inter_arr[0], inter_arr[1]
-                inter_plot_arr.append([x_target, y_target])
-                arr_index.append(i)
+        #     if inter_arr == False:
+        #         continue    
+        #     elif inter_arr[1]!=y_target:
+        #         x_target, y_target = intercept(y_target, inter_arr[0] ,inter_arr[1])
+        #         inter_plot_arr.append([x_target, y_target])
+        #         arr_index.append(i)
+        #     else:
+        #         x_target, y_target = inter_arr[0], inter_arr[1]
+        #         inter_plot_arr.append([x_target, y_target])
+        #         arr_index.append(i)
 
 
         '''second loop is for drawing the points stored in inter_plot_arr'''                
