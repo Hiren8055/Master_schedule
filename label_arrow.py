@@ -150,13 +150,13 @@ def condition_for_text_buffer_st_bsl(label, len_of_labels, arrow_label_buffer, s
                 arrow_label_buffer = arrow_label_buffer - 0.03 #done
                 slash_buffer = slash_buffer + 0.01             #done
             elif inx == 1: 
-                arrow_label_buffer = arrow_label_buffer - 0.02 #issue of intersection
-                slash_buffer = slash_buffer - 0.05             #issue of intersection
+                arrow_label_buffer = arrow_label_buffer + 0.05 #done
+                slash_buffer = slash_buffer - 0.02             #done
 
     elif 7 < len_of_labels <= 10:
         # TODO: there is problem regarding up start in intersection from virar
-        # if label == 'W,F,Sa,Su 12843':
-        #     print('label: W,F,Sa,Su 12843 is found in 8 to 10')  
+        # if label == 'Mon 12950':
+        #     print(f'Mon 12950 is found in 8 to 10 flag is {flag_ueds} and inx is {inx}')  
         if flag_ueds == False:
             # usde
             if inx == 0: 
@@ -172,8 +172,8 @@ def condition_for_text_buffer_st_bsl(label, len_of_labels, arrow_label_buffer, s
                 arrow_label_buffer = arrow_label_buffer - 0.05 #done
                 slash_buffer = slash_buffer + 0.02             #done
             elif inx == 1:
-                arrow_label_buffer = arrow_label_buffer - 0.02 #issue of intersection
-                slash_buffer = slash_buffer - 0.03             #issue of intersection
+                arrow_label_buffer = arrow_label_buffer + 0.03 #done
+                slash_buffer = slash_buffer - 0.02             #done
 
 
     elif 10 < len_of_labels <= 15:
@@ -183,7 +183,7 @@ def condition_for_text_buffer_st_bsl(label, len_of_labels, arrow_label_buffer, s
             # usde
             if inx == 0:
                 arrow_label_buffer = arrow_label_buffer - 0.06 #done
-                slash_buffer = slash_buffer + 0.001
+                slash_buffer = slash_buffer + 0.001            #done
             elif  inx == 1:
                 arrow_label_buffer = arrow_label_buffer - 0.07 #done
                 slash_buffer = slash_buffer - 0.025            #done
@@ -194,12 +194,10 @@ def condition_for_text_buffer_st_bsl(label, len_of_labels, arrow_label_buffer, s
                 arrow_label_buffer = arrow_label_buffer - 0.06  #done
                 slash_buffer = slash_buffer + 0.01              #done
             elif  inx == 1:
-                arrow_label_buffer = arrow_label_buffer -  0.05 #issue of intersection
-                slash_buffer = slash_buffer - 0.03              #issue of intersection
+                arrow_label_buffer = arrow_label_buffer +  0.01 #done
+                slash_buffer = slash_buffer - 0.03              #done
 
-    elif 15 < len_of_labels:
-        # if label == 'W,F,Sa,Su 12843':
-        #     print('label: W,F,Sa,Su 12843 is found in greater than 15')        
+    elif 15 < len_of_labels:  
         if flag_ueds == False:
             # usde
             if inx == 0: 
@@ -213,15 +211,16 @@ def condition_for_text_buffer_st_bsl(label, len_of_labels, arrow_label_buffer, s
             # ueds
             if inx == 0: 
                 arrow_label_buffer = arrow_label_buffer - 0.08 #done
-                slash_buffer = slash_buffer + 0.02            #done
+                slash_buffer = slash_buffer + 0.02             #done
             elif inx == 1: 
-                arrow_label_buffer = arrow_label_buffer - 0.10 #issue of intersection
-                slash_buffer = slash_buffer - 0.03             #issue of intersection
+                arrow_label_buffer = arrow_label_buffer - 0.01 #done
+                slash_buffer = slash_buffer - 0.03             #done
 
-    # else:
-    #     # #print("Problem in len of labels for the label: ", label)
-    #     if label[:3] == 'nan':
-    #         #print("nan label is found with inx: ", inx, "and label name: ", label)
+    elif len_of_labels == 5:
+        #only for ueds in inx = 1
+        if flag_ueds == True and inx == 1:
+            arrow_label_buffer = arrow_label_buffer + 0.07     #done
+            slash_buffer = slash_buffer - 0.02                 #done
 
     return arrow_label_buffer, slash_buffer
 
